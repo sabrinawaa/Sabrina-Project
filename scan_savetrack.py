@@ -13,7 +13,7 @@ import os
 mad=Madx()
 
 strengths=[0.3,0.4,0.5,0.6]
-no_particles=17
+no_particles=1
 
 for j in range(len(strengths)):
     with open('job1.madx', 'r') as file:
@@ -30,8 +30,16 @@ for j in range(len(strengths)):
         else:   
             name="track.obs0001.p00"+str(i)
             
-        newname="k3=" +str(j)+"no="++str(i)
-        os.rename('name', newname)
+        newname="k3=" +str(j)+"no="+str(i)
+        os.rename(name, newname)
+        
+    with open('job1.madx', 'r') as file:
+        data = file.read()
+        data = data.replace("K3="+str(strengths[j]),"K3=0.1")
+    with open('job1.madx', 'w') as file:     
+        file.write(data)
+        
+    print('-----------finished running strength=',strengths[j],"---------------")
             
             
             
