@@ -13,7 +13,7 @@ import os
 mad=Madx()
 
 strengths=[0.3,0.4,0.5,0.6]
-no_particles=1
+no_particles=10
 
 for j in range(len(strengths)):
     with open('job1.madx', 'r') as file:
@@ -30,7 +30,7 @@ for j in range(len(strengths)):
         else:   
             name="track.obs0001.p00"+str(i)
             
-        newname="k3=" +str(j)+"no="+str(i)
+        newname="k3=" +str(strengths[j])+"no="+str(i)
         os.rename(name, newname)
         
     with open('job1.madx', 'r') as file:
