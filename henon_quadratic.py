@@ -5,7 +5,7 @@ Created on Thu Feb  9 14:14:53 2023
 
 @author: sabo4ever
 """
-
+#%%
 from cpymad.madx import Madx
 from matplotlib import pyplot as plt
 import numpy as np
@@ -90,7 +90,7 @@ for i in range (1,no_particles+1):
     Qx=fft_tune(track.X,track.PX,twiss.ALFX[1],twiss.BETX[1])
     x0s.append(track.X[1])
     tunes.append(Qx)
- #check if index need to +-1
+
  
 plt.figure(num='Qx')
 plt.scatter(x0s,tunes,marker='.', linewidths=0.5)
@@ -178,4 +178,50 @@ for j in range(len(strengths)):
         
     print('-----------finished running strength=',strengths[j],"---------------")
     
+   #%% tune inside island
+twiss=pd.read_fwf("sps.tfs",skiprows=50)
+twiss=twiss.drop(index=0)
+twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
+
+#plt.plot(np.array(twiss.S), np.array(twiss.BETX))
+tunes=[]
+x0s=[]
+for i in range (9,13):
+    if i <10:
+        name="track.obs0001.p000"+str(i)
+    else:   
+        name="track.obs0001.p00"+str(i)
     
+    track= pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+    track=track.drop(index=0,columns="*")
+    track=track.astype(np.float)
+  
+    
+    plt.figure(num='x')
+    x4=track.X[::4]
+    px4=track.PX[::4]
+    plt.scatter(x4,px4,marker='.',s=0.1)
+    plt.xlabel("X")
+    plt.ylabel("p_X")
+    plt.show()
+    
+   
+  
+    Qx=fft_tune(x4,px4,twiss.ALFX[1],twiss.BETX[1])
+    x0s.append(track.X[1])
+    tunes.append(Qx)
+
+ 
+plt.figure(num='Qx')
+plt.scatter(x0s,tunes,marker='.', linewidths=0.5)
+plt.xlabel("x0")
+plt.ylabel("Q_x")
+
+pfit=op.curve_fit(quad_func,x0s,tunes,p0=[20,0.248])
+xx=np.linspace(x0s[0],x0s[-1],250)
+fit=quad_func(xx,*pfit[0])
+label="  a2="+str(pfit[0][0])+" a0="+str(pfit[0][1])
+    
+plt.plot(xx,fit,label=label)
+plt.legend()    
+# %%
