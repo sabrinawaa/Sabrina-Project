@@ -67,9 +67,9 @@ ptc_start, x= 1.25e-2, px=0, y= 0, py=0;
 ptc_start, x= 1.3e-2, px=0, y= 0, py=0;
 ptc_start, x= 1.35e-2, px=0, y= 0, py=0;
 ptc_start, x= 1.4e-2, px=0, y= 0, py=0;
-ptc_start, x= 1.45e-2, px=0, y= 0, py=0;
-ptc_start, x= 1.5e-2, px=0, y= 0, py=0;
-!ptc_start, x= 1.6e-2, px=0, y= 0, py=0;
+ptc_start, x= 1.5e-2, px=2.8e-5, y= 0, py=0;
+ptc_start, x= 1.6e-2, px=5.7e-5, y= 0, py=0;
+ptc_start, x= 1.8e-2, px=0.00011, y= 0, py=0;
 !ptc_start, x= 1.7e-2, px=0, y= 0, py=0;
 !ptc_start, x= 1.8e-2, px=0, y= 0, py=0;
 !ptc_start, x= 1.9e-2, px=0, y= 0, py=0;
@@ -87,7 +87,7 @@ ptc_start, x= 1.5e-2, px=0, y= 0, py=0;
 
 
 ptc_track,icase=4,closed_orbit,dump,
-turns=1024 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+turns=2048 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
 
 
 ptc_track_end;
