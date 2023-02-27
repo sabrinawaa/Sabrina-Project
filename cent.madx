@@ -1,0 +1,84 @@
+! system,"[ ! -e sps ] && [ -d /afs/cern.ch/eng/acc-models/sps/2021 ] && ln -nfs /afs/cern.ch/eng/acc-models/sps/2021 sps";
+! system,"[ ! -e sps ] && git clone https://gitlab.cern.ch/acc-models/acc-models-sps -b 2021 sps";
+
+option, -echo;
+
+call,file="sps/sps.seq";
+call,file="sps/strengths/ft_q26.str";
+
+beam,particle=proton, PC=14;
+
+use,sequence=sps;
+
+!twiss;
+
+LOF.30802, K3=0.6;
+
+call,file="sps/toolkit/macro.madx";
+qx=26.247; ! originally 26.62
+qy=26.58;
+
+exec, sps_match_tunes(qx,qy);
+
+! to set the chromaticity using knob in LSA 
+exec,sps_define_sext_knobs;
+exec,sps_set_chroma_weights_ft; 
+
+! the qph and qpv correspond to normalized chromaticity
+qph_setvalue = +0.1;
+qpv_setvalue = +0.0;
+
+
+
+
+
+! to match the chromaticity (varying the chroma knob settings)
+sps_match_chroma(dq1_target_value,dq2_target_value) : macro = {
+ match, sequence=sps;
+        vary, name=qph_setvalue,  step=1.e-8;
+        vary, name=qpv_setvalue,  step=1.e-8;
+        global, dq1=dq1_targetvalue, dq2=dq2_targetvalue;
+        jacobian, calls=10, tolerance=1e-25;
+ endmatch;
+};
+
+dq1_targetvalue=3.12;
+dq2_targetvalue=2;
+exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
+
+select,flag=twiss,column=name,keyword,s,betx,alfx,mux,betay,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
+twiss,file="sps.tfs";
+
+
+
+ptc_create_universe; 
+ptc_create_layout,model=2,method=6,nst=10,exact;
+ptc_start, x=0.00125 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0025 , px =0.0, y= 0, py=0;
+ptc_start, x=0.005 , px =0.0, y= 0, py=0;
+ptc_start, x=0.006 , px =0.0, y= 0, py=0;
+ptc_start, x=0.007 , px =0.0, y= 0, py=0;
+ptc_start, x=0.008 , px =0.0, y= 0, py=0;
+ptc_start, x=0.009 , px =0.0, y= 0, py=0;
+ptc_start, x=0.010 , px =0.0, y= 0, py=0;
+ptc_start, x=0.011 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0155 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0165 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0175 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0185 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0195 , px =0.0, y= 0, py=0;
+
+ptc_track,icase=4,closed_orbit,dump,
+turns=2048 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+
+
+ptc_track_end;
+ptc_end;
+
+value,LOF.30802->k3;
+
+
+
+
+
+
