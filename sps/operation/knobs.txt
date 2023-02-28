@@ -1,0 +1,6 @@
+# MadX name, LSA name, scaling, test trim
+qph_setvalue, SPSBEAM/QPH, 1.0, 0.1
+qpv_setvalue, SPSBEAM/QPV, 1.0, 0.1
+
+dkqf_h, SPSBEAM/QH, 1.0, 0.05
+dkqd_v, SPSBEAM/QV, 1.0, 0.05

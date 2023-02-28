@@ -1,0 +1,8 @@
+# MadX expression   LSA name
+table(summ,q1)      SPSBEAM/QH
+table(summ,q2)      SPSBEAM/QV
+
+table(summ,dq1)     SPSBEAM/QPH   
+table(summ,dq2)     SPSBEAM/QPV
+
+table(summ,gammatr)  SPSBEAM/GammaTransition

@@ -1,0 +1,11 @@
+/.gradle/
+/.settings/
+/bin/
+/cbng-build-info.log
+/cbng-build.log
+/.classpath
+/.project
+/.idea
+*.ipr
+*.iws
+*.iml
