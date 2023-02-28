@@ -50,26 +50,26 @@ select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,
 twiss,file="sps.tfs";
 
 
-!seqedit,sequence=sps;
-!cycle,start=KIK;
-!endedit;
+seqedit,sequence=sps;
+cycle,start=KIK.11654;
+endedit;
 
 
-!ptc_create_universe; 
-!ptc_create_layout,model=2,method=6,nst=10,exact;
-
-
-
-!ptc_start, x=0.0310 , px =0.0, y= 0, py=0;
-
-
-!ptc_track,icase=4,closed_orbit,dump,
-!turns=8192 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+ptc_create_universe; 
+ptc_create_layout,model=2,method=6,nst=10,exact;
 
 
 
-!ptc_track_end;
-!ptc_end;
+ptc_start, x=0.0310 , px =0.0, y= 0, py=0;
+
+
+ptc_track,icase=4,closed_orbit,dump,
+turns=8192 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+
+
+
+ptc_track_end;
+ptc_end;
 
 value,LOF.30802->k3;
 
