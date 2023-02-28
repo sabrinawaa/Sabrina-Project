@@ -12,7 +12,6 @@ import numpy as np
 import pandas as pd
 import scipy.optimize as op
 
-
 def hanning_window(x):
     return x * 2 * np.power((np.sin(np.pi * np.arange(len(x)) / (len(x)))), 2)
 
@@ -24,9 +23,9 @@ def interpolation(data):
     N=len(data)
     
     if index==0:
-        return 1.0
-    elif (index== N-1):
         return 0.0
+    elif (index== N-1):
+        return 1.0
     if (data[index - 1] > data[index + 1]):
         i1 = index - 1
         i2 = index
@@ -47,16 +46,6 @@ def fft_tune(x,px,alf,beta):
     freqs=np.fft.fft(coords)
     return interpolation(abs(freqs))
 
-
-
-mad=Madx()
-
-
-no_particles=7
-no_turns=8192
-
-
-
 def quad_func(x,a2,a0):
     return a2*np.square(x)+a0
 
@@ -66,44 +55,60 @@ twiss=twiss.drop(index=0)
 twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
 
 #plt.plot(np.array(twiss.S), np.array(twiss.BETX))
-tunes=[]
-x0s=[]
-for i in range (1,no_particles+1):
-    if i <10:
-        name="Data/track.obs0001.p000"+str(i)
-    else:   
-        name="Data/track.obs0001.p00"+str(i)
-    
-    track= pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
-    track=track.drop(index=0,columns="*")
-    track=track.astype(np.float)
-  
-    
-    plt.figure(num='x')
-    plt.scatter(track.X,track.PX,marker='.',s=0.1)
-    plt.xlabel("X")
-    plt.ylabel("p_X")
-    plt.show()
-    
-   
-  
-    Qx=fft_tune(track.X,track.PX,twiss.ALFX[1],twiss.BETX[1])
-    x0s.append(track.X[1])
-    tunes.append(Qx)
 
- 
-plt.figure(num='Qx')
-plt.scatter(x0s,tunes,marker='.', linewidths=0.5)
-plt.xlabel("x0")
-plt.ylabel("Q_x")
-
-pfit=op.curve_fit(quad_func,x0s,tunes,p0=[20,0.248])
-xx=np.linspace(x0s[0],x0s[-1],250)
-fit=quad_func(xx,*pfit[0])
-label="  a2="+str(pfit[0][0])+" a0="+str(pfit[0][1])
+no_particles=7
+no_turns=8192
+for j in [0.6]:
+    tunes=[]
+    x0s=[]
+    for i in range (1,no_particles+1):
+        if i <10:
+            name="Data/000/track.obs0001.p000"+str(i)
+        else:   
+            name="track.obs0001.p00"+str(i)
+        
+        # name="Data/220/k3="+str(j)+"no="+str(i)
+        
+        track= pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+        track=track.drop(index=0,columns="*")
+        track=track.astype(np.float)
+      
+        
+        plt.figure(num='x')
+        plt.scatter(track.X,track.PX,marker='.',s=0.1,label="k3="+str(j))
+        plt.xlabel("X")
+        plt.ylabel("p_X")
+        plt.legend()
+        plt.show()
+        
+       
+      
+        Qx=fft_tune(track.X,track.PX,twiss.ALFX[1],twiss.BETX[1])
+        x0s.append(track.X[1])
+        tunes.append(Qx)
+        
+        
+        # xn = track.X/np.sqrt(twiss.BETX[1])
+        # pxn = twiss.ALFX[1] * track.X/np.sqrt(twiss.BETX[1]) + track.PX*np.sqrt(twiss.BETX[1])
+        # coords=xn - 1j * pxn
+        # freqs=np.fft.fft(hanning_window(coords))
+        # plt.plot(np.arange(8193)/8192,abs(freqs))
+            
+         
     
-plt.plot(xx,fit,label=label)
-plt.legend() 
+     
+    plt.figure(num='Qx')
+    plt.scatter(x0s,tunes,marker='.', linewidths=0.5)
+    plt.xlabel("x0")
+    plt.ylabel("Q_x")
+    
+    pfit=op.curve_fit(quad_func,x0s,tunes,p0=[20,0.248])
+    xx=np.linspace(x0s[0],x0s[-1],250)
+    fit=quad_func(xx,*pfit[0])
+    label="k3="+ str(j)+" a2="+str(pfit[0][0])+" a0="+str(pfit[0][1])
+        
+    plt.plot(xx,fit,label=label)
+    plt.legend() 
 #%% also generating data
 
 strengths=[0.3,0.4,0.5,0.6]
@@ -186,62 +191,5 @@ for j in range(len(strengths)):
         
     print('-----------finished running strength=',strengths[j],"---------------")
     
-   #%% tune inside island
-island=1   # 0=right, 1= bottom, 2=left, 3=top
-name=["ptc_twiss_right.tfs","ptc_twiss_bot.tfs","ptc_twiss_left.tfs","ptc_twiss_top.tfs"]
-name_sum=["ptc_twiss_summ_right.tfs","ptc_twiss_summ_bot.tfs","ptc_twiss_summ_left.tfs","ptc_twiss_summ_top.tfs"]
-
-twiss=pd.read_fwf(name[island],skiprows=88)
-#twiss=pd.read_fwf("sps.tfs",skiprows=50)
-twiss=twiss.drop(index=0)
-twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
-
-twiss_sum=pd.read_fwf(name_sum[island],skiprows=6)
-twiss_sum=twiss_sum.drop(index=0,columns='*')
-
-#plt.plot(np.array(twiss.S), np.array(twiss.BETX))
-tunes=[]
-x0s=[]
-for i in range (1,no_particles+1):
-    if i <10:
-        name="Data/track.obs0001.p000"+str(i)
-    else:   
-        name="Data/track.obs0001.p00"+str(i)
-    
-    track= pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
-    track=track.drop(index=0,columns="*")
-    track=track.astype(np.float)
   
-    
-    plt.figure(num='x')
-    x4=track.X[island::4]-np.float(twiss_sum.ORBIT_X)
-    px4=track.PX[island::4]-np.float(twiss_sum.ORBIT_PX)
-    
-    plt.scatter(x4,px4,marker='.',s=0.1)
-    plt.xlabel("X")
-    plt.ylabel("p_X")
-    plt.show()
-    
-    plt.figure(num=1)
-    xn=x4/np.sqrt(twiss.BETX[1])
-    pxn=twiss.ALFX[1]*x4/np.sqrt(twiss.BETX[1]) + px4*np.sqrt(twiss.BETX[1])
-    plt.scatter(xn,pxn,marker='.',s=0.1)
-  
-    Qx=fft_tune(x4,px4,twiss.ALFX[1],twiss.BETX[1])
-    x0s.append(track.X[1])
-    tunes.append(Qx)
-
- 
-plt.figure(num='Qx')
-plt.scatter(x0s,tunes,marker='.', linewidths=0.5)
-plt.xlabel("x0")
-plt.ylabel("Q_x")
-
-# pfit=op.curve_fit(quad_func,x0s,tunes,p0=[20,0.248])
-# xx=np.linspace(x0s[0],x0s[-1],250)
-# fit=quad_func(xx,*pfit[0])
-# label="  a2="+str(pfit[0][0])+" a0="+str(pfit[0][1])
-    
-# plt.plot(xx,fit,label=label)
-# plt.legend()    
 # %%
