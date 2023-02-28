@@ -3,7 +3,7 @@
 
 option, -echo;
 
-call,file="sps/sps.seq";
+call,file="sps.seq";
 call,file="sps/strengths/ft_q26.str";
 
 beam,particle=proton, PC=14;
@@ -52,6 +52,7 @@ twiss,file="sps.tfs";
 
 seqedit,sequence=sps;
 cycle,start=KIK;
+endedit;
 
 
 ptc_create_universe; 
@@ -59,7 +60,7 @@ ptc_create_layout,model=2,method=6,nst=10,exact;
 
 
 
-ptc_start, x=0.0310 , px =0.0008646512185, y= 0, py=0;
+ptc_start, x=0.0310 , px =0.0, y= 0, py=0;
 
 
 ptc_track,icase=4,closed_orbit,dump,
