@@ -46,12 +46,18 @@ dq1_targetvalue=3.12;
 dq2_targetvalue=2;
 exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
 
+seqedit,sequence=sps;
+cycle,start=KIK.11654;
+endedit;
+
+
 sps4: sequence, refer = entry, L = 27646.0152;
 sps, at=0.0;
 sps, at=6911.5038;
 sps, at=13823.0076;
 sps, at=20734.5114;
 endsequence;
+
 
 use,sequence=sps4;
 
@@ -60,7 +66,7 @@ ptc_create_layout,model=1,method=6,nst=10,exact;
 
 select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,betay,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 
-ptc_twiss,closed_orbit,file="ptc_twiss_left.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ_left.tfs",x=-0.02,px=-0.0002,no=4,icase=56; 
+ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=0.02,px=0.0,no=4,icase=56; 
 
 ptc_end;
 
