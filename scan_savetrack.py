@@ -41,10 +41,11 @@ mad=Madx()
 #         file.write(data)
         
 #     print('-----------finished running strength=',strengths[j],"---------------")
-            
+      # #%%tracking centre   
+      
 oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
-strengths=[0.3,0.4,0.5]#,0.6,0.7,0.8,0.9]
-no_particles=1
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+no_particles=8
 
 for k in oct_names:
     for j in range(len(strengths)):
@@ -75,5 +76,5 @@ for k in oct_names:
             file.write(data)
             
         print('-----------finished running strength=',strengths[j],"---------------")
-            
+
             

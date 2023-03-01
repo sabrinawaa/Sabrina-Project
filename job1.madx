@@ -3,7 +3,7 @@
 
 option, -echo;
 
-call,file="sps/sps.seq";
+call,file="sps1.seq";
 call,file="sps/strengths/ft_q26.str";
 
 beam,particle=proton, PC=14;
@@ -12,7 +12,7 @@ use,sequence=sps;
 
 !twiss;
 
-LOF.30802, K3=0.6;
+LOF.30802, K3=0.1;
 
 call,file="sps/toolkit/macro.madx";
 qx=26.247; ! originally 26.62
@@ -54,24 +54,29 @@ seqedit,sequence=sps;
 cycle,start=KIK.11654;
 endedit;
 
-
+use,sequence=sps;
 ptc_create_universe; 
 ptc_create_layout,model=2,method=6,nst=10,exact;
 
-
-
-ptc_start, x=0.0310 , px =0.0, y= 0, py=0;
+ptc_start, x=0.005 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0075 , px =0.0, y= 0, py=0;
+ptc_start, x=0.01 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0125 , px =0.0, y= 0, py=0;
+ptc_start, x=0.013, px =0.0, y= 0, py=0;
+ptc_start, x=0.015 , px =0.0, y= 0, py=0;
+ptc_start, x=0.0175 , px =0.0, y= 0, py=0;
+ptc_start, x=0.02 , px =0.0, y= 0, py=0;
 
 
 ptc_track,icase=4,closed_orbit,dump,
-turns=8192 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+turns=1024 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
 
 
 
 ptc_track_end;
 ptc_end;
 
-value,LOF.30802->k3;
+value,LOE.LOF.30802->k3;
 
 
 
