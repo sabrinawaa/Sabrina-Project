@@ -42,8 +42,8 @@ mad=Madx()
         
 #     print('-----------finished running strength=',strengths[j],"---------------")
             
-oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
-strengths=[0.3,0.4,0.5]#,0.6,0.7,0.8,0.9]
+oct_names=["LOE.12002"]#,"LOE.22002","LOE.32002","LOEN.52002"]
+strengths=[0.3]#,0.4,0.5]#,0.6,0.7,0.8,0.9]
 no_particles=1
 
 for k in oct_names:
