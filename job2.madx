@@ -12,7 +12,7 @@ use,sequence=sps;
 
 !twiss;
 
-LOF.30802, K3=0.6;
+LOE.12002, K3=0.1;
 
 call,file="sps/toolkit/macro.madx";
 qx=26.247; ! originally 26.62
@@ -66,7 +66,7 @@ ptc_create_layout,model=1,method=6,nst=10,exact;
 
 select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,betay,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 
-ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=0.02,px=0.0,no=4,icase=56; 
+ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.016,px=0.0008,no=4,icase=56; 
 
 ptc_end;
 
