@@ -39,8 +39,8 @@ for k in range(len(oct_names)):
             mad.call("job2.madx")
             
            
-            twiss_newname="twiss.oct="+str(k)+"k3=" +str(strengths[j])+islands[i]+".tfs"
-            twissum_newname="twissum.oct="+str(k)+"k3=" +str(strengths[j])+islands[i]+".tfs"
+            twiss_newname="twiss.oct="+oct_names[k]+"k3=" +str(strengths[j])+islands[i]+".tfs"
+            twissum_newname="twissum.oct="+oct_names[k]+"k3=" +str(strengths[j])+islands[i]+".tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
                 
