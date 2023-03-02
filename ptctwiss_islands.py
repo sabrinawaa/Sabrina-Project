@@ -39,8 +39,8 @@ for k in range(len(oct_names)):
             mad.call("job2.madx")
             
            
-            twiss_newname="twiss.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
-            twissum_newname="twissum.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
+            twiss_newname="twiss.oct="+str(k)+"k3=" +str(strengths[j])+islands[i]+".tfs"
+            twissum_newname="twissum.oct="+str(k)+"k3=" +str(strengths[j])+islands[i]+".tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
                 
@@ -48,8 +48,8 @@ for k in range(len(oct_names)):
                 data = file.read()
                 data = data.replace("K3="+str(strengths[j]),"K3=0.1")
                 data = data.replace(oct_names[k],"LOF.30802")
-                data = data.replace(FP[k][i][0],"x=0.02")
-                data = data.replace(FP[k][i][1],"px=0.0")
+                data = data.replace(str(FP[k][i][0]),"x=0.02")
+                data = data.replace(str(FP[k][i][1]),"px=0.0")
             with open('job2.madx', 'w') as file:     
                 file.write(data)
        
