@@ -30,8 +30,8 @@ for k in range(len(oct_names)):
                 data = file.read()
                 data = data.replace("K3=0.1", "K3="+str(strengths[j]))
                 data = data.replace("LOF.30802", oct_names[k])
-                data = data.replace("x=0.02", FP[k][i][0])
-                data = data.replace("px=0.0", FP[k][i][1])
+                data = data.replace("x=0.02", "x="+str(FP[k][i][0]))
+                data = data.replace("px=0.0", "px="+str(FP[k][i][1]))
                 
             with open('job2.madx', 'w') as file:     
                 file.write(data)
