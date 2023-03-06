@@ -52,7 +52,7 @@ for a in range (len(oct_names)):
                     track = track.drop(index = 0,columns="*")
                     track = track.astype(np.float)
                     
-                    plt.figure(num=k+a)
+                    plt.figure(num=oct_names[k]+oct_names[a])
                     plt.scatter(track.X,track.PX,marker='.',s=0.1)
                     plt.xlabel("X")
                     plt.ylabel("p_X")
