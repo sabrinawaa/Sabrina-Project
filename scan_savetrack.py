@@ -11,7 +11,7 @@ import os
 
 
 mad=Madx()
-job='75track_cent.madx'
+job='job1.madx'
 # #%%
 # oct_names=[]
 # strengths=[0.3,0.1,0.5,0.6,0.7,0.8,0.9]
