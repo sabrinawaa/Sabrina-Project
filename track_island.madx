@@ -67,7 +67,7 @@ n=n+0.00025;
 }
 
 ptc_track,icase=4,closed_orbit,dump,
-turns=10 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+turns=4096 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
 
 
 
