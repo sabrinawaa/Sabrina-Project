@@ -20,7 +20,7 @@ oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
 strengths=[0.6]
 no_particles=8
 no_turns=1024
-#%%
+#%%single
 
 twiss=pd.read_fwf('sps.tfs',skiprows=50,infer_nrows=3000)
 twiss=twiss.drop(index=0)
@@ -40,7 +40,7 @@ for k in oct_names:
             plt.xlabel("X")
             plt.ylabel("p_X")
             
-#%%
+#%%pairs
 oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
 strengths=[0.6]
 no_particles=7
@@ -59,7 +59,40 @@ for a in range (len(oct_names)):
                     plt.scatter(track.X,track.PX,marker='.',s=0.1)
                     plt.xlabel("X")
                     plt.ylabel("p_X")
-       
-
-
+#%% triplets       
+oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
+strengths=[0.6]
+no_particles=8
+for b in range (len(oct_names)):
+    for a in range (len(oct_names)):
+        if b>a:
+            for k in range (len(oct_names)):
+                if a>k:
+                    print (oct_names[k],oct_names[a],oct_names[b])
+                    for j in range(len(strengths)):
+                        for i in range (1,no_particles+1):
+                            name="Data/triplets/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
+                            track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+                            track = track.drop(index = 0,columns="*")
+                            track = track.astype(np.float64)
+                            
+                            plt.figure(num=oct_names[k]+oct_names[a]+oct_names[b])
+                            plt.scatter(track.X,track.PX,marker='.',s=0.1)
+                            plt.xlabel("X")
+                            plt.ylabel("p_X")
+#%%
+for i in range (1,no_particles+1):
+    if i <10:
+        name="Data/all4/track.obs0001.p000"+str(i)
+    else:   
+        name="Data/all4/track.obs0001.p00"+str(i)
+   
+    track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+    track = track.drop(index = 0,columns="*")
+    track = track.astype(np.float64)
+    
+    plt.figure(num=oct_names[k]+oct_names[a]+oct_names[b])
+    plt.scatter(track.X,track.PX,marker='.',s=0.1)
+    plt.xlabel("X")
+    plt.ylabel("p_X")
    
