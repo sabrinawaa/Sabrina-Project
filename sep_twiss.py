@@ -14,10 +14,10 @@ import os
 mad=Madx()
 
 
-oct_names=["LOE.22002"]
-strengths=[0.3,0.1,0.5,0.6,0.7,0.8,0.9]
+oct_names=["LOE.22002","LOE.32002"]
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 no_particles=8
-islands=["top"]#,"right","bot","left"]
+islands=["top","bot"]#,"right","bot","left"]
 
 alltwiss=pd.read_csv('islands_twiss.csv').reset_index()
 alltwiss=alltwiss.loc[:, ~alltwiss.columns.isin(['index', 'Unnamed: 0'])]
@@ -27,7 +27,7 @@ for k in oct_names:
     for i in islands:
         datatop=alltwiss[alltwiss["island"]==i].reset_index()
         datatop12=datatop[datatop["name"]==k].reset_index()
-        csvname="Data/Islandtwiss_csv/"+k+i+"_twiss.csv"
+        csvname="Data/75Islandtwiss_csv/"+k+i+"_twiss.csv"
         datatop12.to_csv(csvname)
         
         plt.figure(num=k+str(1))

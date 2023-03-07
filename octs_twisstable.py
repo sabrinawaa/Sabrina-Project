@@ -43,19 +43,19 @@ for k in oct_names:
         alldata=alldata.append(data)
         
         #%%
-oct_names=["LOE.12002"]#,"LOE.22002","LOE.32002","LOEN.52002"]
-strengths=[0.3,0.1]#,0.5,0.6,0.7,0.8,0.9]
-islands=["top"]#,"right","bot","left"]
+oct_names=["LOE.22002","LOE.32002"]
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+islands=["top","bot"]
 no_particles=1
 
-alldata=pd.DataFrame(columns=['name', 'k3', 'BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
+alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
        'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 
 for k in oct_names:
     for j in strengths:
         for i in range(len(islands)):
-            twiss_name="Data/istwiss/twiss.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
-            twissum_name="Data/istwiss/twissum.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
+            twiss_name="Data/75_twiss_island/twiss.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
+            twissum_name="Data/75_twiss_island/twissum.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
             
             twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
             twiss=twiss.drop(index=0)
@@ -70,6 +70,10 @@ for k in oct_names:
             data.insert(2,"island",islands[i])
             data.insert(3,"ALFX",twiss.ALFX[1])
             data.insert(3,"BETX",twiss.BETX[1])
+            data.insert(3,"max_X",max(twiss.X))
             
             alldata=alldata.append(data)
+            
+# ,"LOE.32002","LOEN.52002"
 alldata.to_csv("islands_twiss.csv")
+
