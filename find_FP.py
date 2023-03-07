@@ -41,13 +41,16 @@ for k in oct_names:
             plt.ylabel("p_X")
             
 #%%
+oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
+strengths=[0.6]
+no_particles=7
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
         if a>k:
             print (oct_names[k],oct_names[a])
             for j in range(len(strengths)):
                 for i in range (1,no_particles+1):
-                    name="Data/pairs/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+"no="+str(i)
+                    name="Data/75pairs/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+"no="+str(i)
                     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
                     track = track.drop(index = 0,columns="*")
                     track = track.astype(np.float)
