@@ -71,7 +71,7 @@ for b in range (len(oct_names)):
                     print (oct_names[k],oct_names[a],oct_names[b])
                     for j in range(len(strengths)):
                         for i in range (1,no_particles+1):
-                            name="Data/triplets/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
+                            name="Data/75triplets/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
                             track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
                             track = track.drop(index = 0,columns="*")
                             track = track.astype(np.float64)
@@ -80,18 +80,18 @@ for b in range (len(oct_names)):
                             plt.scatter(track.X,track.PX,marker='.',s=0.1)
                             plt.xlabel("X")
                             plt.ylabel("p_X")
-#%%
+#%%all4
 for i in range (1,no_particles+1):
     if i <10:
-        name="Data/all4/track.obs0001.p000"+str(i)
+        name="Data/75all4/track.obs0001.p000"+str(i)
     else:   
-        name="Data/all4/track.obs0001.p00"+str(i)
+        name="Data/75all4/track.obs0001.p00"+str(i)
    
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
     
-    plt.figure(num=oct_names[k]+oct_names[a]+oct_names[b])
+    
     plt.scatter(track.X,track.PX,marker='.',s=0.1)
     plt.xlabel("X")
     plt.ylabel("p_X")
