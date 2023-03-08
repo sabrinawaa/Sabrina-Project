@@ -13,12 +13,15 @@ import pandas as pd
 import scipy.optimize as op
 
 import henon_funcs as fn
-from math import log10, floor
-def round_sig(x, sig):
-    return round(x, sig-int(floor(log10(abs(x))))-1)
+
 #%%
 mad=Madx()
-mad.call("job1.madx")
+mad.call("track.madx")
+#%%
+twiss=pd.read_fwf("sps.tfs",skiprows=50,infer_nrows=3000)
+#twiss=pd.read_fwf("sps.tfs",skiprows=50)
+twiss=twiss.drop(index=0)
+twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
 #%%
 
 L_LOD=0.677
