@@ -41,10 +41,10 @@ for k in oct_names:
         data.insert(2,"BETX",twiss.BETX[1])
         
         alldata=alldata.append(data)
-alldata.to_csv("cent_twiss.csv")        
+alldata.to_csv("data/twiss_csv/cent_twiss.csv")        
         #%%islands
-oct_names=["LOE.22002"]
-strengths=[0.3,0.1,0.5,0.6,0.7,0.8,0.9]
+oct_names=["LOE.32002"]
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]
 no_particles=1
 
@@ -54,8 +54,8 @@ alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'AL
 for k in oct_names:
     for j in strengths:
         for i in range(len(islands)):
-            twiss_name="Data/25_twiss_island/twiss.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
-            twissum_name="Data/25_twiss_island/twissum.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
+            twiss_name="Data/75_twiss_island/twiss.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
+            twissum_name="Data/75_twiss_island/twissum.oct="+str(k)+"k3=" +str(j)+islands[i]+".tfs"
             
             twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
             twiss=twiss.drop(index=0)
@@ -75,11 +75,13 @@ for k in oct_names:
             alldata=alldata.append(data)
             
 # ,"LOE.32002","LOEN.52002"
-alldata.to_csv("islands_twiss.csv")
+alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 
 #%%pairs
-oct_names=["LOE.12002,LOE.22002","LOE.22002,LOE.32002","LOE.22002,LOE.52002"]
-strengths=[0.6]
+# oct_names=["LOE.12002,LOE.22002","LOE.22002,LOE.32002","LOE.22002,LOE.52002"]#25 config
+oct_names=["LOE.12002,LOE.32002","LOE.22002,LOE.32002","LOE.32002,LOE.52002"]#75 config
+
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]
 
 alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
@@ -87,8 +89,8 @@ alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'AL
 for k in oct_names:
             for j in range(len(strengths)):
                 for i in range(len(islands)):
-                    twiss_name="Data/25twiss_pairs/twiss.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
-                    twissum_name="Data/25twiss_pairs/twissum.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
+                    twiss_name="Data/75twiss_pairs/twiss.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
+                    twissum_name="Data/75twiss_pairs/twissum.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
                     
                     twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
                     twiss=twiss.drop(index=0)
@@ -108,11 +110,11 @@ for k in oct_names:
                     alldata=alldata.append(data)
             
 # ,"LOE.32002","LOEN.52002"
-alldata.to_csv("islands_twiss.csv")
+alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 
 #%% triplets
 oct_names=["LOE.12002,LOE.32002,LOEN.52002","LOE.22002,LOE.32002,LOEN.52002"]
-strengths=[0.6]
+strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]
 
 alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
@@ -141,4 +143,4 @@ for k in oct_names:
                     alldata=alldata.append(data)
             
 # ,"LOE.32002","LOEN.52002"
-alldata.to_csv("islands_twiss.csv")
+alldata.to_csv("data/twiss_csv/islands_twiss.csv")
