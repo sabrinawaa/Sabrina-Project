@@ -35,7 +35,6 @@ for k in range (len(oct_names)):
                 data = data.replace("K3=0.1", "K3="+str(strengths[j]))
                 data = data.replace("oct1", oct_names[k][0])
                 data = data.replace("oct2",oct_names[k][1])
-                data = data.replace("oct3",oct_names[k][2])
             with open(job, 'w') as file:     
                 file.write(data)
                 
@@ -56,7 +55,6 @@ for k in range (len(oct_names)):
                 data = data.replace("K3="+str(strengths[j]),"K3=0.1")
                 data = data.replace( oct_names[k][0],"oct1")
                 data = data.replace(oct_names[k][1],"oct2")
-                data = data.replace(oct_names[k][2],"oct3")
             with open(job, 'w') as file:     
                 file.write(data)
                 
