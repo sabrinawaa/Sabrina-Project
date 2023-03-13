@@ -25,7 +25,7 @@ job='square_pairs.madx'
       
 oct_names=[["LOE.12002","LOE.32002"],["LOE.22002","LOE.32002"],["LOE.22002","LOEN.52002"],["LOE.32002","LOEN.52002"]]
 strengths=[0.6]#
-no_particles=10
+no_particles=99
 for k in range (len(oct_names)):
       
         print (oct_names[k])
