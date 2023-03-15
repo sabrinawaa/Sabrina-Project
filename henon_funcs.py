@@ -8,6 +8,7 @@ Created on Fri Feb 24 14:03:58 2023
 
 import numpy as np
 from numba import njit
+import pandas as pd
 
 
 @njit
@@ -44,7 +45,32 @@ def fft_tune(x,px,alf,beta):
     coords=xn - 1j * pxn
     freqs=np.fft.fft(coords)
     return interpolation(abs(freqs))
-@njit
+
 def quad_func(x,a2,a0):
     return a2*np.square(x)+a0
 
+
+def cart2pol(x, y):
+    rho = np.sqrt(x**2 + y**2)
+    phi = np.arctan2(y, x)
+    return(rho, phi)
+
+def trig_area(x1, y1, x2, y2, x3, y3):
+    # calculate the area using the formula above
+    area = 0.5 * abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))
+    return area
+
+def shape_area(x0,px0,x,px):
+    r,theta = cart2pol(x,px)
+    data = {"theta":theta,"r":r}
+    polar = pd.DataFrame(data=data)
+    polar = polar.sort_values(by="theta")
+    
+    x_re = list(polar.r*np.cos(polar.theta))
+    px_re = list(polar.r*np.sin(polar.theta))
+    
+    area=0
+    for j in range (len(r)-1):
+        area += trig_area(x0, px0, x_re[j], px_re[j], x_re[j+1], px_re[j+1])
+        
+    return area
