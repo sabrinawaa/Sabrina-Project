@@ -60,7 +60,7 @@ def trig_area(x1, y1, x2, y2, x3, y3):
     area = 0.5 * abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))
     return area
 
-def shape_area(x0,px0,x,px):
+def shape_area(x,px,x0=0,px0=0):#need to have shape centred around 0,0. orelse coords not ordered right
     r,theta = cart2pol(x,px)
     data = {"theta":theta,"r":r}
     polar = pd.DataFrame(data=data)

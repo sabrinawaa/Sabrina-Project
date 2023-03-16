@@ -138,37 +138,13 @@ for i in [107]:
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
-    x4=track.X[::4]
-    px4=track.PX[::4]
+    x4 = np.array(track.X[::4]) - float(twiss_FP.ORBIT_X)
+    px4 = np.array(track.PX[::4]) - float(twiss_FP.ORBIT_PX)
+    
     plt.scatter(x4,px4,marker='.',s=0.1)
-    plt.scatter(twiss_FP.ORBIT_X,twiss_FP.ORBIT_PX,marker='x',s=10)
-    
-def cart2pol(x, y):
-    rho = np.sqrt(x**2 + y**2)
-    phi = np.arctan2(y, x)
-    return(rho, phi)
-
-def trig_area(x1, y1, x2, y2, x3, y3):
-    # calculate the area using the formula above
-    area = 0.5 * abs(x1*(y2-y3) + x2*(y3-y1) + x3*(y1-y2))
-    return area
-
-
-r,theta = cart2pol(x4,px4)
-data = {"theta":theta,"r":r}
-polar = pd.DataFrame(data=data)
-polar = polar.sort_values(by="theta")
-
-x_re = list(polar.r*np.cos(polar.theta))
-px_re = list(polar.r*np.sin(polar.theta))
-
-area=0
-trigs=[]
-for j in range (len(r)-1):
-    area += trig_area(twiss_FP.ORBIT_X,twiss_FP.ORBIT_PX, x_re[j], px_re[j], x_re[j+1], px_re[j+1])
-    trigs.append(trig_area(twiss_FP.ORBIT_X,twiss_FP.ORBIT_PX, x_re[j], px_re[j], x_re[j+1], px_re[j+1]))   
+    plt.scatter(0,0,marker='x',s=10) 
     
     
-area2=fn.shape_area(twiss_FP.ORBIT_X,twiss_FP.ORBIT_PX, x4, px4)
-print("area=",area)
+area2=fn.shape_area(x4, px4)
+print("area=",area2)
     

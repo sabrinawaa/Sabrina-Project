@@ -9,15 +9,15 @@ def main():
     endPID = 7774
     step = 100
     flavour = "workday"
-    folder = "32square_submit"
+    folder = "./submit/32square_submit/"
     
-   
+    os.chdir(folder)
     oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
     with open(oneSubmitFileName, 'w') as ff:
             ff.write("universe = vanilla\n")
             ff.write("executable = $(MYEXE)\n\n")
             ff.write("output = out/$(MYNAME)_$(ClusterId).$(ProcId).out\n")
-            ff.write("error = error/$(MYNAME)_$(ClusterId).$(ProcId).err\n")
+            ff.write("error = err/$(MYNAME)_$(ClusterId).$(ProcId).err\n")
             ff.write("log = log/$(MYNAME)_$(ClusterId).$(ProcId).log\n\n")
             ff.write("transfer_input_files = $(MYINPUT)\n\n")
             ff.write('+AccountingGroup = "group_u_BE.ABP.normal"\n')
@@ -25,14 +25,14 @@ def main():
 
     for i in range(startPID, endPID, step):
         exeFileName = "sq32_{}.sh".format(str(i))
-        mad_filename = "sq32_{}.madx".format(folder,str(i))
+        mad_filename = "sq32_{}.madx".format(str(i))
         py_filename = "sq32_{}.py".format(str(i))
         with open(exeFileName, 'w') as f:
             f.write("#!/bin/bash\n\n")
             f.write("source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-dbg/setup.sh\n")
             f.write("source /afs/cern.ch/work/s/sawang/public/project/myenv/bin/activate\n\n")
             f.write("ln -nfs /afs/cern.ch/eng/acc-models/sps/2021 sps\n\n")
-            f.write("python3 {}\n".format(mad_filename))
+            f.write("python3 {}\n".format(py_filename))
             #fstring=literal string interpolation, interpolate values inside{}
             
         shutil.copy("template.py",py_filename)
