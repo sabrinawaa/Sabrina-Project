@@ -10,10 +10,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import sys
+import shutil
+#%%
 no_particles = 1008
 no_turns = 2048
-folder =" Data/square22/"
-job = "square.madx"
+
+
+x_start=-0.0029
+px_start=0.0024
 
 # for i in range (1,no_particles+1):
 #     if i <10:
@@ -34,28 +38,42 @@ job = "square.madx"
 twiss_cent = pd.read_csv("Data/twiss_csv/cent_twiss.csv")
 twiss_cent = twiss_cent.iloc[[0]]
 
-twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.22002top_twiss.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
-
 xns=np.arange(-0.0029,0.0024,1.7726e-5)
 pxns=np.arange(0.0012,0.0036,9.58e-5)
 xn,pxn=np.meshgrid(xns,pxns)
-
+xn=xn.flatten()
+pxn=pxn.flatten()
 
 
 x = np.sqrt(float(twiss_cent.BETX)) * xn 
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
 plt.scatter(x,px,s=0.1)
-# value=[]
-# for i in range(len(x)):
-#     value.append(f"ptc_start, x={x} , px={px}, y= 0, py=0;\n")
+#%%
+chunk_size=20
 
+for i in range(0,len(x),chunk_size):
+    mad_filename = "./submit/32square_submit/sq32_"+str(i)+".madx"
+    shutil.copy("sq_template.madx",mad_filename)
+        
+    xchunk = x[i:i + chunk_size]
+    pxchunk = px[i:i + chunk_size]
+    value = []
+    
+    for j in range (len(xchunk)):
+        value.append(f"ptc_start, x={xchunk[j]} , px={pxchunk[j]}, y= 0, py=0;\n")
+    
 
-# with open(job, "r") as f:
-#     contents = f.readlines()
+    with open(mad_filename, "r") as f:
+        contents = f.readlines()
+    if contents[55].strip()=="":
+        contents[55:55]=value
+    else:
+        print("ini pos already filled")
 
-# contents.insert(60, value)
-
-# with open(job, "w") as f:
-#     contents = "".join(contents)
-#     f.write(contents)
+    with open(mad_filename, "w") as f:
+        contents = "".join(contents)
+        f.write(contents)
+            
+            
+            
+            

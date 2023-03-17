@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 16 14:44:16 2023
+
+@author: sawang
+"""
+
 import os
 import sys
 import shutil
@@ -6,13 +14,13 @@ def main():
     oct_name = "LOE.32002"
     k3= 0.6
     startPID = 0
-    endPID = 7774
-    step = 20
+    endPID = 3000
+    step = 30
     flavour = "workday"
-    folder = "./submit/32square_submit/"
+    folder = "./submit/32gauss_submit/"
     
     os.chdir(folder)
-    oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
+    oneSubmitFileName = "gauss_track." + oct_name + "k3_" + str(k3) + ".sub"
     with open(oneSubmitFileName, 'w') as ff:
             ff.write("universe = vanilla\n")
             ff.write("executable = $(MYEXE)\n\n")
@@ -24,9 +32,9 @@ def main():
             ff.write('+JobFlavour = "{}"\n\n'.format(flavour))
 
     for i in range(startPID, endPID, step):
-        exeFileName = "sq32_{}.sh".format(str(i))
-        mad_filename = "sq32_{}.madx".format(str(i))
-        py_filename = "sq32_{}.py".format(str(i))
+        exeFileName = "gs32_{}.sh".format(str(i))
+        mad_filename = "gs32_{}.madx".format(str(i))
+        py_filename = "gs32_{}.py".format(str(i))
         with open(exeFileName, 'w') as f:
             f.write("#!/bin/bash\n\n")
             f.write("source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-dbg/setup.sh\n")
@@ -35,7 +43,7 @@ def main():
             f.write("python3 {}\n".format(py_filename))
             #fstring=literal string interpolation, interpolate values inside{}
             
-        shutil.copy("template.py",py_filename)
+        shutil.copy("/home/sawang/Desktop/Project/Sabrina-Project/template.py",py_filename)
         with open(py_filename, 'r') as f:
             content = f.read()
             content = content.replace("job=","job="+"'"+str(mad_filename)+"'")
@@ -45,9 +53,11 @@ def main():
             
         with open(oneSubmitFileName, 'a') as f:
             f.write("MYEXE= {}\n".format(exeFileName))
-            f.write("MYNAME = {}\n".format("sq32_"+str(i)))
+            f.write("MYNAME = {}\n".format("gs32_"+str(i)))
             f.write("MYINPUT = sps1.seq, {},  {}\n".format(mad_filename,py_filename))
             f.write("queue\n\n")
+            
+    os.chdir('/home/sawang/Desktop/Project/Sabrina-Project/')
 
 if __name__ == "__main__": #execute code when file runs as script not imported as module
     main()
