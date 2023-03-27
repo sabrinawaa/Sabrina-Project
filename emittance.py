@@ -29,14 +29,18 @@ def emittance(x,px,x_fp,px_fp, weight=1):
 #weight=1 is unweighted 
 
 #%%
-twissname="Data/twiss_csv/cent_twiss.csv"
+# twissname="Data/twiss_csv/cent_twiss.csv"
 
-twiss=pd.read_csv(twissname)
-twiss=twiss[twiss["k3"]==0.6]
-twiss=twiss.iloc[[0]]
+# twiss=pd.read_csv(twissname)
+# twiss=twiss[twiss["k3"]==0.6]
+# twiss=twiss.iloc[[0]]
 
-twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+# twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
+# twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+twiss = pd.DataFrame()
+twiss.BETX = 64.33992636
+twiss.ALFX = 1.728756478
+
 #%%
 no_particles=3000
 no_turns=2048

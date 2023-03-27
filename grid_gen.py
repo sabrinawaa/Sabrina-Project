@@ -16,9 +16,6 @@ no_particles = 1008
 no_turns = 2048
 
 
-x_start=-0.0029
-px_start=0.0024
-
 # for i in range (1,no_particles+1):
 #     if i <10:
 #         name=folder+"track.obs0001.p000"+str(i)
@@ -35,11 +32,16 @@ px_start=0.0024
 #     plt.scatter(track.X,track.PX,marker='.',s=0.01)
     
     
-twiss_cent = pd.read_csv("Data/twiss_csv/cent_twiss.csv")
-twiss_cent = twiss_cent.iloc[[0]]
+# twiss_cent = pd.read_csv("Data/twiss_csv/cent_twiss.csv")
+# twiss_cent = twiss_cent.iloc[[0]]
 
-xns=np.arange(-0.0029,0.0024,1.7726e-5)
-pxns=np.arange(0.0012,0.0036,9.58e-5)
+
+twiss_cent = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
+twiss_cent.BETX = 64.33992636
+twiss_cent.ALFX = 1.728756478
+
+xns=np.linspace(-0.0023,0.0022,120)
+pxns=np.linspace(0.00175,0.0035,65)
 xn,pxn=np.meshgrid(xns,pxns)
 xn=xn.flatten()
 pxn=pxn.flatten()
@@ -47,7 +49,7 @@ pxn=pxn.flatten()
 
 x = np.sqrt(float(twiss_cent.BETX)) * xn 
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
-plt.scatter(x,px,s=0.1)
+plt.scatter(xn,pxn,s=0.1)
 #%%
 chunk_size=20
 

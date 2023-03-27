@@ -6,10 +6,10 @@ def main():
     oct_name = "LOE.32002"
     k3= 0.6
     startPID = 0
-    endPID = 6386
+    endPID = 7800
     step = 20
     flavour = "workday"
-    folder = "./submit/32cent/"
+    folder = "./submit/32square_submit/"
     
     os.chdir(folder)
     # os.mkdir("out")
