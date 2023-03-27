@@ -12,7 +12,7 @@ import pandas as pd
 import scipy.optimize as op
 from numba import njit
 from scipy.integrate import dblquad
-from scipy.integrate import trapezoid
+# from scipy.integrate import trapezoid
 
 
 import henon_funcs as fn
@@ -25,8 +25,8 @@ def emittance(x,px, w=1):
     mux= np.average(x,weights= w)
     mupx=np.average(px,weights= w)
     
-    x_sqmean = np.power(x-mux,2).dot(w) /sum(w)
-    px_sqmean = np.power(px-mupx,2).dot(w) /sum(w)
+    x_sqmean = sum((x-mux)**2*w) /sum(w)
+    px_sqmean = sum((px-mupx)**2 *w) /sum(w)
     
     xpx_sqmean = ((x-mux).dot(w)*(px-mupx).dot(w)/sum(w))**2
     return np.sqrt(x_sqmean * px_sqmean -xpx_sqmean)
@@ -38,25 +38,29 @@ def emittance(x,px, w=1):
 @njit
 def gaussian(x, mu, sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.))) / (sig * np.sqrt(2*np.pi))
+#%%
+# twissname="Data/twiss_csv/cent_twiss.csv"
 
-twissname="Data/twiss_csv/cent_twiss.csv"
+# twiss=pd.read_csv(twissname)
+# twiss=twiss[twiss["k3"]==0.6]
+# twiss=twiss.iloc[[0]]
 
-twiss=pd.read_csv(twissname)
-twiss=twiss[twiss["k3"]==0.6]
-twiss=twiss.iloc[[0]]
+# twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
+# twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
 
-twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
+twiss.BETX = 64.33992636
+twiss.ALFX = 1.728756478
 
 area = 1.24e-6
 std = np.sqrt( area *0.05/ np.pi) /3
 offset = 0.003
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
-no_particles=7774
+no_particles=7774#8918
 no_turns=2048
 folder="Data/SQ32/"
-stds = np.linspace(std*0.25, std*1.75, 50)
+stds = np.linspace(std*0.5, std*1.5, 50)
 offsets = np.linspace(offset - 0.0005, offset + 0.0003, 50)
 
 std_grid,offs_grid=np.meshgrid(stds,offsets)
@@ -82,6 +86,7 @@ for i in range (1,no_particles+1):
     
     x_fins.append(track.X.iloc[-1])
     px_fins.append(track.PX.iloc[-1])
+
 #%%
 delta_xn = 1.7726e-5
 delta_pxn = 9.58e-5
@@ -93,26 +98,40 @@ pxn0 = float(twiss.ALFX) * np.array(x0s) /np.sqrt(float(twiss.BETX)) + np.array(
 
 xn_fin = np.array(x_fins)/np.sqrt(float(twiss.BETX))
 pxn_fin = float(twiss.ALFX) * np.array(x_fins)/np.sqrt(float(twiss.BETX)) + np.array(px_fins)*np.sqrt(float(twiss.BETX))
-
+plt.scatter(xn_fin,pxn_fin,s=0.1)
+#%%
+emm_grid = []
+emm_inis =[]
 for i in range (len(std_grid)):
     weights = []
+    wx =[]
+    wpx=[]
     for j in range (len(xn0)):
         # gauss_func = lambda xn, pxn: (np.exp(-xn**2/(2*std_grid[i]**2)) 
         #                * np.exp(-(pxn-offs_grid[i])**2/(2*std_grid[i]**2)) 
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/2, xn0[j]+delta_pxn/2)
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn * gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
 
-    
         weights.append(weighti)
+
         
     emm_ini =  emittance(np.array(xn0), np.array(pxn0),weights)
     emm_fin = emittance(np.array(xn_fin), np.array(pxn_fin),weights)
     emm_grid.append(emm_fin)
     emm_inis.append(emm_ini)
     print(i)
-#%%        
+#%%    
+i=1550  
+weights=[]
+for j in range (len(xn0)):
+      
+        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+
+        weights.append(weighti)
+  
+#%%
 plt.scatter(std_grid,offs_grid,c=emm_grid,s=10,cmap=plt.cm.jet)
 plt.colorbar(label="final emittance")
 plt.xlabel("sigma")
@@ -125,12 +144,12 @@ plt.ylabel("momentum offset")
 
 #%%
 emm_inc = (np.array(emm_grid)-np.array(emm_inis))/np.array(emm_inis)
-plt.scatter(std_grid,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
+plt.scatter(emm_grid,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
 plt.colorbar(label="emittance growth")
-plt.xlabel("sigma")
+plt.xlabel("final emittance")
 plt.ylabel("momentum offset")
 #%%
-plt.scatter(xn_fin,pxn_fin,c=weighti,s=5,cmap=plt.cm.jet)
+plt.scatter(xn_fin,pxn_fin,c=weights,s=5,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.xlabel("xn")
 plt.ylabel("pxn")
@@ -148,19 +167,19 @@ plt.scatter(pxn0, delta_pxn*gaussian(pxn0,offs_grid[i],std_grid[i]))
 plt.xlabel("pxn0")
 plt.ylabel("px_weights")
 #%%
-weight = np.array(weights)
+emit_table= pd.DataFrame(data={"sigma": std_grid, "offset": offs_grid,
+                                "emit_fin":emm_grid, "emit_ini": emm_inis,
+                                "emit_inc":emm_inc})
+min_idx=1550
+min_emit= emit_table[emit_table["sigma"]==std_grid[1550]]
 
-x = np.array(xn0) 
-px = np.array(pxn0)
-
-mux= np.average(xn0,weights= weights)
-muy=np.average(pxn0,weights= weights)
-
-x_sqmean = np.power(x-mux,2).dot(weights) /sum(weights)
-px_sqmean = np.power(px-muy,2).dot(weights)  /sum(weight)
-
-xpx_sqmean = (np.sum(x * px * weights) /sum(weights))**2
-
+plt.scatter(min_emit.offset,min_emit.emit_inc)
+param=np.polyfit(min_emit.offset, min_emit.emit_inc, 2)
+fit=np.poly1d(param)
+xx=np.linspace(min_emit.offset[0],min_emit.offset.iloc[-1],250)
+label="  a1="+str(fit[1])+" a0="+str(fit[0])
+plt.plot(xx,fit(xx),label=label)
+plt.legend()
 #%%
 xtrial=np.linspace(-3, 3, 100)
 ytrial= gaussian (xtrial,0,0.1)
@@ -168,7 +187,19 @@ weight =ytrial*(xtrial[1]-xtrial[0])
 print(np.sqrt(sum(xtrial**2*weight)))
 
 #%%
-aa=np.array([1,2,3])
-aa*aa*aa
+def focusing_error (alf_nom, alf_fp,beta_nom, beta_fp):
+    return 0.5* (beta_nom/beta_fp + beta_fp/beta_nom
+                 +(alf_nom-alf_fp * beta_nom/beta_fp)**2*beta_fp/beta_nom)
 
-                   # standard deviation
+def normalise (x,px,alf,beta):
+    xn = x/np.sqrt(beta)
+    pxn = alf * x/np.sqrt(beta) + px * np.sqrt(beta)
+    return xn,pxn
+                 
+def steering_error (x,px,x_fp,px_fp,alf_fp,beta_fp):
+    xn,pxn = normalise(x,px,alf_fp,beta_fp)
+    xn_fp, pxn_fp = normalise(x,px,alf_fp,beta_fp)
+    delta_xn = abs(xn - xn_fp) 
+    delta_pxn = abs(pxn - pxn_fp)    
+    delta_r = np.sqrt(delta_xn**2 + delta_xn**2)
+    return (1+ delta_r /) **2         
