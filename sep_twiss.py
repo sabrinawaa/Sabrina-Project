@@ -21,10 +21,10 @@ alltwiss=pd.read_csv('Data/twiss_csv/islands_twiss.csv').reset_index()
 alltwiss=alltwiss.loc[:, ~alltwiss.columns.isin(['index', 'Unnamed: 0'])]
 
 #%% single islnads
-oct_names=["LOE.32002"]
+oct_names=["LOE.22002"]
 strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 no_particles=8
-islands=["top","bot"]#,"right","bot","left"]
+islands=["top"]#,"bot"]#,"right","bot","left"]
 
 
 
@@ -55,9 +55,9 @@ for k in oct_names:
         plt.plot(xx,fit(xx),label=label)
         plt.legend()  
         
-        # plt.figure(num=k+str(1))
-        # plt.scatter(datatop12.k3,datatop12.ALPHA_C,marker='.',s=10,label=i+"alpha_c"
-        #             )
+        plt.figure(num=k+str(1))
+        plt.scatter(datatop12.k3,datatop12.ALPHA_C,marker='.',s=10,label=i+"alpha_c"
+                    )
         # plt.legend()
         # plt.figure(num=k+str(2))
         # plt.scatter(datatop12.k3,datatop12.ALPHA_C_P,marker='.',s=10,label=i+"alpha_c_p"
@@ -73,8 +73,8 @@ for k in oct_names:
         # plt.legend()
 
 #%%pairs
-# oct_names=["LOE.12002,LOE.22002","LOE.22002,LOE.32002","LOE.22002,LOE.52002"]#25 config
-oct_names=["LOE.12002,LOE.32002","LOE.22002,LOE.32002","LOE.32002,LOE.52002"]#75 config
+oct_names=["LOE.12002,LOE.22002","LOE.12002,LOE.32002","LOE.22002,LOE.32002"]
+# oct_names=["LOE.22002,LOEN.52002","LOE.32002,LOEN.52002"]#75 config
 strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]
 

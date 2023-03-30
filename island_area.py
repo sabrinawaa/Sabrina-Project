@@ -12,14 +12,18 @@ import pandas as pd
 import scipy.optimize as op
 
 import henon_funcs as fn
+def normalise (x,px,alf,beta):
+    xn = x/np.sqrt(beta)
+    pxn = alf * x/np.sqrt(beta) + px * np.sqrt(beta)
+    return xn,pxn
 
 
 #%%
 oct_names=["LOE.12002,LOE.32002,LOEN.52002","LOE.22002,LOE.32002,LOEN.52002"]
 island=0
-no_particles=7774
+no_particles=270
 no_turns=2048
-folder="Data/SQ32/"
+folder="submit/32k3_1.2/"
 #%%
 twissname=["Data/twiss_csv/cent_twiss.csv"]
 
@@ -41,14 +45,15 @@ for i in range (1,no_particles+1):
     #     name=folder+"track.obs0001.p"+str(i)
     name = folder + "32track.no=" + str(i)
     # name=folder[island]+"track.oct="+oct_names[0]+"k3=0.6no="+str(i)
-    
+    plt.figure(num='1')
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
+    plt.scatter(track.X,track.PX,marker='.',s=0.1)
 
   
     
-    # plt.figure(num='1')
+    
     x4 = np.array(track.X) - np.float64(twiss.ORBIT_X)
     px4 = np.array(track.PX) - np.float64(twiss.ORBIT_PX)
     
@@ -58,8 +63,10 @@ for i in range (1,no_particles+1):
     xns.append(track.X[1])
    
     pxns.append(track.PX[1])
-    
-    
+    plt.scatter(xns,pxns,s=10)
+    # plt.figure(num = "2")
+    # x4n,px4n = normalise(x4,px4,float(twiss.ALFX),float(twiss.BETX))
+    # plt.scatter(x4n,px4n,marker='.',s=1) 
     
     
     
@@ -73,7 +80,7 @@ fig,ax=plt.subplots()
 
 
 
-im=ax.scatter(xns,pxns,c=tunes,s=0.1,cmap=plt.cm.jet) 
+im=ax.scatter(xns,pxns,c=tunes,s=10,cmap=plt.cm.jet) 
 plt.xlabel("X0")
 plt.ylabel("Px0")
 
@@ -84,13 +91,13 @@ x0i=[]
 px0i=[]
 tunei=[]
 for a in range(len(xns)):
-     if abs(tunes[a]-0.75)<1.9571954692570003e-05:
+     if abs(tunes[a]-0.75)<0.0002:
          x0i.append(xns[a])
          px0i.append(pxns[a])
          tunei.append(tunes[a])
          
 fig2,ax2=plt.subplots()
-for i in range (1,7774,500):
+for i in range (1,no_particles+1):
     # if i <10:
     #     name=folder+"track.obs0001.p000"+str(i)
     # elif 9<i<100:   
@@ -113,7 +120,7 @@ plt.ylabel("Px0")
 
 fig.colorbar(im2, ax=ax2)
 
-#%%
+#%% all points between separatrices
 x0is=[]
 px0is=[]
 tuneis=[]
@@ -129,7 +136,7 @@ plt.xlabel("X0")
 plt.ylabel("Px0")
 fig.colorbar(im3, ax=ax3)     
 
-#%%
+#%% calculate area using no points
 xns=np.array(xns)
 pxns=np.array(pxns)
 xn = xns/np.sqrt(float(twiss.BETX))   
@@ -139,7 +146,7 @@ plt.scatter(xn,pxn)
 print("no of points=",len(x0is))
 area_tot=(max(xn)-min(xn))*(max(pxn)-min(pxn))
 print("area=",area_tot*(len(x0is))/len(xn))
-#%%
+#%% tolerance of tune
 area=[]
 tol=np.linspace(0.00000,0.001,100)
 for t in tol:
@@ -171,7 +178,7 @@ plt.xlabel('tolerance')
  #%% find separatrix
 idx=[]
 for a in range(len(xns)):
-     if abs(tunes[a]-0.75)<0.0000186 and abs(tunes[a]-0.75)>0.0000185:
+     if abs(tunes[a]-0.75)<0.0001 and abs(tunes[a]-0.75)>0.00001:
          idx.append(a)
          
 for i in idx:
@@ -180,7 +187,7 @@ for i in idx:
     # elif 9<i<100:   
     #     name=folder+"track.obs0001.p00"+str(i)
     # elif 99<i<1000:
-    #     name=folder+"track.obs0001.p0"+str(i)
+    #     name=folder+"track.obs0001.p0"+str(i)0.001324 
     # else:
     #     name=folder+"track.obs0001.p"+str(i) 
     
@@ -195,12 +202,11 @@ for i in idx:
 
 
 #%%
-
+folder = 'submit/32k3_1.2/'
 twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
 twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
 
-for i in [3253
-          ]:
+for i in [122]:
     # if i <10:
     #     name=folder+"track.obs0001.p000"+str(i)
     # elif 9<i<100:   
@@ -214,13 +220,19 @@ for i in [3253
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
+    plt.scatter(track.X,track.PX,marker='.',s=0.1,label = 'k3=10')
+    plt.legend()
+    # x4 = np.array(track.X[3::4]) - float(twiss_FP.ORBIT_X)
+    # px4 = np.array(track.PX[3::4]) - float(twiss_FP.ORBIT_PX)#+0.00008
+    
+    # plt.scatter(x4,px4,marker='.',s=0.1)
+    # plt.scatter(0,0,marker='x',s=10) 
+    
+    x4n,px4n = normalise(track.X,track.PX,float(twiss.ALFX),float(twiss.BETX))
+    plt.scatter(x4n,px4n,marker='.',s=1) 
+  
+    
 
-    x4 = np.array(track.X[::4]) - float(twiss_FP.ORBIT_X)
-    px4 = np.array(track.PX[::4]) - float(twiss_FP.ORBIT_PX)
-    
-    plt.scatter(x4,px4,marker='.',s=0.1)
-    plt.scatter(x4[0],px4[0],marker='x',s=10) 
-    
     
 area2=fn.shape_area(x4, px4)
 print("area=",area2)

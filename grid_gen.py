@@ -11,8 +11,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import sys
 import shutil
+import os
 #%%
-no_particles = 1008
+
 no_turns = 2048
 
 
@@ -42,6 +43,12 @@ twiss_cent.ALFX = 1.728756478
 
 xns=np.linspace(-0.0023,0.0022,120)
 pxns=np.linspace(0.00175,0.0035,65)
+# pxns=np.linspace(0.0005,0.0048,100)
+
+xns=np.linspace(-0.0022,-0.0018,18)
+pxns=np.linspace(0.0013,0.0023,15)
+# xns=np.linspace(-0.0013,-0.0005,18)
+# pxns=np.linspace(0.0003,0.0013,15)
 xn,pxn=np.meshgrid(xns,pxns)
 xn=xn.flatten()
 pxn=pxn.flatten()
@@ -49,12 +56,15 @@ pxn=pxn.flatten()
 
 x = np.sqrt(float(twiss_cent.BETX)) * xn 
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
-plt.scatter(xn,pxn,s=0.1)
+plt.scatter(x,px,s=5)
 #%%
 chunk_size=20
+folder = "./submit/32_k3_10/"
+os.mkdir(folder)
 
 for i in range(0,len(x),chunk_size):
-    mad_filename = "./submit/32square_submit/sq32_"+str(i)+".madx"
+    
+    mad_filename = folder+ "/sq32_"+str(i)+".madx"
     shutil.copy("sq_template.madx",mad_filename)
         
     xchunk = x[i:i + chunk_size]

@@ -39,29 +39,30 @@ def emittance(x,px, w=1):
 def gaussian(x, mu, sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.))) / (sig * np.sqrt(2*np.pi))
 #%%
-# twissname="Data/twiss_csv/cent_twiss.csv"
+twissname="Data/twiss_csv/cent_twiss.csv"
 
-# twiss=pd.read_csv(twissname)
-# twiss=twiss[twiss["k3"]==0.6]
-# twiss=twiss.iloc[[0]]
+twiss=pd.read_csv(twissname)
+twiss=twiss[twiss["k3"]==0.6]
+twiss=twiss.iloc[[0]]
 
-# twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
-# twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
+twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
 
-twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
-twiss.BETX = 64.33992636
-twiss.ALFX = 1.728756478
+# twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
+# twiss.BETX = 64.33992636
+# twiss.ALFX = 1.728756478
 
-area = 1.24e-6
-std = np.sqrt( area *0.05/ np.pi) /3
-offset = 0.003
+# area = 1.24e-6
+# std = np.sqrt( area *0.05/ np.pi) /3
+std = 0.0003
+offset = 0.00296
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
-no_particles=7774#8918
+no_particles=7800 #7774
 no_turns=2048
-folder="Data/SQ32/"
+folder="Data/SQ32_1/"
 stds = np.linspace(std*0.5, std*1.5, 50)
-offsets = np.linspace(offset - 0.0005, offset + 0.0003, 50)
+offsets = np.linspace(offset - 0.00004, offset + 0.00003, 50)
 
 std_grid,offs_grid=np.meshgrid(stds,offsets)
 std_grid=std_grid.flatten()
@@ -88,8 +89,8 @@ for i in range (1,no_particles+1):
     px_fins.append(track.PX.iloc[-1])
 
 #%%
-delta_xn = 1.7726e-5
-delta_pxn = 9.58e-5
+plt.scatter(x_fins,px_fins,s=0.1)
+
 emm_grid = []
 
 emm_inis =[]
@@ -98,7 +99,10 @@ pxn0 = float(twiss.ALFX) * np.array(x0s) /np.sqrt(float(twiss.BETX)) + np.array(
 
 xn_fin = np.array(x_fins)/np.sqrt(float(twiss.BETX))
 pxn_fin = float(twiss.ALFX) * np.array(x_fins)/np.sqrt(float(twiss.BETX)) + np.array(px_fins)*np.sqrt(float(twiss.BETX))
-plt.scatter(xn_fin,pxn_fin,s=0.1)
+
+
+delta_xn = xn0[1]-xn0[0] #1.7726e-5 for 7774 case, but doesn't matter
+delta_pxn = 2.7343750000000024e-05#9.58e-5 for 7774 case
 #%%
 emm_grid = []
 emm_inis =[]
@@ -123,7 +127,7 @@ for i in range (len(std_grid)):
     emm_inis.append(emm_ini)
     print(i)
 #%%    
-i=1550  
+i=np.argmin(emm_grid)
 weights=[]
 for j in range (len(xn0)):
       
@@ -133,8 +137,17 @@ for j in range (len(xn0)):
   
 #%%
 plt.scatter(std_grid,offs_grid,c=emm_grid,s=10,cmap=plt.cm.jet)
-plt.colorbar(label="final emittance")
-plt.xlabel("sigma")
+plt.colorbar(label="final emittance [m rad]")
+plt.xlabel("initial std [m]")
+plt.ylabel("momentum offset")
+#%%
+gamma = float((1+twiss.ALFX**2)/twiss.BETX)
+emm_norm_fin = float(twiss.BETX) * gamma * np.array(emm_grid)
+emm_norm_ini = float(twiss.BETX) * gamma * np.array(emm_inis)
+
+plt.scatter(emm_norm_ini,offs_grid,c=emm_norm_fin,s=10,cmap=plt.cm.jet)
+plt.colorbar(label="final normalised emittance [m rad]")
+plt.xlabel("initial normalised emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
 plt.scatter(std_grid,offs_grid,c=emm_inis,s=10,cmap=plt.cm.jet)
@@ -143,13 +156,13 @@ plt.xlabel("sigma")
 plt.ylabel("momentum offset")
 
 #%%
-emm_inc = (np.array(emm_grid)-np.array(emm_inis))/np.array(emm_inis)
-plt.scatter(emm_grid,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
-plt.colorbar(label="emittance growth")
-plt.xlabel("final emittance")
+emm_inc = np.array(emm_grid)/np.array(emm_inis)
+plt.scatter(emm_inis,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
+plt.colorbar(label="emm_fin / emm_ini")
+plt.xlabel("initial emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
-plt.scatter(xn_fin,pxn_fin,c=weights,s=5,cmap=plt.cm.jet)
+plt.scatter(xn0,pxn0,c=weights,s=8,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.xlabel("xn")
 plt.ylabel("pxn")
@@ -157,7 +170,7 @@ plt.ylabel("pxn")
 #%%
 plt.scatter(std_grid, emm_inis,s=1)
 plt.xlabel("sigma")
-plt.ylabel("emmittance")
+plt.ylabel("initial emmittance")
 #%%
 plt.scatter(xn0,delta_xn*gaussian(xn0,0,std_grid[i]))
 plt.xlabel("xn0")
@@ -170,7 +183,7 @@ plt.ylabel("px_weights")
 emit_table= pd.DataFrame(data={"sigma": std_grid, "offset": offs_grid,
                                 "emit_fin":emm_grid, "emit_ini": emm_inis,
                                 "emit_inc":emm_inc})
-min_idx=1550
+min_idx=np.argmin(emm_inc)
 min_emit= emit_table[emit_table["sigma"]==std_grid[1550]]
 
 plt.scatter(min_emit.offset,min_emit.emit_inc)
@@ -179,6 +192,8 @@ fit=np.poly1d(param)
 xx=np.linspace(min_emit.offset[0],min_emit.offset.iloc[-1],250)
 label="  a1="+str(fit[1])+" a0="+str(fit[0])
 plt.plot(xx,fit(xx),label=label)
+plt.xlabel("Momentum Offset")
+plt.ylabel("")
 plt.legend()
 #%%
 xtrial=np.linspace(-3, 3, 100)
@@ -192,14 +207,47 @@ def focusing_error (alf_nom, alf_fp,beta_nom, beta_fp):
                  +(alf_nom-alf_fp * beta_nom/beta_fp)**2*beta_fp/beta_nom)
 
 def normalise (x,px,alf,beta):
-    xn = x/np.sqrt(beta)
-    pxn = alf * x/np.sqrt(beta) + px * np.sqrt(beta)
+    xn = np.array(x)/np.sqrt(beta)
+    pxn = alf * np.array(x)/np.sqrt(beta) + np.array(px) * np.sqrt(beta)
     return xn,pxn
                  
-def steering_error (x,px,x_fp,px_fp,alf_fp,beta_fp):
-    xn,pxn = normalise(x,px,alf_fp,beta_fp)
-    xn_fp, pxn_fp = normalise(x,px,alf_fp,beta_fp)
-    delta_xn = abs(xn - xn_fp) 
-    delta_pxn = abs(pxn - pxn_fp)    
-    delta_r = np.sqrt(delta_xn**2 + delta_xn**2)
-    return (1+ delta_r /) **2         
+def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
+
+    xn_fp, pxn_fp = normalise(x_fp,px_fp,alf,beta)
+    
+    w = np.array(w)
+    
+    muxn= np.average(xn,weights= w)
+    mupxn=np.average(pxn,weights= w)
+    
+    xn_std = np.sqrt(sum((xn-muxn)**2*w) /sum(w))
+    pxn_std= np.sqrt(sum((pxn-mupxn)**2 *w) /sum(w))
+    
+    delta_xn = abs(muxn - xn_fp) 
+    delta_pxn = abs(mupxn - pxn_fp)    
+    
+    delta_r = np.sqrt(delta_xn**2 + delta_pxn**2)
+    r0 = ((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2)
+    return (1+ delta_r / r0) **2         
+#%%
+xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
+                           float(twiss_FP.ORBIT_PX),float(twiss_FP.ALFX), float(twiss.BETX))
+
+w = np.array(weights)
+
+muxn= np.average(xn0,weights= w)
+mupxn=np.average(pxn0,weights= w)
+
+xn_std = np.sqrt(sum((xn0-muxn)**2*w) /sum(w))
+pxn_std= np.sqrt(sum((pxn0-mupxn)**2 *w) /sum(w))
+
+delta_xn = abs(muxn - xn_fp) 
+delta_pxn = abs(mupxn - pxn_fp)    
+
+delta_r = np.sqrt(delta_xn**2 + delta_pxn**2)
+r0 = np.sqrt(((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2))
+err= (1+ delta_r / r0) **2    
+#%%
+foc_err = focusing_error(float(twiss.ALFX), float(twiss_FP.ALFX), float(twiss.BETX), float(twiss_FP.BETX))
+steer_err = steering_error(xn0, pxn0, float(twiss_FP.ORBIT_X), 
+                           float(twiss_FP.ORBIT_PX), float(twiss.ALFX),float(twiss.BETX), weights)

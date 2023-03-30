@@ -28,7 +28,7 @@ def trig_area(x1, y1, x2, y2, x3, y3):
 
 island=0   # 0=right, 1= bottom, 2=left, 3=top
 
-no_particles=7
+no_particles=8
 no_turns=8192
 
 folder=["Data/right/","Data/bot/","Data/left/","Data/top/","Data/cent/"]
@@ -121,26 +121,33 @@ island=0
 no_particles=13
 no_turns=2048
 folder=["Data/cent/"]
-name=["ptc_twiss_cent.tfs"]
-name_sum=["ptc_twiss_summ_cent.tfs"]
+# name=["ptc_twiss_cent.tfs"]
+# name_sum=["ptc_twiss_summ_cent.tfs"]
 
-twiss=pd.read_fwf(name[island],skiprows=88,infer_nrows=3000)
-#twiss=pd.read_fwf("sps.tfs",skiprows=50)
-twiss=twiss.drop(index=0)
-twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
+# twiss=pd.read_fwf(name[island],skiprows=88,infer_nrows=3000)
+# #twiss=pd.read_fwf("sps.tfs",skiprows=50)
+# twiss=twiss.drop(index=0)
+# twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
 
-twiss_sum=pd.read_fwf(name_sum[island],skiprows=6)
-twiss_sum=twiss_sum.drop(index=0,columns='*')
+# twiss_sum=pd.read_fwf(name_sum[island],skiprows=6)
+# twiss_sum=twiss_sum.drop(index=0,columns='*')
+
+twissname=["Data/twiss_csv/cent_twiss.csv"]
+
+twiss=pd.read_csv(twissname[island])
+twiss=twiss[twiss["k3"]==0.6]
+twiss=twiss.reset_index()
+twiss_sum = twiss.iloc[1]
 
 actions=[]
 tunes=[]
 deltas=[]
 for i in range (1,no_particles+1):
-    if i <10:
-        name = folder[island] + "track.obs0001.p000"+str(i)
-    else:   
-        name = folder[island] + "track.obs0001.p00"+str(i)
-    
+    # if i <10:
+    #     name = folder[island] + "track.obs0001.p000"+str(i)
+    # else:   
+    #     name = folder[island] + "track.obs0001.p00"+str(i)
+    name = "Data/track75C/track.oct=LOE.22002k3=-0.6no=" + str(i)
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float)
@@ -176,7 +183,7 @@ for i in range (1,no_particles+1):
     
     Qx=fn.fft_tune(x4,px4,twiss.ALFX[1],twiss.BETX[1])
     tunes.append(Qx)
-    deltas.append(track.X[1]-np.float(twiss_sum.ORBIT_X))
+    deltas.append(track.PX[1]-np.float(twiss_sum.ORBIT_PX))
 
 plt.figure(num='Qx-J')
 plt.scatter(actions,tunes,marker='.', linewidths=0.5)

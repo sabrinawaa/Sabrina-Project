@@ -43,7 +43,7 @@ for k in oct_names:
         alldata=alldata.append(data)
 alldata.to_csv("data/twiss_csv/cent_twiss.csv")        
         #%%islands
-oct_names=["LOE.32002"]
+oct_names=["LOE.22002"]
 strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]
 no_particles=1
@@ -78,8 +78,8 @@ for k in oct_names:
 alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 
 #%%pairs
-# oct_names=["LOE.12002,LOE.22002","LOE.22002,LOE.32002","LOE.22002,LOE.52002"]#25 config
-oct_names=["LOE.12002,LOE.32002","LOE.22002,LOE.32002","LOE.32002,LOE.52002"]#75 config
+oct_names=["LOE.12002,LOE.22002","LOE.12002,LOE.32002","LOE.22002,LOE.32002"]#25 config
+# oct_names=["LOE.22002,LOEN.52002","LOE.32002,LOEN.52002"]#75 config
 
 strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
 islands=["top","bot"]

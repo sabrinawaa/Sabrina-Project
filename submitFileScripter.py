@@ -4,17 +4,16 @@ import shutil
 
 def main():
     oct_name = "LOE.32002"
-    k3= 0.6
+    k3= 2.1
     startPID = 0
-    endPID = 7800
+    endPID = 270
     step = 20
     flavour = "workday"
-    folder = "./submit/32square_submit/"
-    
+    folder = "./submit/32_k3_2.1"
     os.chdir(folder)
-    # os.mkdir("out")
-    # os.mkdir("err")
-    # os.mkdir("log")
+    os.mkdir("out")
+    os.mkdir("err")
+    os.mkdir("log")
     oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
     with open(oneSubmitFileName, 'w') as ff:
             ff.write("universe = vanilla\n")
