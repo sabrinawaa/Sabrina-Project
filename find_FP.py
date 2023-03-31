@@ -23,7 +23,7 @@ def normalise (x,px,alf,beta):
 beta= 64.33992636
 alfa = 1.728756478
 #%%single
-oct_names=["LOE.12002"]
+oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
 
 strengths=[-0.6]
 no_particles=20
@@ -39,7 +39,7 @@ for k in oct_names:
     for j in range(len(strengths)):
         for i in range (1,no_particles+1):
             
-            name="Data/track75C/track.oct="+str(k)+"k3=" +str(strengths[j])+"no="+str(i)
+            name="Data/25single/track.oct="+str(k)+"k3=" +str(strengths[j])+"no="+str(i)
           
             plt.figure(num=k)
             track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)

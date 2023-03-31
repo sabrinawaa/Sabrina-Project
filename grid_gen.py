@@ -45,10 +45,10 @@ xns=np.linspace(-0.0023,0.0022,120)
 pxns=np.linspace(0.00175,0.0035,65)
 # pxns=np.linspace(0.0005,0.0048,100)
 
-xns=np.linspace(-0.0022,-0.0018,18)
-pxns=np.linspace(0.0013,0.0023,15)
-# xns=np.linspace(-0.0013,-0.0005,18)
-# pxns=np.linspace(0.0003,0.0013,15)
+# xns=np.linspace(-0.0022,-0.0018,18)
+# pxns=np.linspace(0.0013,0.0023,15)
+xns=np.linspace(-0.0027,-0.0024,18)
+pxns=np.linspace(0.002,0.003,15)
 xn,pxn=np.meshgrid(xns,pxns)
 xn=xn.flatten()
 pxn=pxn.flatten()
@@ -59,7 +59,7 @@ px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.
 plt.scatter(x,px,s=5)
 #%%
 chunk_size=20
-folder = "./submit/32_k3_10/"
+folder = "./submit/32_k3_6.3/"
 os.mkdir(folder)
 
 for i in range(0,len(x),chunk_size):

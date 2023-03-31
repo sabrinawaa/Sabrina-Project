@@ -9,7 +9,7 @@ def main():
     endPID = 270
     step = 20
     flavour = "workday"
-    folder = "./submit/32_k3_2.1"
+    folder = "./submit/32_k3_4.2"
     os.chdir(folder)
     os.mkdir("out")
     os.mkdir("err")
