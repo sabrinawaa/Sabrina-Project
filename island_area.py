@@ -54,8 +54,8 @@ for i in range (1,no_particles+1):
   
     
     
-    x4 = np.array(track.X) - np.float64(twiss.ORBIT_X)
-    px4 = np.array(track.PX) - np.float64(twiss.ORBIT_PX)
+    x4 = np.array(track.X) #- np.float64(twiss.ORBIT_X)
+    px4 = np.array(track.PX) #- np.float64(twiss.ORBIT_PX)
     
     # plt.scatter(x4,px4,marker='.',s=0.1)
     
@@ -178,7 +178,7 @@ plt.xlabel('tolerance')
  #%% find separatrix
 idx=[]
 for a in range(len(xns)):
-     if abs(tunes[a]-0.75)<0.000006 and abs(tunes[a]-0.75)>0.000005:
+     if abs(tunes[a]-0.75)<0.000005 and abs(tunes[a]-0.75)>0.00000:
          idx.append(a)
          
 for i in idx:
@@ -202,11 +202,13 @@ for i in idx:
 
 
 #%%
-folder = 'submit/32_k3_2.1/'
-twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+folder = 'submit/32_k3_4.2/'
+# twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
+# twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+twiss_FP=pd.DataFrame(data= [[-0.002211155106,0.000432587081]],columns=["ORBIT_X","ORBIT_PX"])
 
-for i in [94]:
+
+for i in [252]:
     # if i <10:
     #     name=folder+"track.obs0001.p000"+str(i)
     # elif 9<i<100:   
@@ -220,16 +222,17 @@ for i in [94]:
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
-    plt.scatter(track.X,track.PX,marker='.',s=0.1,label = 'k3=2.1, Qx=0.7475')
+    plt.scatter(track.X,track.PX,marker='.',s=0.1,label = 'k3=4.2, Qx=0.738')
     plt.legend()
     x4 = np.array(track.X[3::4]) - float(twiss_FP.ORBIT_X)
     px4 = np.array(track.PX[3::4]) - float(twiss_FP.ORBIT_PX)-0.00009
     
-    plt.scatter(x4,px4,marker='.',s=0.1)
-    plt.scatter(0,0,marker='x',s=10) 
+    # plt.scatter(x4,px4,marker='.',s=0.1)
+    # plt.scatter(0,0,marker='x',s=10) 
     
-    x4n,px4n = normalise(x4,px4,float(twiss.ALFX),float(twiss.BETX))
-    plt.scatter(x4n,px4n,marker='.',s=1) 
+    # x4n,px4n = normalise(x4,px4,float(twiss.ALFX),float(twiss.BETX))
+    # x4n,px4n = normalise(track.X,track.PX,float(twiss.ALFX),float(twiss.BETX))
+    # plt.scatter(x4n,px4n,marker='.',s=1) 
   
     
 

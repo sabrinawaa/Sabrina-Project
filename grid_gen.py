@@ -60,7 +60,7 @@ plt.scatter(x,px,s=5)
 #%%
 chunk_size=20
 folder = "./submit/32_k3_6.3/"
-os.mkdir(folder)
+# os.mkdir(folder)
 
 for i in range(0,len(x),chunk_size):
     
