@@ -12,13 +12,18 @@ import os
 mad=Madx()
 job = "qxk3_dependence.madx"
 
+#%%
+mad.call(job)
+#%%
+
 FP = [0.0,0.0005]
 
-Qxs = np.linspace(26.705,26.72,5)
-k3s = np.arange(8.5,11.1,0.5)
+Qxs = np.linspace(26.7175,26.7176,4)
+k3s = np.arange(13,14,1)
 Qx,k3=np.meshgrid(Qxs,k3s)
 Qx=Qx.flatten()
 k3=k3.flatten()
+
 #%%
 chunk_size=8
 folder = "./submit/223252_k3_10.4/"

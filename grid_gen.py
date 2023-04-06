@@ -5,7 +5,7 @@ Created on Tue Mar 14 16:33:06 2023
 
 @author: sawang
 """
-
+#%%
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -41,14 +41,15 @@ twiss_cent = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALF
 twiss_cent.BETX = 64.33992636
 twiss_cent.ALFX = 1.728756478
 
-xns=np.linspace(-0.0023,0.0022,120)
-pxns=np.linspace(0.00175,0.0035,65)
+# xns=np.linspace(-0.0023,0.0022,120)
+# pxns=np.linspace(0.00175,0.0035,65)
 # pxns=np.linspace(0.0005,0.0048,100)
 
 # xns=np.linspace(-0.0022,-0.0018,18)
 # pxns=np.linspace(0.0013,0.0023,15)
 xns=np.linspace(-0.0027,-0.0024,18)
-pxns=np.linspace(0.002,0.003,15)
+pxns=np.linspace(0.002,0.003,15) #for 32, qx=0.744, k3=2.1, enough central area.
+
 xn,pxn=np.meshgrid(xns,pxns)
 xn=xn.flatten()
 pxn=pxn.flatten()
@@ -58,34 +59,76 @@ x = np.sqrt(float(twiss_cent.BETX)) * xn
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
 plt.scatter(x,px,s=5)
 #%%
-chunk_size=20
-folder = "./submit/32_k3_6.3/"
-# os.mkdir(folder)
+k3=[ 7.35]#np.arange(4.9,8.41,0.7)
+qx=[ 26.729]#np.arange(26.729,26.7164,-0.0025)
 
-for i in range(0,len(x),chunk_size):
+for idx in range(len(k3)):
     
-    mad_filename = folder+ "/sq32_"+str(i)+".madx"
-    shutil.copy("sq_template.madx",mad_filename)
+    with open("sq_template.madx", 'r') as file:
+        data = file.read()
+        data = data.replace("K3=0.1", "K3="+str(k3[idx]))
+        data = data.replace("qx=QX","qx="+ str(qx[idx]))
         
-    xchunk = x[i:i + chunk_size]
-    pxchunk = px[i:i + chunk_size]
-    value = []
+        with open("sq_template.madx", 'w') as file:     
+            file.write(data)
     
-    for j in range (len(xchunk)):
-        value.append(f"ptc_start, x={xchunk[j]} , px={pxchunk[j]}, y= 0, py=0;\n")
-    
-
-    with open(mad_filename, "r") as f:
-        contents = f.readlines()
-    if contents[55].strip()=="":
-        contents[55:55]=value
-    else:
-        print("ini pos already filled")
-
-    with open(mad_filename, "w") as f:
-        contents = "".join(contents)
-        f.write(contents)
             
+    
+        
+    chunk_size=20
+    folder = "./submit/3252_k3_"+str(k3[idx])+"/"
+    os.mkdir(folder)
+    
+    for i in range(0,len(x),chunk_size):
+        
+        mad_filename = folder+ "/sq32_"+str(i)+".madx"
+        shutil.copy("sq_template.madx",mad_filename)
+            
+        xchunk = x[i:i + chunk_size]
+        pxchunk = px[i:i + chunk_size]
+        value = []
+        
+        for j in range (len(xchunk)):
+            value.append(f"ptc_start, x={xchunk[j]} , px={pxchunk[j]}, y= 0, py=0;\n")
+        
+    
+        with open(mad_filename, "r") as f:
+            contents = f.readlines()
+        if contents[55].strip()=="":
+            contents[55:55]=value
+        else:
+            print("ini pos already filled")
+    
+        with open(mad_filename, "w") as f:
+            contents = "".join(contents)
+            f.write(contents)
+            
+    with open("sq_template.madx", 'r') as file:
+        data = file.read()
+        data = data.replace("K3="+str(k3[idx]),"K3=0.1")
+        data = data.replace("qx="+ str(qx[idx]),"qx=QX")
+    with open("sq_template.madx", 'w') as file:     
+        file.write(data)
+        
+#%%
+"sps/toolkit/macro.madx"
+chunk_size=20
+folders= [8.4,10.5,12.6, 14.7, 16.8, 18.9, 21 , 23.1,25]
+for k in folders:
+    folder = "./submit/32_k3_"+str(k)+"/"
+  
+    for i in range(0,len(x),chunk_size):
+        
+        mad_filename = folder+ "/sq32_"+str(i)+".madx"
+        
+        with open(mad_filename, 'r') as file:
+            data = file.read()
+            data = data.replace("sps/toolkit/macro.madx", "macro.madx")
+
+        with open(mad_filename, 'w') as file:     
+            file.write(data)
+            
+                
             
             
             
