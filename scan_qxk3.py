@@ -48,6 +48,8 @@ for i in range(0,len(x),chunk_size):
         f.write(contents)
         
 #%%
+mad.call("qxk3_dependencee.madx")
+#%%
 for i in Qx:
     for j in k3:
         with open(job, 'r') as file:
