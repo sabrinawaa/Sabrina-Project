@@ -15,7 +15,7 @@ LOE.12002, K3=-2.1;
 LOEN.52002, K3=-2.1;
 
 call,file="sps/toolkit/macro.madx";
-qx=26.747; ! originally 26.62
+qx=26.748; ! originally 26.62
 qy=26.58;
 
 exec, sps_match_tunes(qx,qy);
