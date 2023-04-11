@@ -41,14 +41,14 @@ twiss_cent = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALF
 twiss_cent.BETX = 64.33992636
 twiss_cent.ALFX = 1.728756478
 
-# xns=np.linspace(-0.0023,0.0022,120)
-# pxns=np.linspace(0.00175,0.0035,65)
+xns=np.linspace(-0.0039,0.0035,120)
+pxns=np.linspace(0.0037,0.0103,65)
 # pxns=np.linspace(0.0005,0.0048,100)
 
 # xns=np.linspace(-0.0022,-0.0018,18)
 # pxns=np.linspace(0.0013,0.0023,15)
-xns=np.linspace(-0.0027,-0.0024,18)
-pxns=np.linspace(0.002,0.003,15) #for 32, qx=0.744, k3=2.1, enough central area.
+# xns=np.linspace(-0.0027,-0.0024,18)
+# pxns=np.linspace(0.002,0.003,15) #for 32, qx=0.744, k3=2.1, enough central area.
 
 xn,pxn=np.meshgrid(xns,pxns)
 xn=xn.flatten()
@@ -57,10 +57,10 @@ pxn=pxn.flatten()
 
 x = np.sqrt(float(twiss_cent.BETX)) * xn 
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
-plt.scatter(x,px,s=5)
+plt.scatter(xn,pxn,s=5)
 #%%
-k3=[ 7.35]#np.arange(4.9,8.41,0.7)
-qx=[ 26.729]#np.arange(26.729,26.7164,-0.0025)
+k3=[-2.1]#np.arange(4.9,8.41,0.7)
+qx=[26.747]#np.arange(26.729,26.7164,-0.0025)
 
 for idx in range(len(k3)):
     
@@ -76,8 +76,8 @@ for idx in range(len(k3)):
     
         
     chunk_size=20
-    folder = "./submit/3252_k3_"+str(k3[idx])+"/"
-    os.mkdir(folder)
+    folder = "./submit/1252sq_k3_"+str(k3[idx])+"/"
+    # os.mkdir(folder)
     
     for i in range(0,len(x),chunk_size):
         

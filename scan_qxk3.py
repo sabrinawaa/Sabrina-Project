@@ -18,7 +18,7 @@ mad.call(job)
 
 FP = [0.0,0.0005]
 
-Qxs = np.linspace(26.7175,26.7176,4)
+Qxs = np.linspace(26.72125,26.72126,4)
 k3s = np.arange(13,14,1)
 Qx,k3=np.meshgrid(Qxs,k3s)
 Qx=Qx.flatten()

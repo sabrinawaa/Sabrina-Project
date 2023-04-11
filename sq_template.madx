@@ -8,7 +8,7 @@ beam,particle=proton, PC=14;
 
 use,sequence=sps;
 
-LOE.32002, K3=0.1;
+LOE.12002, K3=0.1;
 LOEN.52002, K3=0.1;
 
 call,file="macro.madx";
@@ -56,7 +56,7 @@ ptc_create_layout,model=2,method=6,nst=10,exact;
 
 
 ptc_track,icase=4,closed_orbit,dump,
-turns=2048 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+turns=2048 ,ffile=2048; ! onetable, turns=1000, norm_no=4; norm_out
 
 
 

@@ -58,19 +58,20 @@ for k in oct_names:
 #%%pairs
 oct_names=["LOE.12002","LOEN.52002"]
 strengths=[-0.6,-0.9,-1.2,-1.5,-1.8,-2.1]
-no_particles=20
+no_particles=16
+no_turns=2048
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
         if a>k:
             print (oct_names[k],oct_names[a])
             for j in range(len(strengths)):
                 for i in range (1,no_particles+1):
-                    name="Data/25pairs/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+"no="+str(i)
+                    name="Data/75_1252_negk3/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+"no="+str(i)
                     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
                     track = track.drop(index = 0,columns="*")
                     track = track.astype(np.float64)
                     
-                    plt.figure(num=oct_names[k]+oct_names[a])
+                    plt.figure(num=str(j))
                     plt.scatter(track.X,track.PX,marker='.',s=0.1)
                     plt.xlabel("X")
                     plt.ylabel("p_X")

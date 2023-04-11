@@ -11,12 +11,13 @@ beam,particle=proton, PC=14;
 use,sequence=sps;
 
 !twiss;
-LOE.22002, K3=9.0;
-LOE.32002, K3=9.0;
-LOEN.52002, K3=9.0;
+
+LOE.22002, K3=0.1;
+LOE.32002, K3=0.1;
+LOEN.52002, K3=0.1;
 
 call,file="sps/toolkit/macro.madx";
-qx=26.705; ! originally 26.62
+qx=QX; ! originally 26.62
 qy=26.58;
 
 exec, sps_match_tunes(qx,qy);
@@ -47,8 +48,8 @@ dq1_targetvalue=3.12;
 dq2_targetvalue=2;
 exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
 
-!select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
-!twiss,file="sps.tfs";
+select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
+twiss,file="sps.tfs";
 
 seqedit,sequence=sps;
 cycle,start=KIK.11654;
@@ -68,7 +69,6 @@ ptc_create_layout,model=1,method=6,nst=10,exact;
 
 select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 
-ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=0.0,px=0.00049,no=4,icase=56; 
+ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.004,px=0.0005,no=4,icase=56; 
 
 ptc_end;
-

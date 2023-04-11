@@ -3,18 +3,18 @@ import sys
 import shutil
 
 def main():
-    for K3 in [7.35]:
-        oct_name = "LOE.32002,LOEN.52002"
+    for K3 in [-2.1]:
+        oct_name = "LOE.12002,LOEN.52002"
         k3= K3
         startPID = 0
-        endPID = 270
+        endPID = 7800
         step = 20
         flavour = "workday"
-        folder = "./submit/3252_k3_"+str(k3)
+        folder = "./submit/1252sq_k3_"+str(k3)
         os.chdir(folder)
-        os.mkdir("out")
-        os.mkdir("err")
-        os.mkdir("log")
+        # os.mkdir("out")
+        # os.mkdir("err")
+        # os.mkdir("log")
         oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
         with open(oneSubmitFileName, 'w') as ff:
                 ff.write("universe = vanilla\n")
@@ -37,7 +37,8 @@ def main():
                 f.write("python3 {}\n".format(py_filename))
                 #fstring=literal string interpolation, interpolate values inside{}
                 
-            shutil.copy("/home/sawang/Desktop/Project/Sabrina-Project/template.py",py_filename)
+            # shutil.copy("/home/sawang/Desktop/Project/Sabrina-Project/template.py",py_filename)
+            shutil.copy("/Users/sabo4ever/Sabrina/EPFL/Project/template.py",py_filename)
             with open(py_filename, 'r') as f:
                 content = f.read()
                 content = content.replace("job=","job="+"'"+str(mad_filename)+"'")

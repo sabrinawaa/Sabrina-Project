@@ -8,7 +8,7 @@ mad=Madx()
 job=
 chunk=
 
-no_particles=100
+no_particles=20
             
 mad.call(job)
 
@@ -22,7 +22,7 @@ for i in range (1,no_particles+1):
     else:
         name="track.obs0001.p"+str(i)
         
-    newname="32track.no="+str(i+chunk)
+    newname="track.no="+str(i+chunk)
     os.rename(name, newname)
                     
              
