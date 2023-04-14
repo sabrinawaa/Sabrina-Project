@@ -11,11 +11,11 @@ beam,particle=proton, PC=14;
 use,sequence=sps;
 
 !twiss;
-LOE.12002, K3=-2.1;
-LOEN.52002, K3=-2.1;
+LOE.12002, K3=0.1;
+LOEN.52002, K3=0.1;
 
 call,file="sps/toolkit/macro.madx";
-qx=26.748; ! originally 26.62
+qx=QX; ! originally 26.62
 qy=26.58;
 
 exec, sps_match_tunes(qx,qy);

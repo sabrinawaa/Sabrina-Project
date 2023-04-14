@@ -38,6 +38,42 @@ def emittance(x,px, w=1):
 @njit
 def gaussian(x, mu, sig):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.))) / (sig * np.sqrt(2*np.pi))
+
+def focusing_error (alf_nom, alf_fp,beta_nom, beta_fp):
+    return 0.5* ((beta_nom/beta_fp) + (beta_fp/beta_nom)
+                 +(alf_nom/beta_nom - alf_fp/beta_fp)**2 * beta_fp * beta_nom)
+                 # +(alf_nom - alf_fp*beta_fp/beta_nom)**2 * beta_nom/ beta_fp )
+                  
+                 
+
+def normalise (x,px,alf,beta):
+    xn = np.array(x)/np.sqrt(beta)
+    pxn = alf * np.array(x)/np.sqrt(beta) + np.array(px) * np.sqrt(beta)
+    return xn,pxn
+
+def unormalise(xn, pxn, alf, beta):
+    x = np.sqrt(beta) * np.array(xn)
+    px = -alf * np.array(xn)/np.sqrt(beta) + np.array(pxn) / np.sqrt(beta)
+    return x,px
+                 
+def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
+
+    xn_fp, pxn_fp = normalise(x_fp,px_fp,alf,beta)
+    
+    w = np.array(w)
+    
+    muxn= np.average(xn,weights= w)
+    mupxn=np.average(pxn,weights= w)
+    
+    xn_std = np.sqrt(sum((xn-muxn)**2*w) /sum(w))
+    pxn_std= np.sqrt(sum((pxn-mupxn)**2 *w) /sum(w))
+    
+    delta_xn = abs(muxn - xn_fp) 
+    delta_pxn = abs(mupxn - pxn_fp)    
+    
+    delta_r = np.sqrt(delta_xn**2 + delta_pxn**2)
+    r0 = np.sqrt(((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2))
+    return (1+ delta_r / r0) **2  
 #%%
 twissname="Data/twiss_csv/cent_twiss.csv"
 
@@ -45,30 +81,31 @@ twiss=pd.read_csv(twissname)
 twiss=twiss[twiss["k3"]==0.6]
 twiss=twiss.iloc[[0]]
 
-# twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
-# twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
+twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.2]
+twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
 # twiss.BETX = 64.33992636
 # twiss.ALFX = 1.728756478
 
-twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
+# twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
 
 
 # area = 1.24e-6
 # std = np.sqrt( area *0.05/ np.pi) /3
-std =  0.000937
-# std = 0.0002
-offset = 0.0065
+# std =  0.000937
+std = 0.000613
+offset = 0.0068
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=7800 #7774
 no_turns=2048
-folder="submit/1252sq_k3_-2.1/"
+folder="submit/1252sq_k3_-2.2Qx_26.7485/"
 stds = np.linspace(std*0.5, std*1.5, 50)
-offsets = np.linspace(offset*0.75, offset *1.25, 50)
+offsets = np.linspace(offset*0.5, offset *1.5, 50)
 
-std_grid,offs_grid=np.meshgrid(std,offsets)
+std_grid,offs_grid=np.meshgrid(std,offset)
 std_grid=std_grid.flatten()
 offs_grid=offs_grid.flatten()
 #%%
@@ -108,6 +145,9 @@ delta_pxn = 2.7343750000000024e-05#9.58e-5 for 7774 case
 #%%
 emm_grid = []
 emm_inis =[]
+xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
+                           float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
+
 for i in range (len(std_grid)):
     weights = []
     wx =[]
@@ -118,8 +158,8 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/2, xn0[j]+delta_pxn/2)
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-
+        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -129,7 +169,8 @@ for i in range (len(std_grid)):
     emm_inis.append(emm_ini)
     print(i)
 #%%    
-i=np.argmin(emm_inc)
+# i=np.argmin(emm_inc)
+i=0
 weights=[]
 for j in range (len(xn0)):
       
@@ -168,15 +209,17 @@ plt.xlabel("initial emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
 
-plt.scatter(xn_fin,pxn_fin,c=weights,s=1,cmap=plt.cm.jet)
+plt.scatter(xn_fin,pxn_fin,c=weights,s=0.5,cmap=plt.cm.jet)
+# plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.xlabel("xn")
 plt.ylabel("pxn")
 #%%
-xx = np.sqrt(float(twiss.BETX)) * xn_fin
-pxx = - float(twiss.ALFX) * xn_fin / np.sqrt(float(twiss.BETX)) + pxn_fin / np.sqrt(float(twiss.BETX)) 
-plt.scatter(xx,pxx,c=weights,s=5,cmap=plt.cm.jet)
+xx = np.sqrt(float(twiss.BETX)) * xn0
+pxx = - float(twiss.ALFX) * xn0 / np.sqrt(float(twiss.BETX)) + pxn0/ np.sqrt(float(twiss.BETX)) 
+plt.scatter(xx,pxx,c=weights,s=1,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
+plt.scatter(twiss_FP.ORBIT_X, twiss_FP.ORBIT_PX, marker='x', s=10)
 #%%
 plt.scatter(std_grid, emm_inis,s=1)
 plt.xlabel("sigma")
@@ -217,36 +260,10 @@ weight =ytrial*(xtrial[1]-xtrial[0])
 print(np.sqrt(sum(xtrial**2*weight)))
 
 #%%
-def focusing_error (alf_nom, alf_fp,beta_nom, beta_fp):
-    return 0.5* (beta_nom/beta_fp + beta_fp/beta_nom
-                 +(alf_nom-alf_fp * beta_nom/beta_fp)**2*beta_fp/beta_nom)
-
-def normalise (x,px,alf,beta):
-    xn = np.array(x)/np.sqrt(beta)
-    pxn = alf * np.array(x)/np.sqrt(beta) + np.array(px) * np.sqrt(beta)
-    return xn,pxn
-                 
-def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
-
-    xn_fp, pxn_fp = normalise(x_fp,px_fp,alf,beta)
-    
-    w = np.array(w)
-    
-    muxn= np.average(xn,weights= w)
-    mupxn=np.average(pxn,weights= w)
-    
-    xn_std = np.sqrt(sum((xn-muxn)**2*w) /sum(w))
-    pxn_std= np.sqrt(sum((pxn-mupxn)**2 *w) /sum(w))
-    
-    delta_xn = abs(muxn - xn_fp) 
-    delta_pxn = abs(mupxn - pxn_fp)    
-    
-    delta_r = np.sqrt(delta_xn**2 + delta_pxn**2)
-    r0 = np.sqrt(((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2))
-    return (1+ delta_r / r0) **2         
+       
 #%%
 xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
-                           float(twiss_FP.ORBIT_PX),float(twiss_FP.ALFX), float(twiss.BETX))
+                           float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
 
 w = np.array(weights)
 
@@ -270,3 +287,5 @@ foc_err = focusing_error(float(twiss.ALFX), float(twiss_FP.ALFX), float(twiss.BE
 
 steer_err = steering_error(xn0, pxn0, float(twiss_FP.ORBIT_X), 
                            float(twiss_FP.ORBIT_PX), float(twiss.ALFX),float(twiss.BETX), weights)
+print("focusing err= ", foc_err)
+print('steering error=', steer_err)

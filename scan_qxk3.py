@@ -5,12 +5,13 @@ Created on Mon Apr  3 11:26:13 2023
 
 @author: sawang
 """
+#%%
 from cpymad.madx import Madx
 import numpy as np
 
 import os
 mad=Madx()
-job = "qxk3_dependence.madx"
+job = "qxk3_dependencee.madx"
 
 #%%
 mad.call(job)
@@ -18,8 +19,8 @@ mad.call(job)
 
 FP = [0.0,0.0005]
 
-Qxs = np.linspace(26.72125,26.72126,4)
-k3s = np.arange(13,14,1)
+Qxs = [26.748]
+k3s = [-1.8,-2.1]
 Qx,k3=np.meshgrid(Qxs,k3s)
 Qx=Qx.flatten()
 k3=k3.flatten()
@@ -67,8 +68,8 @@ for i in Qx:
                 
             mad.call(job)
             
-            twiss_newname="twiss.oct=LOE.22002,LOE.32002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
-            twissum_newname="twissum.oct=LOE.22002,LOE.32002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
+            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
+            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
                 
@@ -78,3 +79,12 @@ for i in Qx:
                 data = data.replace("qx="+ str(i),"qx=QX")
             with open(job, 'w') as file:     
                 file.write(data)
+#%%
+Qx=26.747
+i=Qx
+k3=-0.9
+j=k3
+twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
+twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
+os.rename("ptc_twiss.tfs", twiss_newname)
+os.rename("ptc_twiss_summ.tfs", twissum_newname)

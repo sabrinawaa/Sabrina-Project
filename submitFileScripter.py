@@ -3,18 +3,19 @@ import sys
 import shutil
 
 def main():
-    for K3 in [-2.1]:
+    for K3 in [-2.2]:
         oct_name = "LOE.12002,LOEN.52002"
         k3= K3
+        qx= 26.7485
         startPID = 0
         endPID = 7800
         step = 20
         flavour = "workday"
-        folder = "./submit/1252sq_k3_"+str(k3)
+        folder = "./submit/1252sq_k3_"+str(k3)+"qx_"+str(qx)
         os.chdir(folder)
-        # os.mkdir("out")
-        # os.mkdir("err")
-        # os.mkdir("log")
+        os.mkdir("out")
+        os.mkdir("err")
+        os.mkdir("log")
         oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
         with open(oneSubmitFileName, 'w') as ff:
                 ff.write("universe = vanilla\n")
@@ -51,7 +52,8 @@ def main():
                 f.write("MYNAME = {}\n".format("sq32_"+str(i)))
                 f.write("MYINPUT = /afs/cern.ch/work/s/sawang/public/project/macro.madx, /afs/cern.ch/work/s/sawang/public/project/ft_q26.str, /afs/cern.ch/work/s/sawang/public/project/sps1.seq, {},  {}\n".format(mad_filename,py_filename))
                 f.write("queue\n\n")
-        os.chdir('/home/sawang/Desktop/Project/Sabrina-Project/')
+        # os.chdir('/home/sawang/Desktop/Project/Sabrina-Project/')
+        os.chdir("/Users/sabo4ever/Sabrina/EPFL/Project")
 if __name__ == "__main__": #execute code when file runs as script not imported as module
     main()
     

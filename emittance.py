@@ -17,23 +17,35 @@ from scipy.integrate import dblquad
 
 import henon_funcs as fn
 
-@njit
-def emittance(x,px,x_fp,px_fp, weight=1):
-    x = x - x_fp
-    px = px - px_fp
-    weight = np.array(weight)
-    x_sqmean = np.mean(x**2 * weight) 
-    px_sqmean = np.mean(px**2 * weight ) 
-    xpx_sqmean = (np.mean(x * px * weight))**2
+
+# def emittance(x,px, w=1):
+
+#     w = np.full(len(x),1)
+    
+#     mux= np.average(x,weights= w)
+#     mupx=np.average(px,weights= w)
+    
+#     x_sqmean = sum((x-mux)**2*w) /sum(w)
+#     px_sqmean = sum((px-mupx)**2 *w) /sum(w)
+    
+#     xpx_sqmean = ((x-mux).dot(w)*(px-mupx).dot(w)/sum(w))**2
+#     return np.sqrt(x_sqmean * px_sqmean -xpx_sqmean)
+
+def emittance_simp(x,px):
+    x = x - np.mean(x)
+    px = px - np.mean(px)
+    x_sqmean = np.mean(x**2) 
+    px_sqmean = np.mean(px**2) 
+    xpx_sqmean = (np.mean(x * px ))**2
     return np.sqrt(x_sqmean * px_sqmean - xpx_sqmean)
 #weight=1 is unweighted 
 
 #%%
-# twissname="Data/twiss_csv/cent_twiss.csv"
+twissname="Data/twiss_csv/cent_twiss.csv"
 
-# twiss=pd.read_csv(twissname)
-# twiss=twiss[twiss["k3"]==0.6]
-# twiss=twiss.iloc[[0]]
+twiss=pd.read_csv(twissname)
+twiss=twiss[twiss["k3"]==0.6]
+twiss=twiss.iloc[[0]]
 
 # twiss_FP = pd.read_csv("Data/twiss_csv/75Islandtwiss_csv/LOE.32002top_twiss.csv")
 # twiss_FP = twiss_FP[twiss_FP["k3"]==0.6]
@@ -44,13 +56,13 @@ twiss.ALFX = 1.728756478
 #%%
 no_particles=3000
 no_turns=2048
-folder="Data/GAUSS32/"
+folder="submit/1252gauss_scan_-2.1_747/"
 x0=[]
 px0=[]
 xfin=[]
 pxfin=[]
 for i in range (1,no_particles):
-    name = folder + "32track.no=" + str(i)
+    name = folder + "track.no=" + str(i)
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
@@ -60,40 +72,40 @@ for i in range (1,no_particles):
     xfin.append(track.X.iloc[-1])
     pxfin.append(track.PX.iloc[-1])
   #%%  
+# plt.figure(num="Emittance")
+plt.scatter(x0,px0,marker='.',s=0.1, label="initial dist")
 
-plt.figure(num="Initial Distribution")
-plt.scatter(x0,px0,marker='.',s=0.1)
-
-for i in [3253
-          ]:
-    # if i <10:
-    #     name=folder+"track.obs0001.p000"+str(i)
-    # elif 9<i<100:   
-    #     name=folder+"track.obs0001.p00"+str(i)
-    # elif 99<i<1000:
-    #     name=folder+"track.obs0001.p0"+str(i)
-    # else:
-    #     name=folder+"track.obs0001.p"+str(i)
-    # name=folder[island]+"track.oct="+oct_names[0]+"k3=0.6no="+str(i)
-    name =  "Data/SQ32/32track.no=" + str(i+1)
-    track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
-    track = track.drop(index = 0,columns="*")
-    track = track.astype(np.float64)
-    x4 = np.array(track.X[::4])
-    px4 = np.array(track.PX[::4]) 
+# for i in [3253
+#           ]:
+#     # if i <10:
+#     #     name=folder+"track.obs0001.p000"+str(i)
+#     # elif 9<i<100:   
+#     #     name=folder+"track.obs0001.p00"+str(i)
+#     # elif 99<i<1000:
+#     #     name=folder+"track.obs0001.p0"+str(i)
+#     # else:
+#     #     name=folder+"track.obs0001.p"+str(i)
+#     # name=folder[island]+"track.oct="+oct_names[0]+"k3=0.6no="+str(i)
+#     name =  "Data/SQ32/32track.no=" + str(i+1)
+#     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+#     track = track.drop(index = 0,columns="*")
+#     track = track.astype(np.float64)
+#     x4 = np.array(track.X[::4])
+#     px4 = np.array(track.PX[::4]) 
     
-plt.scatter(x4,px4,marker='.',s=0.1)
+# plt.scatter(x4,px4,marker='.',s=0.1)
 
 plt.xlabel("X0")
 plt.ylabel("Px0")
-print("emittance before=",emittance(x0,px0,float(twiss.ORBIT_X), float(twiss.ORBIT_PX)))
+print("emittance before=",emittance_simp(np.array(x0),np.array(px0)))
 #%%
-plt.figure(num="Final Dist")
-plt.scatter(xfin,pxfin,marker='.',s=0.1)
-plt.scatter(x4,px4,marker='.',s=0.1)
+plt.figure(num="Emittance")
+plt.scatter(xfin,pxfin,marker='.',s=0.1,label="final dist")
+# plt.scatter(x4,px4,marker='.',s=0.1)
 plt.xlabel("X_fin")
 plt.ylabel("Px_fin")
-print("emittance after=",emittance(xfin,pxfin,float(twiss.ORBIT_X), float(twiss.ORBIT_PX)))
+plt.legend()
+print("emittance after=",emittance_simp(xfin,pxfin))
 #%%
 
 area = 1.24e-6
@@ -139,8 +151,8 @@ for a in range (len(std_grid)):
             x_fins.append(track.X.iloc[-1])
             px_fins.append(track.PX.iloc[-1])
             
-        emm_ini= emittance(x0s,px0s,float(twiss.ORBIT_X), float(twiss.ORBIT_PX))
-        emm_fin= emittance(x_fins,px_fins,float(twiss.ORBIT_X), float(twiss.ORBIT_PX))
+        emm_ini= emittance_simp(x0s,px0s)
+        emm_fin= emittance_simp(x_fins,px_fins)
         em_fin.append(emm_fin)
         em_increase.append((emm_fin-emm_ini)/emm_ini)
 

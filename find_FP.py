@@ -57,8 +57,8 @@ for k in oct_names:
             
 #%%pairs
 oct_names=["LOE.12002","LOEN.52002"]
-strengths=[-1.8]#,-0.9,-1.2,-1.5,-1.8,-2.1]
-no_particles=8
+strengths=[-2.4]#,-0.9,-1.2,-1.5,-1.8,-2.1]
+no_particles=16
 no_turns=2048
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
@@ -115,3 +115,11 @@ for i in range (1,no_particles+1):
     plt.xlabel("X")
     plt.ylabel("p_X")
    
+    #%%747
+plt.scatter(-0.003791943669, 0.000779672626, marker='x', s=30,c='orange')
+plt.scatter(-0.005054382282, 0.0009536294541 , marker='x', s=30,c='orange')
+plt.scatter(-0.006786209248, 0.001178558315, marker='x', s=30,c='orange')
+#%%748
+plt.scatter(-0.003970787959, 0.0008080053465 , marker='x', s=30,c='red')
+plt.scatter(-0.005750759367, 0.00105059112, marker='x', s=30,c='red')
+
