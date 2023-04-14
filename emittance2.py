@@ -95,17 +95,18 @@ twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 # area = 1.24e-6
 # std = np.sqrt( area *0.05/ np.pi) /3
 # std =  0.000937
-std = 0.000613
+std = 0.0003
 offset = 0.0068
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=7800 #7774
 no_turns=2048
-folder="submit/1252sq_k3_-2.2Qx_26.7485/"
-stds = np.linspace(std*0.5, std*1.5, 50)
+folder="submit/1252sq_k3_-2.2qx_26.7485/"
+# stds = np.linspace(std*0.5, std*1.5, 50)
+stds = np.linspace(0.0001,0.0009,80)
 offsets = np.linspace(offset*0.5, offset *1.5, 50)
 
-std_grid,offs_grid=np.meshgrid(std,offset)
+std_grid,offs_grid=np.meshgrid(stds,offset)
 std_grid=std_grid.flatten()
 offs_grid=offs_grid.flatten()
 #%%
@@ -170,12 +171,12 @@ for i in range (len(std_grid)):
     print(i)
 #%%    
 # i=np.argmin(emm_inc)
-i=0
+i=30
 weights=[]
 for j in range (len(xn0)):
       
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-
+        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -203,14 +204,14 @@ plt.ylabel("momentum offset")
 #%%
 plt.figure()
 emm_inc = np.array(emm_grid)/np.array(emm_inis)
-plt.scatter(emm_inis,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
+plt.scatter(emm_norm_ini,offs_grid,c=emm_inc,s=10,cmap=plt.cm.jet)
 plt.colorbar(label="emm_fin / emm_ini")
-plt.xlabel("initial emittance [m rad]")
+plt.xlabel("normalised initial emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
 
 plt.scatter(xn_fin,pxn_fin,c=weights,s=0.5,cmap=plt.cm.jet)
-# plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
+plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.xlabel("xn")
 plt.ylabel("pxn")
@@ -221,9 +222,9 @@ plt.scatter(xx,pxx,c=weights,s=1,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.scatter(twiss_FP.ORBIT_X, twiss_FP.ORBIT_PX, marker='x', s=10)
 #%%
-plt.scatter(std_grid, emm_inis,s=1)
-plt.xlabel("sigma")
-plt.ylabel("initial emmittance")
+plt.scatter(emm_norm_ini, emm_inc,s=1)
+plt.xlabel("normalised initial emittance")
+plt.ylabel("emmittance growth")
 #%%
 plt.scatter(offs_grid, emm_inc,s=1)
 plt.xlabel("mom offset")
