@@ -19,8 +19,8 @@ mad.call(job)
 
 FP = [0.0,0.0005]
 
-Qxs = [26.748]
-k3s = [-1.8,-2.1]
+Qxs = [26.747]
+k3s = [2.1]
 Qx,k3=np.meshgrid(Qxs,k3s)
 Qx=Qx.flatten()
 k3=k3.flatten()
@@ -32,7 +32,7 @@ os.mkdir(folder)
 
 for i in range(0,len(x),chunk_size):
     
-    mad_filename = folder+ "/qxk3_dependence.madx"
+    mad_filename = folder+ "/qxk3_dependencee.madx"
     
     qxchunk = Qx[i:i + chunk_size]
     k3chunk = k3[i:i + chunk_size]
@@ -68,8 +68,8 @@ for i in Qx:
                 
             mad.call(job)
             
-            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
-            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+".tfs"
+            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+"cent.tfs"
+            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(j)+"Qx="+str(i)+"cent.tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
                 

@@ -51,7 +51,7 @@ def normalise (x,px,alf,beta):
     pxn = alf * np.array(x)/np.sqrt(beta) + np.array(px) * np.sqrt(beta)
     return xn,pxn
 
-def unormalise(xn, pxn, alf, beta):
+def unnormalise(xn, pxn, alf, beta):
     x = np.sqrt(beta) * np.array(xn)
     px = -alf * np.array(xn)/np.sqrt(beta) + np.array(pxn) / np.sqrt(beta)
     return x,px
@@ -82,7 +82,7 @@ twiss=twiss[twiss["k3"]==0.6]
 twiss=twiss.iloc[[0]]
 
 twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==-2.2]
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.4]
 twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
@@ -95,18 +95,18 @@ twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 # area = 1.24e-6
 # std = np.sqrt( area *0.05/ np.pi) /3
 # std =  0.000937
-std = 0.0003
-offset = 0.0068
+std = 0.000613
+offset = 0.008
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=7800 #7774
 no_turns=2048
-folder="submit/1252sq_k3_-2.2qx_26.7485/"
+folder="submit/1252sq_k3_-2.5qx_26.7485/"
 # stds = np.linspace(std*0.5, std*1.5, 50)
-stds = np.linspace(0.0001,0.0009,80)
+stds = np.linspace(0.0001,0.0011,80)
 offsets = np.linspace(offset*0.5, offset *1.5, 50)
 
-std_grid,offs_grid=np.meshgrid(stds,offset)
+std_grid,offs_grid=np.meshgrid(std,offsets)
 std_grid=std_grid.flatten()
 offs_grid=offs_grid.flatten()
 #%%
@@ -159,8 +159,8 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/2, xn0[j]+delta_pxn/2)
-        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -171,12 +171,12 @@ for i in range (len(std_grid)):
     print(i)
 #%%    
 # i=np.argmin(emm_inc)
-i=30
+i=20
 weights=[]
 for j in range (len(xn0)):
       
-        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -211,7 +211,7 @@ plt.ylabel("momentum offset")
 #%%
 
 plt.scatter(xn_fin,pxn_fin,c=weights,s=0.5,cmap=plt.cm.jet)
-plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
+# plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.xlabel("xn")
 plt.ylabel("pxn")

@@ -39,6 +39,10 @@ def emittance_simp(x,px):
     xpx_sqmean = (np.mean(x * px ))**2
     return np.sqrt(x_sqmean * px_sqmean - xpx_sqmean)
 #weight=1 is unweighted 
+def normalise (x,px,alf,beta):
+    xn = np.array(x)/np.sqrt(beta)
+    pxn = alf * np.array(x)/np.sqrt(beta) + np.array(px) * np.sqrt(beta)
+    return xn,pxn
 
 #%%
 twissname="Data/twiss_csv/cent_twiss.csv"
@@ -56,7 +60,7 @@ twiss.ALFX = 1.728756478
 #%%
 no_particles=3000
 no_turns=2048
-folder="submit/1252gauss_scan_-2.1_747/"
+folder="submit/1252gauss_scan_-2.2_7485/"
 x0=[]
 px0=[]
 xfin=[]
@@ -73,7 +77,7 @@ for i in range (1,no_particles):
     pxfin.append(track.PX.iloc[-1])
   #%%  
 # plt.figure(num="Emittance")
-plt.scatter(x0,px0,marker='.',s=0.1, label="initial dist")
+plt.scatter(x0,px0,marker='.',s=10, label="initial dist")
 
 # for i in [3253
 #           ]:
@@ -99,8 +103,12 @@ plt.xlabel("X0")
 plt.ylabel("Px0")
 print("emittance before=",emittance_simp(np.array(x0),np.array(px0)))
 #%%
-plt.figure(num="Emittance")
-plt.scatter(xfin,pxfin,marker='.',s=0.1,label="final dist")
+xn00,pxn00=normalise(x0,px0,float(twiss.ALFX),float(twiss.BETX))
+plt.scatter(xn00,pxn00,marker='.',s=10, label="initial dist")
+
+#%%
+# plt.figure(num="Emittance")
+plt.scatter(xfin,pxfin,marker='.',s=10,label="final dist")
 # plt.scatter(x4,px4,marker='.',s=0.1)
 plt.xlabel("X_fin")
 plt.ylabel("Px_fin")

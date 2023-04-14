@@ -3,7 +3,7 @@ import sys
 import shutil
 
 def main():
-    for K3 in [-2.2]:
+    for K3 in [-2.5]:
         oct_name = "LOE.12002,LOEN.52002"
         k3= K3
         qx= 26.7485
@@ -38,8 +38,8 @@ def main():
                 f.write("python3 {}\n".format(py_filename))
                 #fstring=literal string interpolation, interpolate values inside{}
                 
-            # shutil.copy("/home/sawang/Desktop/Project/Sabrina-Project/template.py",py_filename)
-            shutil.copy("/Users/sabo4ever/Sabrina/EPFL/Project/template.py",py_filename)
+            shutil.copy("/home/sawang/Desktop/Project/Sabrina-Project/template.py",py_filename)
+            # shutil.copy("/Users/sabo4ever/Sabrina/EPFL/Project/template.py",py_filename)
             with open(py_filename, 'r') as f:
                 content = f.read()
                 content = content.replace("job=","job="+"'"+str(mad_filename)+"'")
@@ -52,8 +52,8 @@ def main():
                 f.write("MYNAME = {}\n".format("sq32_"+str(i)))
                 f.write("MYINPUT = /afs/cern.ch/work/s/sawang/public/project/macro.madx, /afs/cern.ch/work/s/sawang/public/project/ft_q26.str, /afs/cern.ch/work/s/sawang/public/project/sps1.seq, {},  {}\n".format(mad_filename,py_filename))
                 f.write("queue\n\n")
-        # os.chdir('/home/sawang/Desktop/Project/Sabrina-Project/')
-        os.chdir("/Users/sabo4ever/Sabrina/EPFL/Project")
+        os.chdir('/home/sawang/Desktop/Project/Sabrina-Project/')
+        # os.chdir("/Users/sabo4ever/Sabrina/EPFL/Project")
 if __name__ == "__main__": #execute code when file runs as script not imported as module
     main()
     
