@@ -78,19 +78,22 @@ for k in oct_names:
 alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 
 #%%pairs
-oct_names=["LOE.12002,LOE.22002","LOE.12002,LOE.32002","LOE.22002,LOE.32002"]#25 config
+# oct_names=["LOE.12002,LOE.22002","LOE.12002,LOE.32002","LOE.22002,LOE.32002"]#25 config
 # oct_names=["LOE.22002,LOEN.52002","LOE.32002,LOEN.52002"]#75 config
+oct_names=["LOE.12002,LOEN.52002"]
 
-strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-islands=["top","bot"]
+strengths=[-0.9,-1.2,-1.5,-2.1,-2.2,-2.3,-2.4]
+Qx=[26.747, 26.748, 26.7485, 26.749, 26.7495]
+islands=["top"]#,"bot"]
 
-alldata=pd.DataFrame(columns=['name', 'island','k3', 'max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
-       'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
+alldata=pd.DataFrame(columns=['name', 'island','k3', 'Qx','max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
+        'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 for k in oct_names:
+    for qx in Qx:
             for j in range(len(strengths)):
                 for i in range(len(islands)):
-                    twiss_name="Data/75twiss_pairs/twiss.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
-                    twissum_name="Data/75twiss_pairs/twissum.oct="+k+"k3=" +str(strengths[j])+islands[i]+".tfs"
+                    twiss_name="Data/1252_negk3_twiss/twiss.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
+                    twissum_name="Data/1252_negk3_twiss/twissum.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
                     
                     twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
                     twiss=twiss.drop(index=0)
@@ -102,16 +105,28 @@ for k in oct_names:
                     data=twiss_sum.loc[:,twiss_sum.columns.isin([ 'ALPHA_C', 'ALPHA_C_P','ALPHA_C_P2','ALPHA_C_P3','DQ1','DQ2','ORBIT_X','ORBIT_PX'])].astype(np.float64)
                     data.insert(0,"name",k)
                     data.insert(1,"k3",strengths[j])
-                    data.insert(2,"island",islands[i])
-                    data.insert(3,"ALFX",twiss.ALFX[1])
-                    data.insert(3,"BETX",twiss.BETX[1])
-                    data.insert(3,"max_X",max(twiss.X))
+                    data.insert(2,"Qx",qx)
+                    data.insert(3,"island",islands[i])
+                    data.insert(4,"ALFX",twiss.ALFX[1])
+                    data.insert(4,"BETX",twiss.BETX[1])
+                    data.insert(4,"max_X",max(twiss.X))
                     
                     alldata=alldata.append(data)
             
 # ,"LOE.32002","LOEN.52002"
 alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 
+#%%
+Qx = [26.747, 26.748, 26.7485, 26.749, 26.7495]
+for qx in Qx:
+    smalldata=alldata[alldata["Qx"]==qx]
+    plt.scatter(smalldata.ORBIT_X, smalldata.ORBIT_PX)
+    fit = np.polyfit(smalldata.ORBIT_X, smalldata.ORBIT_PX,2)
+    pfit = np.poly1d(fit)
+    plt.plot(smalldata.ORBIT_X, pfit(smalldata.ORBIT_X), label="Qx="+str(qx))
+plt.xlabel("FP X")
+plt.ylabel("FP PX")
+plt.legend()
 #%% triplets
 oct_names=["LOE.12002,LOE.32002,LOEN.52002","LOE.22002,LOE.32002,LOEN.52002"]
 strengths=[0.3,0.4,0.5,0.6,0.7,0.8,0.9]
