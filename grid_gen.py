@@ -41,8 +41,8 @@ twiss_cent = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALF
 twiss_cent.BETX = 64.33992636
 twiss_cent.ALFX = 1.728756478
 
-xns=np.linspace(-0.0039,0.0035,120)
-pxns=np.linspace(0.0033,0.0116,65)
+xns=np.linspace(-0.0049,0.0038,120)
+pxns=np.linspace(0.0033,0.0133,65)
 # pxns=np.linspace(0.0005,0.0048,100)
 
 # xns=np.linspace(-0.0022,-0.0018,18)
@@ -59,8 +59,8 @@ x = np.sqrt(float(twiss_cent.BETX)) * xn
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
 plt.scatter(xn,pxn,s=5)
 #%%
-k3=[-2.5]#np.arange(4.9,8.41,0.7)
-qx=[26.7485]#np.arange(26.729,26.7164,-0.0025)
+k3=[-2.1]#np.arange(4.9,8.41,0.7)
+qx=[26.746]#np.arange(26.729,26.7164,-0.0025)
 
 for idx in range(len(k3)):
     
@@ -111,24 +111,62 @@ for idx in range(len(k3)):
         file.write(data)
         
 #%%
-"sps/toolkit/macro.madx"
-chunk_size=20
-folders= [8.4,10.5,12.6, 14.7, 16.8, 18.9, 21 , 23.1,25]
-for k in folders:
-    folder = "./submit/32_k3_"+str(k)+"/"
-  
-    for i in range(0,len(x),chunk_size):
-        
-        mad_filename = folder+ "/sq32_"+str(i)+".madx"
-        
-        with open(mad_filename, 'r') as file:
-            data = file.read()
-            data = data.replace("sps/toolkit/macro.madx", "macro.madx")
+k31 = [-0.9, -1.2, 
+       -1.5, -1.8,-2.1,-2.5] 
 
-        with open(mad_filename, 'w') as file:     
-            file.write(data)
+k32 = [-0.9, -1.2,
+       -1.5, -1.8,-2.1,-2.5] 
             
-                
+Qx=26.748
+folder = "./submit/1252_748_-DQ/"
+os.mkdir(folder)
+for idx in range(len(k31)):
+    
+    with open("pairs.madx", 'r') as file:
+        data = file.read()
+        data = data.replace("K3=k_31", "K3="+str(k31[idx]))
+        data = data.replace("K3=k_32", "K3="+str(k32[idx]))
+        data = data.replace("qx=QX","qx="+ str(Qx))
+        
+        with open("pairs.madx", 'w') as file:     
+            file.write(data)
+    
+        mad_filename = folder+ "K3="+str(k31[idx])+'_'+str(k32[idx])+".madx"
+        shutil.copy("pairs.madx",mad_filename)
+
+            
+    with open("pairs.madx", 'r') as file:
+        data = file.read()
+        data = data.replace("K3="+str(k31[idx]),"K3=k_31")
+        data = data.replace("K3="+str(k32[idx]),"K3=k_32")
+        data = data.replace("qx="+ str(Qx),"qx=QX")
+    with open("pairs.madx", 'w') as file:     
+        file.write(data)
+    
+    with open("pairs_template.py", 'r') as file:
+        data = file.read()
+        data = data.replace("k_31", str(k31[idx]))
+        data = data.replace("k_32", str(k32[idx]))
+
+
+        
+        with open("pairs_template.py", 'w') as file:     
+            file.write(data)
+    
+        py_filename = folder+"K3="+str(k31[idx])+'_'+str(k32[idx])+".py"
+        shutil.copy("pairs_template.py",py_filename)
+
+            
+    with open("pairs_template.py", 'r') as file:
+        data = file.read()
+        data = data.replace(str(k31[idx]),"k_31")
+        data = data.replace(str(k32[idx]),"k_32")
+
+
+    with open("pairs_template.py", 'w') as file:     
+        file.write(data)
+
+ ##remember to restore k_32 after each run!!              
             
             
             

@@ -82,7 +82,7 @@ twiss=twiss[twiss["k3"]==0.6]
 twiss=twiss.iloc[[0]]
 
 twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==-2.4]
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
 twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
@@ -106,7 +106,7 @@ folder="submit/1252sq_k3_-2.5qx_26.7485/"
 stds = np.linspace(0.0001,0.0011,80)
 offsets = np.linspace(offset*0.5, offset *1.5, 50)
 
-std_grid,offs_grid=np.meshgrid(std,offsets)
+std_grid,offs_grid=np.meshgrid(stds,offset)
 std_grid=std_grid.flatten()
 offs_grid=offs_grid.flatten()
 #%%
@@ -131,6 +131,7 @@ for i in range (1,no_particles+1):
     px_fins.append(track.PX.iloc[-1])
 
 #%%
+plt.figure()
 plt.scatter(x_fins,px_fins,s=0.1)
 
 
@@ -159,8 +160,8 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/2, xn0[j]+delta_pxn/2)
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        # weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        #weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -175,8 +176,8 @@ i=20
 weights=[]
 for j in range (len(xn0)):
       
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        # weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -186,6 +187,7 @@ plt.colorbar(label="final emittance [m rad]")
 plt.xlabel("initial std [m]")
 plt.ylabel("momentum offset")
 #%%
+plt.figure()
 gamma = float((1+twiss.ALFX**2)/twiss.BETX)
 emm_norm_fin = float(twiss.BETX) * gamma * np.array(emm_grid)
 emm_norm_ini = float(twiss.BETX) * gamma * np.array(emm_inis)
@@ -209,7 +211,7 @@ plt.colorbar(label="emm_fin / emm_ini")
 plt.xlabel("normalised initial emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
-
+plt.figure()
 plt.scatter(xn_fin,pxn_fin,c=weights,s=0.5,cmap=plt.cm.jet)
 # plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
@@ -222,9 +224,16 @@ plt.scatter(xx,pxx,c=weights,s=1,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.scatter(twiss_FP.ORBIT_X, twiss_FP.ORBIT_PX, marker='x', s=10)
 #%%
-plt.scatter(emm_norm_ini, emm_inc,s=1)
+plt.figure(num="growth")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.747, Surface=3.316e-05,Foc_Err=1.0234")
+plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.7485, Surface=4.374e-05,Foc_Err=1.0425")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.747, Surface=4.853e-05,Foc_Err=1.0369")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.746, Surface=3.739e-05 ,Foc_Err=1.0261")
+
 plt.xlabel("normalised initial emittance")
-plt.ylabel("emmittance growth")
+plt.ylabel("emittance growth")
+plt.legend()
 #%%
 plt.scatter(offs_grid, emm_inc,s=1)
 plt.xlabel("mom offset")
@@ -284,6 +293,14 @@ err= (1+ delta_r / r0) **2
 plt.scatter(muxn,mupxn,marker='x',s=30,c='orange')
 plt.scatter(xn_fp,pxn_fp,marker='x',s=30,c='red')
 #%%
+# twiss_name = "twiss.oct=LOE.12002,LOEN.52002k3=-3.2,-1.8Qx=26.748top.tfs"
+# twiss_file=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
+# twiss_file=twiss_file.drop(index=0)
+# twiss_file=twiss_file.loc[:, ~twiss_file.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float64)
+
+# twiss_FP.ALFX=twiss_file.ALFX[1]
+# twiss_FP.BETX=twiss_file.BETX[1]
+
 foc_err = focusing_error(float(twiss.ALFX), float(twiss_FP.ALFX), float(twiss.BETX), float(twiss_FP.BETX))
 
 steer_err = steering_error(xn0, pxn0, float(twiss_FP.ORBIT_X), 
