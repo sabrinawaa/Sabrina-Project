@@ -112,21 +112,26 @@ for idx in range(len(k3)):
         
 #%%
 k31 = [-0.9, -1.2, 
-       -1.5, -1.8,-2.1,-2.5] 
+       -1.5, -1.8,-2.1,-2.4] 
 
 k32 = [-0.9, -1.2,
-       -1.5, -1.8,-2.1,-2.5] 
+       -1.5, -1.8,-2.1,-2.4] 
+oct_1= "LOE.12002"
+oct_2 = "LOEN.52002"
             
-Qx=26.748
-folder = "./submit/1252_748_-DQ/"
+Qx=26.248
+folder = "./submit/1252Qx_248/"
 os.mkdir(folder)
 for idx in range(len(k31)):
     
     with open("pairs.madx", 'r') as file:
         data = file.read()
-        data = data.replace("K3=k_31", "K3="+str(k31[idx]))
-        data = data.replace("K3=k_32", "K3="+str(k32[idx]))
+        data = data.replace("K3=k_31;!1", "K3="+str(k31[j])+";!1")
+        data = data.replace("K3=k_32;!2", "K3="+str(k32[j])+";!2")
         data = data.replace("qx=QX","qx="+ str(Qx))
+
+        data = data.replace("oct1", oct_1)
+        data = data.replace("oct2",oct_2)
         
         with open("pairs.madx", 'w') as file:     
             file.write(data)
@@ -137,8 +142,8 @@ for idx in range(len(k31)):
             
     with open("pairs.madx", 'r') as file:
         data = file.read()
-        data = data.replace("K3="+str(k31[idx]),"K3=k_31")
-        data = data.replace("K3="+str(k32[idx]),"K3=k_32")
+        data = data.replace("K3="+str(k31[j])+";!1","K3=k_31;!1")
+        data = data.replace("K3="+str(k32[j])+";!2","K3=k_32;!2")
         data = data.replace("qx="+ str(Qx),"qx=QX")
     with open("pairs.madx", 'w') as file:     
         file.write(data)
@@ -161,6 +166,9 @@ for idx in range(len(k31)):
         data = file.read()
         data = data.replace(str(k31[idx]),"k_31")
         data = data.replace(str(k32[idx]),"k_32")
+        
+        data = data.replace(oct_1, "oct1")
+        data = data.replace(oct_2, "oct2")
 
 
     with open("pairs_template.py", 'w') as file:     

@@ -46,11 +46,13 @@ twissname="Data/twiss_csv/1252_cents.csv"
 
 twiss=pd.read_csv(twissname)
 Qx=float(26.7495)
-twiss=twiss[twiss["Qx"]==Qx]
+twiss=twiss[twiss["Qx"]==Qx] 
 #%%
-topdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"DQ_-3,-3top.csv")
-botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"DQ_-3,-3bot.csv")
-
+topdata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252Qx_26.7495_DQ_0.2,0.005top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252_"+str(Qx)+"bot.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"_DQ_0.2,0.005bot.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"_DQ_0.2,0.005top.csv")
 # topdata = pd.read_csv("Data/twiss_csv/1252_DQ_3,3top.csv")
 
 
@@ -68,7 +70,7 @@ p0= [0.001,0.00001, 0.00001, 0.00001, 0.00001,0.00001]
 top_fit = curve_fit(pair_rela,[surfdata.k31, surfdata.k32], surfdata.Surface, p0=p0)
 
 
-k31s = np.linspace(0,-4,50)
+k31s = np.linspace(0,-2.5,50)
 k32s = np.linspace(0,-2.5,50)
 k31,k32 = np.meshgrid(k31s,k32s)
 k31 = k31.flatten()
@@ -126,34 +128,50 @@ def energy_tr (gamma_tr):
 
 p0= [0.001,0.00001, 0.00001, 0.00001, 0.00001,0.00001]
 top_fit = curve_fit(pair_rela,[topdata.k31, topdata.k32], energy_tr(topdata.GAMMA_TR), p0=p0)
-bot_fit = curve_fit(pair_rela,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=p0)
+# bot_fit = curve_fit(pair_rela,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=p0)
 
-k31s = np.linspace(0,-2.5,50)
-k32s = np.linspace(0,-2.5,50)
+k31s = np.linspace(0,-2.8,50)
+k32s = np.linspace(0,-2.8,50)
 k31,k32 = np.meshgrid(k31s,k32s)
 k31 = k31.flatten()
 k32 = k32.flatten()
-ax.scatter3D(k31,k32,pair_rela([k31,k32],*top_fit[0]),label="top")
-ax.scatter3D(k31,k32,pair_rela([k31,k32],*bot_fit[0]),label="bot")
+# ax.scatter3D(k31,k32,pair_rela([k31,k32],*top_fit[0]),label="top")
+# ax.scatter3D(k31,k32,pair_rela([k31,k32],*bot_fit[0]),label="DQ= 0.2,0.005")
 ax.scatter3D(topdata.k31, topdata.k32,energy_tr(topdata.GAMMA_TR))
 ax.scatter3D(k31,k32,np.full(len(k31),energy_tr(twiss.GAMMA_TR)),label='centre')
 ax.set_xlabel('k31', fontweight ='bold')
 ax.set_ylabel('k32', fontweight ='bold')
 ax.set_zlabel('Transition Energy (GeV)', fontweight ='bold')
 ax.legend()
-print("order 2 top rmse =",rmse(pair_rela([botdata.k31,botdata.k32],*bot_fit[0]),energy_tr(botdata.GAMMA_TR)))
+print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*top_fit[0]),energy_tr(topdata.GAMMA_TR)))
 
 #%%
 fig = plt.figure(figsize = (10, 7))
 ax = plt.axes(projection ="3d")
-bot_fit = curve_fit(order3,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
-ax.scatter3D(k31,k32,order3([k31,k32],*bot_fit[0]),label="bot")
+ax.scatter3D(k31,k32,np.full(len(k31),energy_tr(twiss.GAMMA_TR)),label='centre')
+top_fit = curve_fit(order3,[topdata.k31, topdata.k32], energy_tr(topdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
+# bot_fit = curve_fit(order3,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
+# ax.scatter3D(k31,k32,order3([k31,k32],*top_fit[0]),label="747")
+# ax.scatter3D(k31,k32,order3([k31,k32],*bot_fit[0]),label="7495")
 ax.scatter3D(topdata.k31, topdata.k32,energy_tr(topdata.GAMMA_TR))
-print("order 3 top rmse =",rmse(order3([botdata.k31,botdata.k32],*bot_fit[0]),energy_tr(botdata.GAMMA_TR)))
+ax.set_xlabel('k31', fontweight ='bold')
+ax.set_ylabel('k32', fontweight ='bold')
+ax.set_zlabel('Transition Energy (GeV)', fontweight ='bold')
+ax.legend()
+print("order 3 top rmse =",rmse(order3([topdata.k31,topdata.k32],*top_fit[0]),energy_tr(topdata.GAMMA_TR)))
+
+#%%
+plt.figure(num="transition energy")
+plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), energy_tr(topdata.GAMMA_TR), s=5)
+plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),energy_tr(twiss.GAMMA_TR)),label='centre')
+plt.xlabel("k31+k32")
+plt.ylabel("Transition energy (GeV)")
+plt.legend()
 #%% transition energy >0.5 GeV
 k31_en=[]
 k32_en=[]
-fit = curve_fit(order3,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
+# fit = curve_fit(order3,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
+fit = curve_fit(order3,[topdata.k31, topdata.k32], energy_tr(topdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
 # fit = curve_fit(pair_rela,[botdata.k31, botdata.k32], energy_tr(botdata.GAMMA_TR), p0=p0)
 # pred_en_tr =pair_rela([k31,k32],*fit[0])
 pred_en_tr =order3([k31,k32],*fit[0])
@@ -272,34 +290,80 @@ ax = plt.axes(projection ="3d")
 
 
 p0= [0.001,0.00001, 0.00001, 0.00001, 0.00001,0.00001]
-top_fit = curve_fit(pair_rela,[topdata.k31, topdata.k32], topdata.DQ1, p0=p0)
-bot_fit = curve_fit(pair_rela,[topdata.k31, topdata.k32], topdata.DQ2, p0=p0)
+DQ1_fit = curve_fit(pair_rela,[topdata.k31, topdata.k32], topdata.DQ1, p0=p0)
+DQ2_fit = curve_fit(pair_rela,[topdata.k31, topdata.k32], topdata.DQ2, p0=p0)
 # bot_fit = curve_fit(pair_rela,[botdata.k31, botdata.k32], botdata.DQ1, p0=p0)
 
-k31s = np.linspace(0,-2.5,50)
-k32s = np.linspace(0,-2.5,50)
+k31s = np.linspace(0,-4,50)
+k32s = np.linspace(0,-2.8,50)
 k31,k32 = np.meshgrid(k31s,k32s)
 k31 = k31.flatten()
 k32 = k32.flatten()
-ax.scatter3D(k31,k32,pair_rela([k31,k32],*top_fit[0]),label="DQ1")
-ax.scatter3D(k31,k32,pair_rela([k31,k32],*bot_fit[0]),label="DQ2")
+# ax.scatter3D(k31,k32,pair_rela([k31,k32],*DQ1_fit[0]),label="DQ1")
+# ax.scatter3D(k31,k32,pair_rela([k31,k32],*DQ2_fit[0]),label="DQ2")
 ax.scatter3D(topdata.k31, topdata.k32,topdata.DQ1)
+ax.scatter3D(topdata.k31, topdata.k32,topdata.DQ2)
 ax.set_xlabel('k31', fontweight ='bold')
 ax.set_ylabel('k32', fontweight ='bold')
 ax.set_zlabel('DQ', fontweight ='bold')
 ax.legend()
-print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*top_fit[0]),topdata.DQ1))
-# print("order 2 bot rmse=",rmse(pair_rela([botdata.k31,botdata.k32],*bot_fit[0]),botdata.DQ1))
+print("order 2 DQ1 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
+print("order 2 DQ2 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
 
+#%%
+plt.figure(num="DQ1")
+plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ1, s=5,label="DQ1")
+plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ2, s=5,label="DQ2")
+plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),0),label='0')
+plt.xlabel("k31+k32")
+plt.ylabel("DQ")
+plt.legend()
 
+#%%
+DQ1_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
+DQ2_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ2, p0=[0,0,0,0,0,0,0,0,0,0])
+k31_DQ, k32_DQ= [],[]
+DQ1_pred = order3([k31,k32],*DQ1_fit[0])
+DQ2_pred = order3([k31,k32],*DQ2_fit[0])
+
+for i in range(len(DQ1_pred)):
+    if DQ1_pred[i]*DQ2_pred[i] >0:
+        k31_DQ.append(k31[i])
+        k32_DQ.append(k32[i])
+        
+#transition energy plot
+fig = plt.figure(figsize = (10, 7))
+ax = plt.axes(projection ="3d")
+top_fit =  curve_fit(order3,[topdata.k31, topdata.k32], energy_tr(topdata.GAMMA_TR), p0=[0,0,0,0,0,0,0,0,0,0])
+# ax.scatter3D(k31,k32,order3([k31,k32],*top_fit[0]),label="top")
+
+ax.scatter3D(topdata.k31, topdata.k32,energy_tr(topdata.GAMMA_TR))
+ax.scatter3D(k31,k32,np.full(len(k31),energy_tr(twiss.GAMMA_TR)),label='centre')
+
+ax.scatter3D(k31_DQ,k32_DQ,order3([np.array(k31_DQ),np.array(k32_DQ)],*top_fit[0]))
+ax.set_xlabel('k31', fontweight ='bold')
+ax.set_ylabel('k32', fontweight ='bold')
+ax.set_zlabel('Transition Energy (GeV)', fontweight ='bold')
+ax.legend()        
+
+# x sum plot
+# top_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.ORBIT_X, p0=[0,0,0,0,0,0,0,0,0,0])
+# bot_fit = curve_fit(order3,[botdata.k31, botdata.k32], botdata.ORBIT_X, p0=[0,0,0,0,0,0,0,0,0,0])
+# fig2 = plt.figure(figsize = (10, 7))
+# ax2 = plt.axes(projection ="3d")
+# ax2.scatter3D(k31,k32,abs(order3([k31,k32],*top_fit[0]))+abs(order3([k31,k32],*bot_fit[0])),label="sum")
+# ax2.scatter3D(k31_DQ,k32_DQ,abs(order3([np.array(k31_DQ),np.array(k32_DQ)],*top_fit[0]))+abs(order3([np.array(k31_DQ),np.array(k32_DQ)],*bot_fit[0])),label="sum")
+# ax2.set_xlabel('k31', fontweight ='bold')
+# ax2.set_ylabel('k32', fontweight ='bold')
+# ax2.set_zlabel('sum of x distance to 0', fontweight ='bold')
 #%% DQ1,2 intersection plot
 k31,k32 = np.meshgrid(k31s,k32s)
-top_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
-bot_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ2, p0=[0,0,0,0,0,0,0,0,0,0])
+DQ1_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
+DQ2_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ2, p0=[0,0,0,0,0,0,0,0,0,0])
 
 fig = go.Figure(data=[
-    go.Surface(z=np.array(order3([k31,k32],*top_fit[0])),x=k31,y=k32,name='DQ1'),
-    go.Surface(z=np.array(order3([k31,k32],*bot_fit[0])),x=k31,y=k32,name='DQ2'),
+    go.Surface(z=np.array(order3([k31,k32],*DQ1_fit[0])),x=k31,y=k32,name='DQ1'),
+    go.Surface(z=np.array(order3([k31,k32],*DQ2_fit[0])),x=k31,y=k32,name='DQ2'),
     go.Surface(z=np.zeros_like(k31),x=k31,y=k32,name='X=0')
                ])
 
@@ -308,22 +372,23 @@ fig.update_layout(title='3D Surface Plot',
                   legend=dict(title='Surfaces'))
 
 fig.show()
-
+print("order 3 DQ1 rmse=",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
+print("order 3 DQ2 rmse=",rmse(order3([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
 
 #%%
-top_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
+DQ1_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
 # bot_fit = curve_fit(order3,[botdata.k31, botdata.k32], botdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
 
 fig = plt.figure(figsize = (10, 7))
 ax = plt.axes(projection ="3d")
-ax.scatter3D(k31,k32,order3([k31,k32],*top_fit[0]),label="top")
-# ax.scatter3D(k31,k32,order3([k31,k32],*bot_fit[0]),label="bot")
+ax.scatter3D(k31,k32,order3([k31,k32],*DQ1_fit[0]),label="top")
+# ax.scatter3D(k31,k32,order3([k31,k32],*DQ2_fit[0]),label="bot")
 ax.scatter3D(topdata.k31, topdata.k32,topdata.DQ1)
 ax.set_xlabel('k31', fontweight ='bold')
 ax.set_ylabel('k32', fontweight ='bold')
 ax.set_zlabel('DQ2', fontweight ='bold')
 ax.legend()
-print("order 3 top rmse =", rmse(order3([topdata.k31,topdata.k32],*top_fit[0]),topdata.DQ1))
+print("order 3 top rmse =", rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 # print("order 3 bot rmse=",rmse(order3([botdata.k31,botdata.k32],*bot_fit[0]),botdata.DQ1))
 
 #%%DQ2
@@ -429,18 +494,19 @@ joint_data=pd.DataFrame(columns=['Unnamed: 0', 'name', 'island', 'k31', 'k32', '
        'ALFX', 'ALPHA_C', 'GAMMA_TR', 'ALPHA_C_P', 'ALPHA_C_P2', 'ALPHA_C_P3',
        'DQ1', 'DQ2', 'ORBIT_X', 'ORBIT_PX'])
 for i in Qxs:
-    data= pd.read_csv("Data/twiss_csv/1252Qx_"+str(i)+"DQ_-3,-3bot.csv")
-    data= data[data.k31==-0.4].iloc[2]
+    data= pd.read_csv("Data/twiss_csv/1252_"+str(i)+"bot.csv")
+    data= data[data.k31==-1.8]#.iloc[2]
     joint_data = joint_data.append(data)
-for value in ["GAMMA_TR", "DQ1", "DQ2"]  :
+for value in ["ORBIT_X","GAMMA_TR", "DQ1", "DQ2"]  :
     plt.figure()
     plt.scatter(Qxs,joint_data[value])
-    fit = np.polyfit(Qxs, joint_data[value],2)
+    fit = np.polyfit(Qxs, joint_data[value],3)
     pfit = np.poly1d(fit)
     Qxx = np.linspace(Qxs[0],Qxs[-1],100)
     plt.plot(Qxx, pfit(Qxx), label=value)
     print(fit)
     plt.xlabel("Qx")
+    plt.ylabel(value)
     plt.legend()
     
 

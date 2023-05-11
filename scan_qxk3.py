@@ -18,7 +18,7 @@ job = "qxk3_dependence_2.madx"
 mad.call(job)
 
 
-#%% bot
+#%% top
 from cpymad.madx import Madx
 import numpy as np
 
@@ -28,29 +28,54 @@ job = "qxk3_dependencee.madx"
 
 FP = [0.0,0.0005]
 
-Qx = [26.748]
+Qx = [26.7495]
 
-k31 = [-1.224] 
+  
 
-k32 = [-1.378] 
+# k31 = [-0.4, -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7] 
 
-island = "bot"
+  
 
+# k32 = [-0.4, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, 
+#         -1.1, -1.1, -1.1, -1.1, -1.1, -1.1, 
+#         -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, 
+#         -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, 
+#         -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, 
+#         -2.7, -2.7, -2.7, -2.7, -2.7, -2.7] 
+
+k31 = [-3]
+k32 = [-2]
+
+island = "top"
+DQ1 = -3.12
+DQ2 = -3.12
+oct1 = "LOE.22002"
+oct2 = "LOE.32002"
+qy = 
 for i in Qx:
     for j in range(len(k31)):
-        with open(job, 'r') as file:
+      with open(job, 'r') as file:
             data = file.read()
             data = data.replace("K3=k_31;!1", "K3="+str(k31[j])+";!1")
             data = data.replace("K3=k_32;!2", "K3="+str(k32[j])+";!2")
             data = data.replace("qx=QX","qx="+ str(i))
+            data = data.replace("dq1_targetvalue=DQ_1","dq1_targetvalue="+ str(DQ1))
+            data = data.replace("dq2_targetvalue=DQ_2","dq2_targetvalue="+ str(DQ2))
+            data = data.replace("oct1", oct1)
+            data = data.replace("oct2",oct2)
 
             with open(job, 'w') as file:
                 file.write(data)
 
             mad.call(job)
 
-            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ=-3,-3"+island+".tfs"
-            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ=-3,-3"+island+".tfs"
+            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
+            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
 
@@ -59,9 +84,12 @@ for i in Qx:
                 data = data.replace("K3="+str(k31[j])+";!1","K3=k_31;!1")
                 data = data.replace("K3="+str(k32[j])+";!2","K3=k_32;!2")
                 data = data.replace("qx="+ str(i),"qx=QX")
+                data = data.replace("dq1_targetvalue="+ str(DQ1),"dq1_targetvalue=DQ_1")
+                data = data.replace("dq2_targetvalue="+ str(DQ2),"dq2_targetvalue=DQ_2")
+                data = data.replace(oct1, "oct1")
+                data = data.replace(oct2,"oct2")
             with open(job, 'w') as file:
                 file.write(data)
-                
 #%% top
 from cpymad.madx import Madx
 import numpy as np
@@ -72,29 +100,53 @@ job = "qxk3_dependence_2.madx"
 
 FP = [0.0,0.0005]
 
-Qx = [26.748]
+Qx = [26.7495]
 
-k31 = [-1.224] 
 
-k32 = [-1.378] 
+# k31 = [-0.4, -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+#        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7] 
 
+  
+
+# k32 = [-0.4, -0.7, -0.7, -0.7, -0.7, -0.7, -0.7, 
+#        -1.1, -1.1, -1.1, -1.1, -1.1, -1.1, 
+#        -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, 
+#        -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, 
+#        -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, 
+#        -2.7, -2.7, -2.7, -2.7, -2.7, -2.7] 
+
+k31 = [-3.8,-3.7, -3.9, -3.5, -4, -3.4]
+k32 = [-3.8,-3.7, -3.5, -3.8, -2.3, -4]
+
+DQ1 = 4
+DQ2 = 0.005
 island = "top"
 
+oct1 = "LOE.12002"
+oct2 = "LOEN.52002"
 for i in Qx:
     for j in range(len(k31)):
-        with open(job, 'r') as file:
+      with open(job, 'r') as file:
             data = file.read()
             data = data.replace("K3=k_31;!1", "K3="+str(k31[j])+";!1")
             data = data.replace("K3=k_32;!2", "K3="+str(k32[j])+";!2")
             data = data.replace("qx=QX","qx="+ str(i))
+            data = data.replace("dq1_targetvalue=DQ_1","dq1_targetvalue="+ str(DQ1))
+            data = data.replace("dq2_targetvalue=DQ_2","dq2_targetvalue="+ str(DQ2))
+            data = data.replace("oct1", oct1)
+            data = data.replace("oct2",oct2)
 
             with open(job, 'w') as file:
                 file.write(data)
 
             mad.call(job)
 
-            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ=-3,-3"+island+".tfs"
-            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ=-3,-3"+island+".tfs"
+            twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
+            twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
             os.rename("ptc_twiss.tfs", twiss_newname)
             os.rename("ptc_twiss_summ.tfs", twissum_newname)
 
@@ -103,6 +155,10 @@ for i in Qx:
                 data = data.replace("K3="+str(k31[j])+";!1","K3=k_31;!1")
                 data = data.replace("K3="+str(k32[j])+";!2","K3=k_32;!2")
                 data = data.replace("qx="+ str(i),"qx=QX")
+                data = data.replace("dq1_targetvalue="+ str(DQ1),"dq1_targetvalue=DQ_1")
+                data = data.replace("dq2_targetvalue="+ str(DQ2),"dq2_targetvalue=DQ_2")
+                data = data.replace(oct1, "oct1")
+                data = data.replace(oct2,"oct2")
             with open(job, 'w') as file:
                 file.write(data)
 #%% anothe DQ value
@@ -160,15 +216,33 @@ os.rename("ptc_twiss_summ.tfs", twissum_newname)
 #%%  more renaminh
 FP = [0.0,0.0005]
 
-Qx = [26.7485]#26.7485, 26.749,26.7495]
-k31 = [-3.5,-3.0,-2.5]#-0.6,-0.9,-1.2, -1.5,-1.8,-2.2,-2.3,-2.4
-k32 = [-3.5,-3.5,-3.5]
+Qx = [26.7495]#26.7485, 26.749,26.7495]
+k31 = [-0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+       -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+       -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+       -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+       -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
+       -0.7, -1.1, -1.5, -1.9, -2.3, -2.7] 
+
+  
+
+k32 = [-0.7, -0.7, -0.7, -0.7, -0.7, -0.7, 
+       -1.1, -1.1, -1.1, -1.1, -1.1, -1.1, 
+       -1.5, -1.5, -1.5, -1.5, -1.5, -1.5, 
+       -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, 
+       -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, 
+       -2.7, -2.7, -2.7, -2.7, -2.7, -2.7] 
+DQ1 = 1
+DQ2 = 0.005
+island = "top"
+
+
 for i in Qx:
     for j in range(len(k31)):
-        twiss_name= "twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"top.tfs"
-        twissum_name = "twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"top.tfs"
-        twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ=-3,-3top.tfs"
-        twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ=-3,-3top.tfs"
+        twiss_newname="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(26.747)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
+        twissum_newname="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(26.747)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
+        twiss_name="twiss.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
+        twissum_name="twissum.oct=LOE.12002,LOEN.52002"+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ="+str(DQ1)+','+str(DQ2)+island+".tfs"
         
         os.rename(twiss_name, twiss_newname)
         os.rename(twissum_name, twissum_newname)

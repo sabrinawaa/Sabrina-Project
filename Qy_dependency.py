@@ -42,14 +42,15 @@ def rmse(expected,observed):
     return np.sqrt(np.mean(diff**2))
 #%%
 
-topdata= pd.read_csv("Data/twiss_csv/1252_7495_-1.378,-1.531DQ_-3,-3Qy_after_top.csv").reset_index()
+topdata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv").reset_index()
 # centdata=pd.read_csv("Data/twiss_csv/1252_DQ_3.12,2after_cent.csv")
-topdata = topdata.drop(index=2)
-topdata = topdata.drop(index=9)
+# topdata = topdata.drop(index=2)
+# topdata = topdata.drop(index=9)
 # topdata = topdata.drop(index=22)
 
 plt.scatter(topdata.Qy,topdata.DQ1,s=5,label="DQ1 island")
 plt.scatter(topdata.Qy,topdata.DQ2,s=5,label="DQ2 island")
+# plt.scatter(topdata.Qy,topdata.GAMMA_TR,s=5,label="GAMMA_TR")
 
 # plt.scatter(centdata.Qy,centdata.DQ1,s=5,label="DQ1 centre")
 # plt.scatter(centdata.Qy,centdata.DQ2,s=5,label="DQ2 centre")
@@ -60,3 +61,5 @@ plt.legend()
 
 # print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 # # print("order 3 top rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
+
+#%%

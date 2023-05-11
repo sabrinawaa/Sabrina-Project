@@ -25,13 +25,13 @@ no_particles=270
 no_turns=2048
 
 #%%
-twissname=["Data/twiss_csv/747cent_twiss.csv"]
+twissname="Data/twiss_csv/1252_cents.csv"
 
-twiss=pd.read_csv(twissname[island])
-twiss=twiss[twiss["k3"]==0.6]
-twiss=twiss.iloc[[0]]
+twiss=pd.read_csv(twissname)
+Qx=float(26.7495)
+twiss=twiss[twiss["Qx"]==Qx] 
 #%%
-folder="Data/1252DQ_-3,-3track/Qx=7495/"
+folder="Data/1252DQ_2,0.005_track/Qx=7495/"
 xns=[]
 tunes=[]
 pxns=[]
@@ -45,7 +45,7 @@ for i in range (1,no_particles+1):
     # else:
     #     name=folder+"track.obs0001.p"+str(i)
     # name = folder + "32track.no=" + str(i)
-    name =folder+ "track.oct=LOE.12002,LOEN.52002k3=-1.224,-1.071no=" + str(i)
+    name =folder+ "track.oct=LOE.12002,LOEN.52002k3=-2.3,-1.3no=" + str(i)
     # name = folder+ "track.oct=LOE.32002,LOEN.52002k3=-2.4,-2.4no=" + str(i)
     plt.figure(num='1')
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
@@ -223,7 +223,7 @@ for i in [1]:
     # name=folder[island]+"track.oct="+oct_names[0]+"k3=0.6no="+str(i)
     # name = folder + "32track.no=" + str(i+1)
     # name = folder+ "track.oct=LOE.12002,LOEN.52002k3=-1.635,-1.25no=" + str(i)
-    name = folder+"track.oct=LOE.12002,LOEN.52002k3=-1.224,-1.071no=" + str(i)
+    name = folder+"track.oct=LOE.12002,LOEN.52002k3=-2.3,-1.3no=" + str(i)
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)

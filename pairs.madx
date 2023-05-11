@@ -1,4 +1,4 @@
- !system,"[ ! -e sps ] && [ -d /afs/cern.ch/eng/acc-models/sps/2021 ] && ln -nfs /afs/cern.ch/eng/acc-models/sps/2021 sps";
+!system,"[ ! -e sps ] && [ -d /afs/cern.ch/eng/acc-models/sps/2021 ] && ln -nfs /afs/cern.ch/eng/acc-models/sps/2021 sps";
  !system,"[ ! -e sps ] && git clone https://gitlab.cern.ch/acc-models/acc-models-sps -b 2021 sps";
 
 option, -echo;
@@ -12,12 +12,12 @@ use,sequence=sps;
 
 !twiss;
 
-LOE.12002, K3=k_31;!1
-LOEN.52002, K3=k_32;!2
+oct1, K3=k_31;
+oct2, K3=k_32;
 
 call,file="sps/toolkit/macro.madx";
 qx=QX; ! originally 26.62
-qy=26.58;
+qy=QY;
 
 exec, sps_match_tunes(qx,qy);
 
@@ -43,32 +43,34 @@ sps_match_chroma(dq1_target_value,dq2_target_value) : macro = {
  endmatch;
 };
 
-dq1_targetvalue=DQ_1;
-dq2_targetvalue=DQ_2;
+dq1_targetvalue=DQ_1; !was3.12
+dq2_targetvalue=DQ_2; !was 2
 exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
 
 select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 twiss,file="sps.tfs";
 
+
 seqedit,sequence=sps;
 cycle,start=KIK.11654;
 endedit;
 
-sps4: sequence, refer = entry, L = 27646.0152;
-sps, at=0.0;
-sps, at=6911.5038;
-sps, at=13823.0076;
-sps, at=20734.5114;
-endsequence;
-
-use,sequence=sps4;
-
+use,sequence=sps;
 ptc_create_universe; 
-ptc_create_layout,model=1,method=6,nst=10,exact;
+ptc_create_layout,model=2,method=6,nst=10,exact;
 
-select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
+n=0.009; !was 0.009
+while (n < 0.029) {
+ptc_start, x=n , px =0, y= 0, py=0;
+n=n+0.00125;
+}
 
-ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.008,px=0.0017,no=4,icase=56; 
 
+
+ptc_track,icase=4,closed_orbit,dump,
+turns=4096,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+
+
+
+ptc_track_end;
 ptc_end;
-

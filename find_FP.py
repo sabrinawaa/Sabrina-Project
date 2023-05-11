@@ -26,7 +26,7 @@ alfa = 1.728756478
 oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
 
 strengths=[-0.6]
-no_particles=20
+no_particles=8
 no_turns=2048
 colors= ['r','g','b']
 
@@ -39,7 +39,7 @@ for k in oct_names:
     for j in range(len(strengths)):
         for i in range (1,no_particles+1):
             
-            name="Data/25single/track.oct="+str(k)+"k3=" +str(strengths[j])+"no="+str(i)
+            name="Data/75island_k3/track.oct="+str(k)+"k3=" +str(strengths[j])+"no="+str(i)
           
             plt.figure(num=k)
             track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
@@ -51,14 +51,14 @@ for k in oct_names:
             
             plt.scatter(track.X,track.PX,marker='.',s=0.1,label= "k3="+str(strengths[j]))
             # plt.scatter(xnn,pxnn,marker='.',s=0.1)
-            plt.xlabel("X")
-            plt.ylabel("p_X")
+            plt.xlabel("x (m)")
+            plt.ylabel("$p_x $ (rad)")
             # plt.legend()
             
 #%%pairs
-oct_names=["LOE.12002","LOEN.52002"]
-strengths=[-2.4]#,-0.9,-1.2,-1.5,-1.8,-2.1]
-no_particles=16
+oct_names=["LOE.32002","LOEN.52002"]
+strengths=[0.6]#,-0.9,-1.2,-1.5,-1.8,-2.1]
+no_particles=8
 no_turns=2048
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
@@ -66,19 +66,21 @@ for a in range (len(oct_names)):
             print (oct_names[k],oct_names[a])
             for j in range(len(strengths)):
                 for i in range (1,no_particles+1):
-                    name="Data/1252Qx_748/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+"no="+str(i)
+                    # name="Data/75pairs/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(strengths[j])+','+ str(strengths[j])+"no="+str(i)
+                    name="Data/75_pair3252/track.oct="+oct_names[k]+","+oct_names[a]+"k3=" + str(strengths[j])+"no="+str(i)
                     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
                     track = track.drop(index = 0,columns="*")
                     track = track.astype(np.float64)
                     
                     plt.figure(num=oct_names[k]+oct_names[a])
                     plt.scatter(track.X,track.PX,marker='.',s=0.1)
-                    plt.xlabel("X")
-                    plt.ylabel("p_X")
+                    plt.xlabel("x (m)")
+                    plt.ylabel("$p_x $(rad)")
 #%% triplets       
-oct_names=["LOE.12002","LOE.32002","LOEN.52002"]
-strengths=[-0.9,-1.2,-1.5,-1.8,-2.1]
-no_particles=20
+oct_names=["LOE.12002","LOE.22002","LOE.32002","LOEN.52002"]
+strengths=[-0.9]
+no_particles=16
+no_turns=2048
 for b in range (len(oct_names)):
     for a in range (len(oct_names)):
         if b>a:
@@ -87,16 +89,19 @@ for b in range (len(oct_names)):
                     print (oct_names[k],oct_names[a],oct_names[b])
                     for j in range(len(strengths)):
                         for i in range (1,no_particles+1):
-                            name="Data/25_123252_negk3/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
+                            # name="Data/25_123252_negk3/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
+                            # name="Data/25DQ_-3.12trackpairs,triplets/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+','+ str(strengths[j])+"no="+str(i)
+                            
+                            name="Data/75DQ_-3.12trackpairs,triplets/track.oct="+oct_names[k]+","+oct_names[a]+","+oct_names[b]+"k3=" +str(strengths[j])+"no="+str(i)
                             track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
                             track = track.drop(index = 0,columns="*")
                             track = track.astype(np.float64)
                             
-                            # plt.figure(num=oct_names[k]+oct_names[a]+oct_names[b])
-                            plt.figure(num=str(j))
+                            plt.figure(num=oct_names[k]+oct_names[a]+oct_names[b])
+                            # plt.figure(num=str(j))
                             plt.scatter(track.X,track.PX,marker='.',s=0.1)
-                            plt.xlabel("X")
-                            plt.ylabel("p_X")
+                            plt.xlabel("x (m)")
+                            plt.ylabel("$p_x $(rad)")
 #%%all4
 no_particles=8
 for i in range (1,no_particles+1):

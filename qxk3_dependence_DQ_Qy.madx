@@ -12,10 +12,15 @@ use,sequence=sps;
 
 !twiss;
 
-oct1, K3=k_31;
-oct2, K3=k_32;
+oct1, K3=k_31;!1
+oct2, K3=k_32;!2
 
 call,file="sps/toolkit/macro.madx";
+
+qx=QX; ! originally 26.62
+qy=QY;
+
+exec, sps_match_tunes(qx,qy);
 
 ! to set the chromaticity using knob in LSA 
 exec,sps_define_sext_knobs;
@@ -24,8 +29,6 @@ exec,sps_set_chroma_weights_ft;
 ! the qph and qpv correspond to normalized chromaticity
 qph_setvalue = +0.1;
 qpv_setvalue = +0.0;
-
-
 
 
 
@@ -43,10 +46,7 @@ dq1_targetvalue=DQ_1;
 dq2_targetvalue=DQ_2;
 exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
 
-qx=QX; ! originally 26.62
-qy=QY;
 
-exec, sps_match_tunes(qx,qy);
 
 
 select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
@@ -70,7 +70,7 @@ ptc_create_layout,model=1,method=6,nst=10,exact;
 
 select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 
-ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=0.0,px=0.0015,no=4,icase=56; 
+ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.02,px=0.002,no=4,icase=56; 
 
 ptc_end;
 

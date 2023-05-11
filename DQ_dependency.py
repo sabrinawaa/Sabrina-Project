@@ -41,15 +41,15 @@ def rmse(expected,observed):
     diff= observed-expected
     return np.sqrt(np.mean(diff**2))
 
-# twissname="Data/twiss_csv/1252_748cent.csv"
+twissname="Data/twiss_csv/1252_cents.csv"
+twiss=pd.read_csv(twissname)
+Qx=float(26.7485)
+twiss=twiss[twiss["Qx"]==Qx]
 
-# twiss=pd.read_csv(twissname)
-
-# twiss=twiss.iloc[[0]]
-
-topdata= pd.read_csv("Data/twiss_csv/1252_-1.08,-0.85DQ_top.csv")
+topdata= pd.read_csv("Data/twiss_csv/1252_-1.388,-1.735DQ_top.csv")
 # topdata = topdata[topdata.DQ1<1000]
 
+#%%
 fig = plt.figure(figsize = (10, 7))
 ax = plt.axes(projection ="3d")
 
@@ -93,9 +93,11 @@ ax.set_xlabel('centre DQ1', fontweight ='bold')
 ax.set_ylabel('centre DQ2', fontweight ='bold')
 ax.set_zlabel('Island DQ', fontweight ='bold')
 ax.legend()
-
+# 
 print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
-# print("order 3 top rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
+print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
+# print("order 3 top DQ1 rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
+# print("order 3 top DQ1 rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
 
 #%%
 dq11,dq21 = np.meshgrid(np.linspace(-4,-0.005,50),np.linspace(-4,-0.005,50))
@@ -159,6 +161,7 @@ ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ1_fit[0]),label="gamma_Tr")
 # ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ2_fit[0]),label="Island DQ2")
 # ax.scatter3D(dq1, dq2,np.full(len(dq1),0),label="0")
 ax.scatter3D(topdata.cent_DQ1, topdata.cent_DQ2,topdata.GAMMA_TR)
+ax.scatter3D(dq1,dq2,np.full(len(dq1),twiss.GAMMA_TR),label='centre')
 # ax.scatter3D(topdata.cent_DQ1, topdata.cent_DQ2,topdata.DQ2)
 ax.set_xlabel('centre DQ1', fontweight ='bold')
 ax.set_ylabel('centre DQ2', fontweight ='bold')
@@ -167,9 +170,9 @@ ax.legend()
 
 print("order 2 top rmse =",rmse(pair_rela([topdata.cent_DQ1, topdata.cent_DQ2],*DQ1_fit[0]),topdata.GAMMA_TR))
 
-DQ1_fit = curve_fit(order3,[topdata.cent_DQ1, topdata.cent_DQ2], topdata.GAMMA_TR, p0= [0.001,0.00001, 0.00001, 0.00001, 0.00001,0.00001,0,0,0,0])
-ax.scatter3D(dq1, dq2,order3([dq1,dq2],*DQ1_fit[0]),label="order3")
-print("order 3 top rmse =",rmse(order3([topdata.cent_DQ1, topdata.cent_DQ2],*DQ1_fit[0]),topdata.GAMMA_TR))
+# DQ1_fit = curve_fit(order3,[topdata.cent_DQ1, topdata.cent_DQ2], topdata.GAMMA_TR, p0= [0.001,0.00001, 0.00001, 0.00001, 0.00001,0.00001,0,0,0,0])
+# ax.scatter3D(dq1, dq2,order3([dq1,dq2],*DQ1_fit[0]),label="order3")
+# print("order 3 top rmse =",rmse(order3([topdata.cent_DQ1, topdata.cent_DQ2],*DQ1_fit[0]),topdata.GAMMA_TR))
 
 #%%
 DQ1data= topdata[topdata.cent_DQ2==1]
