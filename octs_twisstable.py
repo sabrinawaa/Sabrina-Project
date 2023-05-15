@@ -80,20 +80,20 @@ alldata.to_csv("Data/twiss_csv/islands_twiss.csv")
 #%%pairs
 # oct_names=["LOE.12002,LOE.22002","LOE.12002,LOE.32002","LOE.22002,LOE.32002"]#25 config
 # oct_names=["LOE.22002,LOEN.52002","LOE.32002,LOEN.52002"]#75 config
-oct_names=["LOE.12002,LOEN.52002"]
 
-strengths=[-2.5]
-Qx=[26.7485]
-islands=["top"]#,"bot"]
+oct_names=["LOE.12002,LOE.22002","LOE.22002,LOE.32002","LOE.12002,LOE.32002","LOE.22002,LOEN.52002","LOE.32002,LOEN.52002"]
+strengths=[-1.8, 1.8]
+Qx=[26.747]
+islands=["cent"]#,"bot"]
 
-alldata=pd.DataFrame(columns=['name', 'island','k3', 'Qx','max_X','BETX', 'ALFX', 'ALPHA_C', 'ALPHA_C_P', 'ALPHA_C_P2',
+alldata=pd.DataFrame(columns=['name', 'island','k3', 'Qx','max_X','BETX', 'ALFX', 'ALPHA_C','GAMMA_TR', 'ALPHA_C_P', 'ALPHA_C_P2',
         'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 for k in oct_names:
     for qx in Qx:
             for j in range(len(strengths)):
                 for i in range(len(islands)):
-                    twiss_name="Data/1252_negk3_twiss/twiss.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
-                    twissum_name="Data/1252_negk3_twiss/twissum.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
+                    twiss_name="Data/pair_twiss_cent/twiss.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
+                    twissum_name="Data/pair_twiss_cent/twissum.oct="+k+"k3=" +str(strengths[j])+"Qx="+str(qx)+islands[i]+".tfs"
                     
                     twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
                     twiss=twiss.drop(index=0)
@@ -102,7 +102,7 @@ for k in oct_names:
                     twiss_sum=pd.read_fwf(twissum_name,skiprows=6)
                     twiss_sum=twiss_sum.drop(index=0,columns='*')
                     
-                    data=twiss_sum.loc[:,twiss_sum.columns.isin([ 'ALPHA_C', 'ALPHA_C_P','ALPHA_C_P2','ALPHA_C_P3','DQ1','DQ2','ORBIT_X','ORBIT_PX'])].astype(np.float64)
+                    data=twiss_sum.loc[:,twiss_sum.columns.isin([ 'ALPHA_C','GAMMA_TR', 'ALPHA_C_P','ALPHA_C_P2','ALPHA_C_P3','DQ1','DQ2','ORBIT_X','ORBIT_PX'])].astype(np.float64)
                     data.insert(0,"name",k)
                     data.insert(1,"k3",strengths[j])
                     data.insert(2,"Qx",qx)
@@ -170,7 +170,7 @@ for k in oct_names:
 alldata= alldata[abs(alldata.ORBIT_PX)>1e-10]
 
 #%%
-alldata.to_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv")
+alldata.to_csv("Data/twiss_csv/pairs_cent.csv")
 #%%
 Qx = [26.747, 26.748, 26.7485, 26.749, 26.7495]
 for qx in Qx:
@@ -187,11 +187,12 @@ plt.legend()
 # alldata=pd.DataFrame(columns=['name', 'island','k31','k32','cent_DQ1','cent_DQ2','Qx','max_X','BETX', 'ALFX', 'ALPHA_C','GAMMA_TR', 'ALPHA_C_P', 'ALPHA_C_P2',
 #         'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 
-oct_names=["LOE.12002,LOEN.52002"]
+oct_names=["LOE.32002,LOEN.52002"]
 
 
-Qx = [26.7495]
 
+Qx = [26.247]
+\
 # k31 = [ -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
 #         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
 #         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
@@ -206,15 +207,21 @@ Qx = [26.7495]
 #         -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, 
 #         -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, 
 #         -2.7, -2.7, -2.7, -2.7, -2.7, -2.7]
-k31=[-4]
-k32 = [-2.5]
-# k31 = [-3.8,-3.7, -3.9, -3.5, -4, -3.4]
-# k32 = [-3.8,-3.7, -3.5, -3.8, -2.3, -4]
+k31 = [-0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3,
+       -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4,
+       -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6,
+       -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7,
+       -1. , -1.3, -1.6, -1.9, -2.2]
+
+k32 = [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.7, -0.7, -0.7, -0.7,
+       -0.7, -0.7, -0.7, -1. , -1. , -1. , -1. , -1. , -1. , -1. , -1.3,
+       -1.3, -1.3, -1.3, -1.3, -1.3, -1.3, -1.6, -1.6, -1.6, -1.6, -1.6,
+       -1.6, -1.6, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -2.2, -2.2,
+       -2.2, -2.2, -2.2, -2.2, -2.2]
 
 
-
-DQ1 = [1]
-DQ2 = [0.005]
+DQ1 = [3.12]
+DQ2 = [2]
 
 #[-2.0 , -2.1, -2.2, -2.3, -2.4,  0.0 ,  0.0 ,  0.0 ,  0.0 ,  0.0,2.4, -2.3, -2.2, -2.1, -2.0 , 
 # -1.9, -1.8, -1.7, -1.6, -1.1, -1, -1.3, -1.2, -1.5, -1.8,-2.1, -2.2, -2.3, -2.4,-2.5] 
@@ -230,8 +237,8 @@ for k in oct_names:
             for j in range(len(k31)):
                 for dq_idx in range (len(DQ1)):
                     for i in range(len(islands)):
-                        twiss_name="Data/1252DQ_1,0.005_twiss/twiss.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
-                        twissum_name="Data/1252DQ_1,0.005_twiss/twissum.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
+                        twiss_name="twiss.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
+                        twissum_name="twissum.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
                         
                         twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
                         twiss=twiss.drop(index=0)

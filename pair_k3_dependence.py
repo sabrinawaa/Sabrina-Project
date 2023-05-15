@@ -9,10 +9,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-import plotly.graph_objects as go
-import plotly.io as pio
+# import plotly.graph_objects as go
+# import plotly.io as pio
 # from scipy.stats import chisquare
-pio.renderers.default='browser'
+# pio.renderers.default='browser'
 
 
 def normalise (x,px,alf,beta):
@@ -494,7 +494,7 @@ joint_data=pd.DataFrame(columns=['Unnamed: 0', 'name', 'island', 'k31', 'k32', '
        'ALFX', 'ALPHA_C', 'GAMMA_TR', 'ALPHA_C_P', 'ALPHA_C_P2', 'ALPHA_C_P3',
        'DQ1', 'DQ2', 'ORBIT_X', 'ORBIT_PX'])
 for i in Qxs:
-    data= pd.read_csv("Data/twiss_csv/1252_"+str(i)+"bot.csv")
+    data= pd.read_csv("Data/twiss_csv//1252_csv/1252_"+str(i)+"bot.csv")
     data= data[data.k31==-1.8]#.iloc[2]
     joint_data = joint_data.append(data)
 for value in ["ORBIT_X","GAMMA_TR", "DQ1", "DQ2"]  :
