@@ -21,17 +21,17 @@ def normalise (x,px,alf,beta):
 #%%
 oct_names=["LOE.12002,LOE.32002,LOEN.52002","LOE.22002,LOE.32002,LOEN.52002"]
 island=0
-no_particles=270
+no_particles=7774
 no_turns=2048
 
 #%%
 twissname="Data/twiss_csv/1252_cents.csv"
 
 twiss=pd.read_csv(twissname)
-Qx=float(26.7495)
+Qx=float(26.747)
 twiss=twiss[twiss["Qx"]==Qx] 
 #%%
-folder="Data/1252DQ_2,0.005_track/Qx=7495/"
+folder="Data/SQ32/"
 xns=[]
 tunes=[]
 pxns=[]
@@ -44,13 +44,14 @@ for i in range (1,no_particles+1):
     #     name=folder+"track.obs0001.p0"+str(i)
     # else:
     #     name=folder+"track.obs0001.p"+str(i)
-    # name = folder + "32track.no=" + str(i)
-    name =folder+ "track.oct=LOE.12002,LOEN.52002k3=-2.3,-1.3no=" + str(i)
+    name = folder + "32track.no=" + str(i)
+    # name =folder+ "track.oct=LOE.12002,LOEN.52002k3=-2.3,-1.3no=" + str(i)
     # name = folder+ "track.oct=LOE.32002,LOEN.52002k3=-2.4,-2.4no=" + str(i)
+
     plt.figure(num='1')
-    # track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
-    # track = track.drop(index = 0,columns="*")
-    # track = track.astype(np.float64)
+    track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+    track = track.drop(index = 0,columns="*")
+    track = track.astype(np.float64)
     # plt.scatter(track.X,track.PX,marker='.',s=0.1)
 
     plt.xlabel("x (m)")
@@ -63,9 +64,9 @@ for i in range (1,no_particles+1):
     # plt.scatter(x4,px4,marker='.',s=0.1)
     
     
-    # xns.append(track.X[1])
+    xns.append(track.X[1])
    
-    # pxns.append(track.PX[1])
+    pxns.append(track.PX[1])
     # plt.scatter(xns,pxns,s=10)
     # plt.figure(num = "2")
     # x4n,px4n = normalise(x4,px4,float(twiss.ALFX),float(twiss.BETX))
@@ -73,8 +74,8 @@ for i in range (1,no_particles+1):
     
     
     
-    # Qx=fn.fft_tune(x4,px4,float(twiss.ALFX),float(twiss.BETX))
-    # tunes.append(Qx)
+    Qx=fn.fft_tune(x4,px4,float(twiss.ALFX),float(twiss.BETX))
+    tunes.append(Qx)
     
    
     
@@ -94,26 +95,26 @@ x0i=[]
 px0i=[]
 tunei=[]
 for a in range(len(xns)):
-     if abs(tunes[a]-0.75)<0.0002:
+     if abs(tunes[a]-0.75)<0.00002:
          x0i.append(xns[a])
          px0i.append(pxns[a])
          tunei.append(tunes[a])
          
 fig2,ax2=plt.subplots()
-for i in range (1,no_particles+1):
-    # if i <10:
-    #     name=folder+"track.obs0001.p000"+str(i)
-    # elif 9<i<100:   
-    #     name=folder+"track.obs0001.p00"+str(i)
-    # elif 99<i<1000:
-    #     name=folder+"track.obs0001.p0"+str(i)
-    # else:
-    #     name=folder+"track.obs0001.p"+str(i)    
-    name = folder + "32track.no=" + str(i)
-    track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
-    track = track.drop(index = 0,columns="*")
-    track = track.astype(np.float64)
-    # imm=ax2.scatter(track.X,track.PX,marker='.',s=0.01)
+# for i in range (1,no_particles+1):
+#     # if i <10:
+#     #     name=folder+"track.obs0001.p000"+str(i)
+#     # elif 9<i<100:   
+#     #     name=folder+"track.obs0001.p00"+str(i)
+#     # elif 99<i<1000:
+#     #     name=folder+"track.obs0001.p0"+str(i)
+#     # else:
+#     #     name=folder+"track.obs0001.p"+str(i)    
+#     name = folder + "32track.no=" + str(i)
+#     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+#     track = track.drop(index = 0,columns="*")
+#     track = track.astype(np.float64)
+#     # imm=ax2.scatter(track.X,track.PX,marker='.',s=0.01)
     
 im2=ax2.scatter(x0i,px0i,s=1,c=tunei,cmap=plt.cm.jet)
 
@@ -121,7 +122,7 @@ plt.xlabel("X0")
 plt.ylabel("Px0")
 
 
-fig.colorbar(im2, ax=ax2)
+fig2.colorbar(im2, ax=ax2)
 
 #%% all points between separatrices
 x0is=[]
@@ -179,10 +180,10 @@ plt.ylabel('area')
 plt.xlabel('tolerance')
 
  #%% find separatrix
-idx=[]
-for a in range(len(xns)):
-     if abs(tunes[a]-0.75)<0.000008 and abs(tunes[a]-0.75)>0.000002:
-         idx.append(a)
+idx=[3253]
+# for a in range(len(xns)):
+#      if abs(tunes[a]-0.75)<0.0000186 and abs(tunes[a]-0.75)>0.0000185:
+#          idx.append(a)
          
 for i in idx:
     # if i <10:
@@ -199,8 +200,10 @@ for i in idx:
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)        
         
-    plt.scatter(track.X,track.PX,marker='.',s=0.1)
+    plt.scatter(track.X,track.PX,marker='.',s=0.15)
     plt.scatter(0,0,marker='x',s=10) 
+    plt.xlabel("x (m)")
+    plt.ylabel("$p_x $(rad)")
      
 
 
