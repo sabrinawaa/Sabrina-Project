@@ -75,14 +75,14 @@ def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
     r0 = np.sqrt(((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2))
     return (1+ delta_r / r0) **2  
 #%%
-twissname="Data/twiss_csv/cent_twiss.csv"
+twissname="Data/twiss_csv/747cent_twiss.csv"
 
 twiss=pd.read_csv(twissname)
 twiss=twiss[twiss["k3"]==0.6]
 twiss=twiss.iloc[[0]]
 
 twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.2]
 twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
@@ -101,7 +101,7 @@ offset = 0.008
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=7800 #7774
 no_turns=2048
-folder="submit/1252sq_k3_-2.5qx_26.7485/"
+folder="submit/1252sq_k3_-2.2qx_26.7485/"
 # stds = np.linspace(std*0.5, std*1.5, 50)
 stds = np.linspace(0.0001,0.0011,80)
 offsets = np.linspace(offset*0.5, offset *1.5, 50)
@@ -189,8 +189,10 @@ plt.ylabel("momentum offset")
 #%%
 plt.figure()
 gamma = float((1+twiss.ALFX**2)/twiss.BETX)
-emm_norm_fin = float(twiss.BETX) * gamma * np.array(emm_grid)
-emm_norm_ini = float(twiss.BETX) * gamma * np.array(emm_inis)
+def emm_norm(emm):
+    return  float(twiss.BETX) * gamma * np.array(emm)
+emm_norm_fin = emm_norm(emm_grid)
+emm_norm_ini = emm_norm(emm_inis)
 
 plt.scatter(emm_norm_ini,offs_grid,c=emm_norm_fin,s=10,cmap=plt.cm.jet)
 plt.colorbar(label="final normalised emittance [m rad]")
@@ -224,15 +226,45 @@ plt.scatter(xx,pxx,c=weights,s=1,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.scatter(twiss_FP.ORBIT_X, twiss_FP.ORBIT_PX, marker='x', s=10)
 #%%
+std = 0.000467
+uncertainty= []
+
+steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
+
+for k in std_grid[::10]:
+    em_fin=[]
+    for i in steps:
+        weights = []
+        xn0_sliced = xn0[::i]
+        pxn0_sliced = pxn0[::i]
+        xn_fin_sliced = xn_fin[::i]
+        pxn_fin_sliced = pxn_fin[::i]
+        
+        for j in range (len(xn0_sliced)):
+            weighti = gaussian(xn0_sliced[j],xn_fp,k) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,k) * delta_pxn
+            weights.append(weighti)
+        em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
+        
+    uncertainty.append((max(abs(em_fin[:3]-em_fin[0]))-min(abs(em_fin[:3]-em_fin[0])))/em_fin[0])    
+    plt.figure(num=k)    
+    plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+    plt.xlabel("No. of Initial Conditions")
+    plt.ylabel("Final Normalised Emittance (m rad)")
+    plt.xscale("log")
+    plt.legend()
+
+           
+#%%
 plt.figure(num="growth")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
+plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.747, Surface=3.316e-05,Foc_Err=1.0234")
-plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.7485, Surface=4.374e-05,Foc_Err=1.0425")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.7485, Surface=4.374e-05,Foc_Err=1.0425")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.747, Surface=4.853e-05,Foc_Err=1.0369")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.746, Surface=3.739e-05 ,Foc_Err=1.0261")
+plt.errorbar(emm_norm_ini, emm_inc,yerr = emm_inc*uncertainty,elinewidth=0.2)
 
-plt.xlabel("normalised initial emittance")
-plt.ylabel("emittance growth")
+plt.xlabel("Normalised Initial Emittance (m rad)")
+plt.ylabel("Emittance Growth")
 plt.legend()
 #%%
 plt.scatter(offs_grid, emm_inc,s=1)
@@ -269,9 +301,7 @@ ytrial= gaussian (xtrial,0,0.1)
 weight =ytrial*(xtrial[1]-xtrial[0])
 print(np.sqrt(sum(xtrial**2*weight)))
 
-#%%
-       
-#%%
+
 xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
                            float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
 
