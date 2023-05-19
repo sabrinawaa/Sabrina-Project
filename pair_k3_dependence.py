@@ -47,14 +47,23 @@ twissname="Data/twiss_csv/1252_cents.csv"
 twiss=pd.read_csv(twissname)
 Qx=float(26.7495)
 twiss=twiss[twiss["Qx"]==Qx] 
+# twiss.GAMMA_TR = 22.8701# for Qx=247
+# twiss.GAMMA_TR = 22.8711# for Qx=248
+# twiss.GAMMA_TR = 22.8715# for Qx=2485
+# twiss.GAMMA_TR = 22.87202 # for 249
+# twiss.GAMMA_TR = 22.87250516 # for 2495
+# twiss.GAMMA_TR = 22.874 # for 251
+
 #%%
-topdata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv")
+# topdata= pd.read_csv("Data/twiss_csv/1252Qx_26.247_DQ_3.12,2.csv")
 # botdata= pd.read_csv("Data/twiss_csv/1252Qx_26.7495_DQ_0.2,0.005top.csv")
 # botdata= pd.read_csv("Data/twiss_csv/1252_"+str(Qx)+"bot.csv")
 # botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"_DQ_0.2,0.005bot.csv")
-# botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"_DQ_0.2,0.005top.csv")
-# topdata = pd.read_csv("Data/twiss_csv/1252_DQ_3,3top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252_-5.4Qx_"+str(Qx)+"_DQ_3,0.005bot.csv")
+# topdata = pd.read_csv("Data/twiss_csv/1252_-5.4Qx_26.7495_DQ_3,0.005top.csv")
 
+botdata= pd.read_csv("Data/twiss_csv/1252_-4.2Qx_"+str(Qx)+"_DQ_2,0.005bot.csv")
+topdata = pd.read_csv("Data/twiss_csv/1252_-4.2Qx_26.7495_DQ_2,0.005top.csv")
 
 #%% Island Surface
 
@@ -162,11 +171,13 @@ print("order 3 top rmse =",rmse(order3([topdata.k31,topdata.k32],*top_fit[0]),en
 
 #%%
 plt.figure(num="transition energy")
-plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), energy_tr(topdata.GAMMA_TR), s=5)
+# plt.grid()
+plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), energy_tr(topdata.GAMMA_TR), s=5,label="island")
 plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),energy_tr(twiss.GAMMA_TR)),label='centre')
-plt.xlabel("k31+k32")
+plt.xlabel("sum of $k_3 (m^{-4})$")
 plt.ylabel("Transition energy (GeV)")
 plt.legend()
+plt.grid()
 #%% transition energy >0.5 GeV
 k31_en=[]
 k32_en=[]
@@ -216,8 +227,8 @@ k31 = k31.flatten()
 k32 = k32.flatten()
 ax.scatter3D(k31,k32,np.full(len(k31),0.0),label="x=0")
 
-ax.scatter3D(k31,k32,order3([k31,k32],*top_fit[0]),label="top")
-ax.scatter3D(k31,k32,order3([k31,k32],*bot_fit[0]),label="bot")
+# ax.scatter3D(k31,k32,order3([k31,k32],*top_fit[0]),label="top")
+# ax.scatter3D(k31,k32,order3([k31,k32],*bot_fit[0]),label="bot")
 ax.scatter3D(topdata.k31, topdata.k32,np.array(topdata.ORBIT_X))
 ax.scatter3D(botdata.k31, botdata.k32,np.array(botdata.ORBIT_X))
 ax.set_xlabel('k31', fontweight ='bold')
@@ -283,6 +294,18 @@ print("best k32s= ",k32_en_xsum)
 
 print ("top x=",order3([np.array(k31_en_xsum),np.array(k32_en_xsum)],*top_fit[0])) 
 print ("bot x=",order3([np.array(k31_en_xsum),np.array(k32_en_xsum)],*bot_fit[0])) 
+#%%
+plt.figure(num="xpos")
+plt.scatter(topdata.k31, topdata.ORBIT_X,label="top")
+plt.scatter(botdata.k31, botdata.ORBIT_X, label="bot")
+plt.xlabel("k31")
+plt.ylabel("island orbit_x")
+plt.legend()
+
+plt.figure()
+plt.scatter(botdata.k31, abs(np.array(botdata.ORBIT_X))+abs(np.array(topdata.ORBIT_X)))
+plt.ylabel("sum of distance")
+plt.xlabel("k31")
 
 #%%DQ1
 fig = plt.figure(figsize = (10, 7))
@@ -311,13 +334,16 @@ print("order 2 DQ1 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0])
 print("order 2 DQ2 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
 
 #%%
+# topdata = topdata[abs(topdata.DQ1)<250]
+# topdata = topdata[abs(topdata.DQ2)<250]
 plt.figure(num="DQ1")
 plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ1, s=5,label="DQ1")
 plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ2, s=5,label="DQ2")
 plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),0),label='0')
-plt.xlabel("k31+k32")
+plt.xlabel("sum of $k_3 (m^{-4})$")
 plt.ylabel("DQ")
 plt.legend()
+plt.grid()
 
 #%%
 DQ1_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
@@ -472,7 +498,21 @@ for i in Qxs:
     ax.set_ylabel('k32', fontweight ='bold')
     ax.set_zlabel(value, fontweight ='bold')
 
-    
+    Scanned aorund k3sum =-4.2  
+
+k31 = [-2.2, -2.3, -2.4, -2.5, -2.6, -2.8, -2.9, -3.0, -3.1, -3.2, -2.1, -2.0, -1.9, -1.8]  
+
+k32 = [ -2.0, -1.9, -1.8, -1.7, -1.6, -1.4, -1.3, -1.2, -1.1, -1.0, -2.1, -2.2, -2.3, -2.4]  
+
+Energy range from 21.95 to 21.98 
+
+ 
+
+ 
+
+ 
+
+However only first 5 points have DQs both negative- lowest at where sum = 0.012 
     for j in range(len(coef)):
         coef[j].append(fit[0][j])
 #%%

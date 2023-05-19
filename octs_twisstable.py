@@ -121,8 +121,9 @@ alldata=pd.DataFrame(columns=['name', 'island','k31','k32', 'Qx','max_X','BETX',
         'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 
 #%%read in existing csv
-alldata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv")
+alldata= pd.read_csv("Data/twiss_csv/1252_-5.4Qx_26.7495_DQ_3,0.005top.csv")
 alldata = alldata.loc[:, ~alldata.columns.isin(['Unnamed: 0'])]
+# alldata=alldata.drop(index=12)
 #%%
 oct_names=["LOE.12002,LOEN.52002"]
 
@@ -167,10 +168,11 @@ for k in oct_names:
             
 #%%select if in right island
 # alldata= alldata[alldata.ORBIT_PX>0.0]
-alldata= alldata[abs(alldata.ORBIT_PX)>1e-10]
+# alldata= alldata[abs(alldata.ORBIT_PX)>1e-10]
+alldata1 = alldata
 
 #%%
-alldata.to_csv("Data/twiss_csv/pairs_cent.csv")
+alldata.to_csv("Data/twiss_csv/1252_-5.4Qx_26.7495_DQ_3,0.005top.csv")
 #%%
 Qx = [26.747, 26.748, 26.7485, 26.749, 26.7495]
 for qx in Qx:
@@ -187,12 +189,12 @@ plt.legend()
 # alldata=pd.DataFrame(columns=['name', 'island','k31','k32','cent_DQ1','cent_DQ2','Qx','max_X','BETX', 'ALFX', 'ALPHA_C','GAMMA_TR', 'ALPHA_C_P', 'ALPHA_C_P2',
 #         'ALPHA_C_P3', 'DQ1', 'DQ2','ORBIT_X','ORBIT_PX'])
 
-oct_names=["LOE.32002,LOEN.52002"]
+oct_names=["LOE.12002,LOEN.52002"]
 
 
 
-Qx = [26.247]
-\
+Qx = [26.7495]
+
 # k31 = [ -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
 #         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
 #         -0.7, -1.1, -1.5, -1.9, -2.3, -2.7, 
@@ -207,21 +209,25 @@ Qx = [26.247]
 #         -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, 
 #         -2.3, -2.3, -2.3, -2.3, -2.3, -2.3, 
 #         -2.7, -2.7, -2.7, -2.7, -2.7, -2.7]
-k31 = [-0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3,
-       -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4,
-       -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6,
-       -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7,
-       -1. , -1.3, -1.6, -1.9, -2.2]
+# k31 = [-0.4, -0.7, -1.0, -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3,
+#         -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4,
+#         -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6,
+#         -1.9, -2.2, -0.4, -0.7, -1. , -1.3, -1.6, -1.9, -2.2, -0.4, -0.7,
+#         -1. , -1.3, -1.6, -1.9, -2.2]
 
-k32 = [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.7, -0.7, -0.7, -0.7,
-       -0.7, -0.7, -0.7, -1. , -1. , -1. , -1. , -1. , -1. , -1. , -1.3,
-       -1.3, -1.3, -1.3, -1.3, -1.3, -1.3, -1.6, -1.6, -1.6, -1.6, -1.6,
-       -1.6, -1.6, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -2.2, -2.2,
-       -2.2, -2.2, -2.2, -2.2, -2.2]
+# k32 = [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.4, -0.7, -0.7, -0.7, -0.7,
+#         -0.7, -0.7, -0.7, -1. , -1. , -1. , -1. , -1. , -1. , -1. , -1.3,
+#         -1.3, -1.3, -1.3, -1.3, -1.3, -1.6, -1.6, -1.6, -1.6, -1.6,
+#         -1.6, -1.6, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -1.9, -2.2, -2.2,
+#         -2.2, -2.2, -2.2, -2.2, -2.2]
 
+k31 = [ -2.0, -1.9, -1.8, -1.7]
 
-DQ1 = [3.12]
-DQ2 = [2]
+k32 = [-3.4, -3.5, -3.6, -3.7]
+# k31 = [-2.2, -2.3, -2.4, -2.5, -2.6, -2.8, -2.9, -3.0, -3.1, -3.2] 
+# k32 = [ -2.0, -1.9, -1.8, -1.7, -1.6, -1.4, -1.3, -1.2, -1.1, -1.0] 
+DQ1 = [3]
+DQ2 = [0.005]
 
 #[-2.0 , -2.1, -2.2, -2.3, -2.4,  0.0 ,  0.0 ,  0.0 ,  0.0 ,  0.0,2.4, -2.3, -2.2, -2.1, -2.0 , 
 # -1.9, -1.8, -1.7, -1.6, -1.1, -1, -1.3, -1.2, -1.5, -1.8,-2.1, -2.2, -2.3, -2.4,-2.5] 
@@ -229,7 +235,9 @@ DQ2 = [2]
 # DQ1 = [-3]#[1,2,3,4,5,1,1,1,1,-1,-2,-3,-4,-1,-1,-1,2,3,4,-2,-3,-4,0.3]
 # DQ2 = [-3]#[1,1,1,1,1,2,3,4,5,-1,-1,-1,-1,-2,-3,-4,2,3,4,-2,-3,-4,0.1]
 
-islands=["top"]#,"cent"]
+islands=["bot"]#,"cent"]
+folder = "Data/1252DQ_3,0.005_twiss/"
+
 
 #
 for k in oct_names:
@@ -237,8 +245,8 @@ for k in oct_names:
             for j in range(len(k31)):
                 for dq_idx in range (len(DQ1)):
                     for i in range(len(islands)):
-                        twiss_name="twiss.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
-                        twissum_name="twissum.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
+                        twiss_name=folder+"twiss.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
+                        twissum_name=folder+"twissum.oct="+k+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1[dq_idx])+','+str(DQ2[dq_idx])+islands[i]+".tfs"
                         
                         twiss=pd.read_fwf(twiss_name,skiprows=88,infer_nrows=3000)
                         twiss=twiss.drop(index=0)

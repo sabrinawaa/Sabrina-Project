@@ -12,8 +12,8 @@ use,sequence=sps;
 
 !twiss;
 
-oct1, K3=k_31;
-oct2, K3=k_32;
+oct1, K3=k_31;!1
+oct2, K3=k_32;!2
 
 call,file="sps/toolkit/macro.madx";
 qx=QX; ! originally 26.62
@@ -43,8 +43,8 @@ sps_match_chroma(dq1_target_value,dq2_target_value) : macro = {
  endmatch;
 };
 
-dq1_targetvalue=DQ_1; !was3.12
-dq2_targetvalue=DQ_2; !was 2
+dq1_targetvalue=DQ_1;
+dq2_targetvalue=DQ_2;
 exec, sps_match_chroma(dq1_targetvalue,dq2_targetvalue);
 
 select,flag=twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
@@ -59,18 +59,23 @@ use,sequence=sps;
 ptc_create_universe; 
 ptc_create_layout,model=2,method=6,nst=10,exact;
 
-n=0.009; !was 0.009
-while (n < 0.029) {
-ptc_start, x=n , px =0, y= 0, py=0;
-n=n+0.00125;
-}
+ptc_start, x=0.0 , px =0.0002, y= 0, py=0;
+ptc_start, x=0.0 , px =0.00025, y= 0, py=0;
+ptc_start, x=0.0 , px =0.0003, y= 0, py=0;
+ptc_start, x=0.0 , px =0.00035, y= 0, py=0;
+ptc_start, x=0.0 , px =0.000375, y= 0, py=0;
+ptc_start, x=0.0 , px =0.0004, y= 0, py=0;
+ptc_start, x=0.0 , px =0.00045, y= 0, py=0;
+ptc_start, x=0.0 , px =0.0005, y= 0, py=0;
+
 
 
 
 ptc_track,icase=4,closed_orbit,dump,
-turns=4096,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
+turns=2048 ,ffile=1; ! onetable, turns=1000, norm_no=4; norm_out
 
 
 
 ptc_track_end;
 ptc_end;
+

@@ -82,8 +82,8 @@ twiss=twiss[twiss["k3"]==0.6]
 twiss=twiss.iloc[[0]]
 
 twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==-2.2]
-twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
+twiss_FP = twiss_FP[twiss_FP["Qx"]==26.747]
 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
 # twiss.BETX = 64.33992636
@@ -96,15 +96,15 @@ twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7485]
 # std = np.sqrt( area *0.05/ np.pi) /3
 # std =  0.000937
 std = 0.000613
-offset = 0.008
+offset = 0.0082707
 
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=7800 #7774
 no_turns=2048
-folder="submit/1252sq_k3_-2.2qx_26.7485/"
+folder="submit/1252sq_k3_-2.5qx_26.747/"
 # stds = np.linspace(std*0.5, std*1.5, 50)
 stds = np.linspace(0.0001,0.0011,80)
-offsets = np.linspace(offset*0.5, offset *1.5, 50)
+offsets = np.linspace(offset*0.75, offset *1.25, 30)
 
 std_grid,offs_grid=np.meshgrid(stds,offset)
 std_grid=std_grid.flatten()
@@ -160,8 +160,8 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/2, xn0[j]+delta_pxn/2)
-        #weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp+0.003,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -172,12 +172,12 @@ for i in range (len(std_grid)):
     print(i)
 #%%    
 # i=np.argmin(emm_inc)
-i=20
+i=10
 weights=[]
 for j in range (len(xn0)):
       
         # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp+0.008,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -231,7 +231,7 @@ uncertainty= []
 
 steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
 
-for k in std_grid[::10]:
+for k in std_grid[::80]:
     em_fin=[]
     for i in steps:
         weights = []
@@ -241,7 +241,7 @@ for k in std_grid[::10]:
         pxn_fin_sliced = pxn_fin[::i]
         
         for j in range (len(xn0_sliced)):
-            weighti = gaussian(xn0_sliced[j],xn_fp,k) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,k) * delta_pxn
+            weighti = gaussian(xn0_sliced[j],xn_fp,std) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,std) * delta_pxn
             weights.append(weighti)
         em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
         
@@ -251,21 +251,27 @@ for k in std_grid[::10]:
     plt.xlabel("No. of Initial Conditions")
     plt.ylabel("Final Normalised Emittance (m rad)")
     plt.xscale("log")
-    plt.legend()
+    # plt.legend()
+    plt.grid()
 
            
 #%%
-plt.figure(num="growth")
-plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
+plt.figure(num="growth1")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.747, Surface=3.316e-05,Foc_Err=1.0234")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.7485, Surface=4.374e-05,Foc_Err=1.0425")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.747, Surface=4.853e-05,Foc_Err=1.0369")
 # plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.746, Surface=3.739e-05 ,Foc_Err=1.0261")
-plt.errorbar(emm_norm_ini, emm_inc,yerr = emm_inc*uncertainty,elinewidth=0.2)
+plt.scatter(emm_norm_ini, emm_inc,s=1, label= "more displaced")
+plt.errorbar(emm_norm_ini, emm_inc,yerr = emm_inc*uncertainty,elinewidth=0.25)
 
 plt.xlabel("Normalised Initial Emittance (m rad)")
 plt.ylabel("Emittance Growth")
 plt.legend()
+plt.grid()
+#%%
+plt.figure(num="growth")
+plt.grid()
 #%%
 plt.scatter(offs_grid, emm_inc,s=1)
 plt.xlabel("mom offset")
@@ -283,18 +289,25 @@ emit_table= pd.DataFrame(data={"sigma": std_grid, "offset": offs_grid,
                                 "emit_fin":emm_grid, "emit_ini": emm_inis,
                                 "emit_inc":emm_inc})
 min_idx=np.argmin(emm_inc)
-min_emit= emit_table[emit_table["sigma"]==std_grid[1550]]
+min_emit= emit_table[emit_table["sigma"]==std_grid[min_idx]]
 
 plt.scatter(min_emit.offset,min_emit.emit_inc)
 
-param=np.polyfit(min_emit.offset, min_emit.emit_inc, 2)
-fit=np.poly1d(param)
-xx=np.linspace(min_emit.offset[0],min_emit.offset.iloc[-1],250)
-label="  a1="+str(fit[1])+" a0="+str(fit[0])
-plt.plot(xx,fit(xx),label=label)
+
 plt.xlabel("Momentum Offset")
 plt.ylabel("Emittance Increase")
 plt.legend()
+
+i=min_idx
+weights=[]
+for j in range (len(xn0)):
+      
+        # weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        weights.append(weighti)
+
+
+
 #%%
 xtrial=np.linspace(-3, 3, 100)
 ytrial= gaussian (xtrial,0,0.1)

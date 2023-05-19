@@ -62,17 +62,17 @@ if __name__ == "__main__": #execute code when file runs as script not imported a
 #%%
 
 def main():
-    k31 = [-0.9, -1.2, -1.5, -1.8,-2.1,-2.5] 
+    k31 = [-0.9, -1.2, -1.5, -1.8,-2.1,-2.4] 
     
-    k32 = [-0.9, -1.2, -1.5, -1.8,-2.1,-2.5] 
-    folder = "./submit/1252_748_-DQ/"
+    k32 = [-0.9, -1.2, -1.5, -1.8,-2.1,-2.4] 
+    folder = "./submit/1232Qx_248/"
     flavour = "longlunch"
     os.chdir(folder)
     os.mkdir("out")
     os.mkdir("err")
     os.mkdir("log")
-    oct_name = "LOE.12002,LOEN.52002"
-    qx= 26.748
+    oct_name = "LOE.12002,LOEN.32002"
+    qx= 26.248
 
     
     oneSubmitFileName = "track.sub"
