@@ -10,9 +10,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-import plotly.graph_objects as go
-import plotly.io as pio
-pio.renderers.default='browser'
+# import plotly.graph_objects as go
+# import plotly.io as pio
+# pio.renderers.default='browser'
 
 
 def normalise (x,px,alf,beta):
@@ -41,12 +41,16 @@ def rmse(expected,observed):
     diff= observed-expected
     return np.sqrt(np.mean(diff**2))
 
+def energy_tr (gamma_tr):
+    gamma_tr = np.array(gamma_tr)
+    return 938.2720813*gamma_tr/1000
+
 twissname="Data/twiss_csv/1252_cents.csv"
 twiss=pd.read_csv(twissname)
-Qx=float(26.7485)
+Qx=float(26.748)
 twiss=twiss[twiss["Qx"]==Qx]
 
-topdata= pd.read_csv("Data/twiss_csv/1252_-1.388,-1.735DQ_top.csv")
+topdata= pd.read_csv("Data/twiss_csv/1252_csv/1252_-1.8DQ_top.csv")
 # topdata = topdata[topdata.DQ1<1000]
 
 #%%
@@ -80,8 +84,8 @@ dq22 = dq2.flatten()
 dq1 = np.concatenate((dq11,dq12))
 dq2 = np.concatenate(((dq21,dq22)))
 
-ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ1_fit[0]),label="Island DQ1")
-ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ2_fit[0]),label="Island DQ2")
+# ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ1_fit[0]),label="Island DQ1")
+# ax.scatter3D(dq1, dq2,pair_rela([dq1,dq2],*DQ2_fit[0]),label="Island DQ2")
 
 # ax.scatter3D(dq1, dq2,order3([dq1,dq2],*DQ1_fit[0]),label="Island DQ1")
 # ax.scatter3D(dq1, dq2,order3([dq1,dq2],*DQ2_fit[0]),label="Island DQ2")
@@ -98,6 +102,22 @@ print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0])
 print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
 # print("order 3 top DQ1 rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 # print("order 3 top DQ1 rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
+#%%
+plt.scatter(np.array(topdata.cent_DQ1)+0.*np.array(topdata.cent_DQ2), topdata.DQ1, s=5,label="DQ1")
+plt.scatter(np.array(topdata.cent_DQ1)+0.*np.array(topdata.cent_DQ2), topdata.DQ2, s=5,label="DQ2")
+plt.plot(np.array(topdata.cent_DQ1)+0.*np.array(topdata.cent_DQ2), np.full(len(topdata.cent_DQ1),0),color='g',label="0")
+plt.xlabel("Centre DQ1")
+plt.ylabel("Island DQ")
+plt.legend()
+plt.grid()
+#%%
+plt.scatter(topdata.cent_DQ1,energy_tr(topdata.GAMMA_TR),s=5,label="island")
+plt.plot(topdata.cent_DQ1,np.full(len(topdata.cent_DQ1),energy_tr(twiss.GAMMA_TR)),label="centre")
+# plt.scatter(topdata.cent_DQ1, topdata.DQ2,s=5,label="DQ2")
+plt.xlabel("Centre DQ1")
+plt.ylabel("Transition Energy (GeV)")
+plt.legend()
+plt.grid()
 
 #%%
 dq11,dq21 = np.meshgrid(np.linspace(-4,-0.005,50),np.linspace(-4,-0.005,50))
