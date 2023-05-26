@@ -41,9 +41,11 @@ twiss_cent = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALF
 twiss_cent.BETX = 64.33992636
 twiss_cent.ALFX = 1.728756478
 
-xns=np.linspace(-0.0049,0.0038,120)
-pxns=np.linspace(0.0033,0.0133,65)
-# pxns=np.linspace(0.0005,0.0048,100)
+# xns=np.linspace(-0.0043,0.0045,120)#bot island
+# pxns=np.arange(-0.0025,-0.014,-0.00015625)#bot island
+
+xns=np.linspace(-0.0038,0.0038,120)#bot island
+pxns=np.linspace(-0.0035,0.0035,65)#bot island
 
 # xns=np.linspace(-0.0022,-0.0018,18)
 # pxns=np.linspace(0.0013,0.0023,15)
@@ -57,58 +59,59 @@ pxn=pxn.flatten()
 
 x = np.sqrt(float(twiss_cent.BETX)) * xn 
 px = - float(twiss_cent.ALFX) * xn / np.sqrt(float(twiss_cent.BETX)) + pxn / np.sqrt(float(twiss_cent.BETX)) 
-plt.scatter(xn,pxn,s=5)
+plt.scatter(x,px,s=5)
 #%%
-k3=[-2.1]#np.arange(4.9,8.41,0.7)
-qx=[26.746]#np.arange(26.729,26.7164,-0.0025)
+k3=[-2.161]#np.arange(4.9,8.41,0.7)
+qx=[26.7495]#np.arange(26.729,26.7164,-0.0025)
 
-for idx in range(len(k3)):
+# for idx in range(len(k3)):
     
-    with open("sq_template.madx", 'r') as file:
-        data = file.read()
-        data = data.replace("K3=0.1", "K3="+str(k3[idx]))
-        data = data.replace("qx=QX","qx="+ str(qx[idx]))
+#     with open("sq_template.madx", 'r') as file:
+#         data = file.read()
+#         data = data.replace("K3=0.1", "K3="+str(k3[idx]))
+#         data = data.replace("qx=QX","qx="+ str(qx[idx]))
         
-        with open("sq_template.madx", 'w') as file:     
-            file.write(data)
+#         with open("sq_template.madx", 'w') as file:     
+#             file.write(data)
     
             
     
         
-    chunk_size=20
-    folder = "./submit/1252sq_k3_"+str(k3[idx])+"qx_"+str(qx[idx])+"/"
-    os.mkdir(folder)
+chunk_size=20
+# folder = "./submit/1252sq_k3_"+str(k3[idx])+"qx_"+str(qx[idx])+"/"
+folder = "submit/1252sq_-2.161,-3.239DQ_3,0.005_cent/"
+# os.mkdir(folder)
+
+for i in range(0,len(x),chunk_size):
     
-    for i in range(0,len(x),chunk_size):
+    mad_filename = folder+ "/sq32_"+str(i)+".madx"
+    shutil.copy("sq_template.madx",mad_filename)
         
-        mad_filename = folder+ "/sq32_"+str(i)+".madx"
-        shutil.copy("sq_template.madx",mad_filename)
+    xchunk = x[i:i + chunk_size]
+    pxchunk = px[i:i + chunk_size]
+    value = []
+    
+    for j in range (len(xchunk)):
+        value.append(f"ptc_start, x={xchunk[j]} , px={pxchunk[j]}, y= 0, py=0;\n")
+    
+
+    with open(mad_filename, "r") as f:
+        contents = f.readlines()
+    if contents[55].strip()=="":
+        contents[55:55]=value
+    else:
+        print("ini pos already filled")
+
+    with open(mad_filename, "w") as f:
+        contents = "".join(contents)
+        f.write(contents)
             
-        xchunk = x[i:i + chunk_size]
-        pxchunk = px[i:i + chunk_size]
-        value = []
-        
-        for j in range (len(xchunk)):
-            value.append(f"ptc_start, x={xchunk[j]} , px={pxchunk[j]}, y= 0, py=0;\n")
-        
-    
-        with open(mad_filename, "r") as f:
-            contents = f.readlines()
-        if contents[55].strip()=="":
-            contents[55:55]=value
-        else:
-            print("ini pos already filled")
-    
-        with open(mad_filename, "w") as f:
-            contents = "".join(contents)
-            f.write(contents)
-            
-    with open("sq_template.madx", 'r') as file:
-        data = file.read()
-        data = data.replace("K3="+str(k3[idx]),"K3=0.1")
-        data = data.replace("qx="+ str(qx[idx]),"qx=QX")
-    with open("sq_template.madx", 'w') as file:     
-        file.write(data)
+    # with open("sq_template.madx", 'r') as file:
+    #     data = file.read()
+    #     data = data.replace("K3="+str(k3[idx]),"K3=0.1")
+    #     data = data.replace("qx="+ str(qx[idx]),"qx=QX")
+    # with open("sq_template.madx", 'w') as file:     
+    #     file.write(data)
         
 #%%
 k31 = [-0.9, -1.2, 

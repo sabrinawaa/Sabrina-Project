@@ -59,14 +59,20 @@ use,sequence=sps;
 ptc_create_universe; 
 ptc_create_layout,model=2,method=6,nst=10,exact;
 
-ptc_start, x=0.0 , px =0.0002, y= 0, py=0;
-ptc_start, x=0.0 , px =0.00025, y= 0, py=0;
-ptc_start, x=0.0 , px =0.0003, y= 0, py=0;
-ptc_start, x=0.0 , px =0.00035, y= 0, py=0;
-ptc_start, x=0.0 , px =0.000375, y= 0, py=0;
-ptc_start, x=0.0 , px =0.0004, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.0002, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.00025, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.0003, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.00035, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.000375, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.0004, y= 0, py=0;
 ptc_start, x=0.0 , px =0.00045, y= 0, py=0;
-ptc_start, x=0.0 , px =0.0005, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.0005, y= 0, py=0;
+
+!ptc_start, x=0.0 , px =0.00075, y= 0, py=0;
+ptc_start, x=0.0 , px =0.001, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.00125, y= 0, py=0;
+!ptc_start, x=0.0 , px =0.0015, y= 0, py=0;
+
 
 
 

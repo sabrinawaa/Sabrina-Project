@@ -6,6 +6,64 @@ Created on Fri Apr 21 17:16:56 2023
 @author: sawang
 """
 
+
+from cpymad.madx import Madx
+import numpy as np
+
+import os
+mad=Madx()
+job = "qxk3_dependence_DQ.madx"
+
+Qx = [26.748]
+
+k31 = [-1.8] 
+
+
+k32 = [-1.8] 
+
+DQ1 = [1, 1, 1, 1, 1, 1, 1, 1]#[1,2,3,4,5,1,1,1,1,-1,-2,-3,-4,-1,-1,-1,2,3,4,-2,-3,-4]
+DQ2 = [ 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]#[1,1,1,1,1,2,3,4,5,-1,-1,-1,-1,-2,-3,-4,2,3,4,-2,-3,-4]
+oct1="LOE.12002"
+oct2="LOEN.52002"
+Qy = [26.58]
+island = "top"
+for qy in Qy:
+    for i in Qx:
+        for j in range(len(k31)):
+            for k in range (len(DQ1)):
+                with open(job, 'r') as file:
+                    data = file.read()
+                    data = data.replace("K3=k_31;!1", "K3="+str(k31[j])+";!1")
+                    data = data.replace("K3=k_32;!2", "K3="+str(k32[j])+";!2")
+                    data = data.replace("qx=QX","qx="+ str(i))
+                    data = data.replace("qy=QY","qy="+ str(qy))
+                    data = data.replace("dq1_targetvalue=DQ_1","dq1_targetvalue="+ str(DQ1[k]))
+                    data = data.replace("dq2_targetvalue=DQ_2","dq2_targetvalue="+ str(DQ2[k]))
+                    data = data.replace("oct1", oct1)
+                    data = data.replace("oct2",oct2)
+                    with open(job, 'w') as file:
+                        file.write(data)
+        
+                    mad.call(job)
+        
+                    twiss_newname="twiss.oct="+oct1+','+oct2+"k3=" +str(k31[j])+','+str(k32[j])+"Qx="+str(i)+"DQ="+str(DQ1[k])+','+str(DQ2[k])+island+".tfs"
+                    twissum_newname="twissum.oct="+oct1+','+oct2+"k3=" +str(k31[j])+','+str(k32[j]) +"Qx="+str(i)+"DQ="+str(DQ1[k])+','+str(DQ2[k])+island+".tfs"
+                    os.rename("ptc_twiss.tfs", twiss_newname)
+                    os.rename("ptc_twiss_summ.tfs", twissum_newname)
+    
+                    with open(job, 'r') as file:
+                        data = file.read()
+                        data = data.replace("K3="+str(k31[j])+";!1","K3=k_31;!1")
+                        data = data.replace("K3="+str(k32[j])+";!2","K3=k_32;!2")
+                        data = data.replace("qx="+ str(i),"qx=QX")
+                        data = data.replace("qy="+ str(qy),"qy=QY")
+                        data = data.replace("dq1_targetvalue="+ str(DQ1[k]),"dq1_targetvalue=DQ_1")
+                        data = data.replace("dq2_targetvalue="+ str(DQ2[k]),"dq2_targetvalue=DQ_2")
+                        data = data.replace(oct1, "oct1")
+                        data = data.replace(oct2,"oct2")
+                    with open(job, 'w') as file:
+                        file.write(data)
+#%%
 from cpymad.madx import Madx
 import numpy as np
 

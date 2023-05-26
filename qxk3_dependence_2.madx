@@ -10,7 +10,7 @@ beam,particle=proton, PC=14;
 
 use,sequence=sps;
 
-!twiss;
+!twiss;s
 
 oct1, K3=k_31;!1
 oct2, K3=k_32;!2
@@ -68,7 +68,7 @@ ptc_create_layout,model=1,method=6,nst=10,exact;
 
 select,flag=ptc_twiss,column=name,keyword,s,betx,alfx,mux,bety,alfy,muy,x,px,y,py,t,pt,dx,dpx,dy,dpy,k2l,k3l;
 
-ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.006,px=0.0016,no=4,icase=56; 
+ptc_twiss,closed_orbit,file="ptc_twiss.tfs", table=ptc_twiss, summary_file="ptc_twiss_summ.tfs",x=-0.005,px=-0.0013,no=4,icase=56; 
 
 ptc_end;
 

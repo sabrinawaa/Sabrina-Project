@@ -42,6 +42,9 @@ def amp (x,px,alf,beta):
     xn,pxn = normalise(x, px, float(alf), float(beta))
     return xn**2 + pxn**2
 
+def perc_err(expected, observed):
+    return abs(np.array(expected)-np.array(observed))/np.array(observed)
+
 twissname="Data/twiss_csv/1252_cents.csv"
 
 twiss=pd.read_csv(twissname)
@@ -55,15 +58,21 @@ twiss=twiss[twiss["Qx"]==Qx]
 # twiss.GAMMA_TR = 22.874 # for 251
 
 #%%
-# topdata= pd.read_csv("Data/twiss_csv/1252Qx_26.247_DQ_3.12,2.csv")
+DQ1='3'
+DQ2='0.005'
+topdata= pd.read_csv("Data/twiss_csv/1252_csv/1252Qx_"+str(Qx)+"_DQ_"+DQ1+','+DQ2+"top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252_csv/1252_-5.4Qx_26.7495_DQ_3,0.005bot.csv")
+# topdata=topdata.iloc[:37]
+# botdata=botdata.drop(index=12)
 # botdata= pd.read_csv("Data/twiss_csv/1252Qx_26.7495_DQ_0.2,0.005top.csv")
 # botdata= pd.read_csv("Data/twiss_csv/1252_"+str(Qx)+"bot.csv")
 # botdata= pd.read_csv("Data/twiss_csv/1252Qx_"+str(Qx)+"_DQ_0.2,0.005bot.csv")
-# botdata= pd.read_csv("Data/twiss_csv/1252_-5.4Qx_"+str(Qx)+"_DQ_3,0.005bot.csv")
-# topdata = pd.read_csv("Data/twiss_csv/1252_-5.4Qx_26.7495_DQ_3,0.005top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252_csv/1252_-5.2Qx_26.7485_DQ_3,0.005bot.csv")
+# topdata = pd.read_csv("Data/twiss_csv/1252_csv/1252_-5.2Qx_26.7485_DQ_3,0.005top.csv")
 
-botdata= pd.read_csv("Data/twiss_csv/1252_-4.2Qx_"+str(Qx)+"_DQ_2,0.005bot.csv")
-topdata = pd.read_csv("Data/twiss_csv/1252_-4.2Qx_26.7495_DQ_2,0.005top.csv")
+# botdata= pd.read_csv("Data/twiss_csv/1252_-4.2Qx_"+str(Qx)+"_DQ_2,0.005bot.csv")
+# topdata = pd.read_csv("Data/twiss_csv/1252_-4.2Qx_26.7495_DQ_2,0.005top.csv")
+
 
 #%% Island Surface
 
@@ -153,7 +162,7 @@ ax.set_ylabel('k32', fontweight ='bold')
 ax.set_zlabel('Transition Energy (GeV)', fontweight ='bold')
 ax.legend()
 print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*top_fit[0]),energy_tr(topdata.GAMMA_TR)))
-
+print("percentage err = ", perc_err(pair_rela([topdata.k31,topdata.k32],*top_fit[0]),energy_tr(topdata.GAMMA_TR)))
 #%%
 fig = plt.figure(figsize = (10, 7))
 ax = plt.axes(projection ="3d")
@@ -174,10 +183,15 @@ plt.figure(num="transition energy")
 # plt.grid()
 plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), energy_tr(topdata.GAMMA_TR), s=5,label="island")
 plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),energy_tr(twiss.GAMMA_TR)),label='centre')
+# plt.plot([-5.5,-0.5],np.full(2,energy_tr(twiss.GAMMA_TR)))
 plt.xlabel("sum of $k_3 (m^{-4})$")
 plt.ylabel("Transition energy (GeV)")
+# plt.xlim([-7.8,-0.5])
+# plt.xlim([-5.5,-0.5])
+# plt.title("centre DQ="+DQ1+','+DQ2)
+plt.title("$Q_x$="+str(Qx))
 plt.legend()
-plt.grid()
+plt.grid(linewidth=0.3)
 #%% transition energy >0.5 GeV
 k31_en=[]
 k32_en=[]
@@ -306,6 +320,17 @@ plt.figure()
 plt.scatter(botdata.k31, abs(np.array(botdata.ORBIT_X))+abs(np.array(topdata.ORBIT_X)))
 plt.ylabel("sum of distance")
 plt.xlabel("k31")
+#%%
+fit= np.polyfit(botdata.k31, botdata.ORBIT_X,2)
+pfit = np.poly1d(fit)
+xx = np.linspace(botdata.k31[0],botdata.k31.iloc[-1],100)
+plt.plot(xx, pfit(xx))
+k3_x=[]
+for i in range(len(xx)):
+    if abs(pfit(xx)[i])<1e-4:
+        k3_x.append(xx[i])
+print("x at 0 at k31=", k3_x)
+plt.plot(k3_x,pfit(k3_x))
 
 #%%DQ1
 fig = plt.figure(figsize = (10, 7))
@@ -332,7 +357,8 @@ ax.set_zlabel('DQ', fontweight ='bold')
 ax.legend()
 print("order 2 DQ1 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 print("order 2 DQ2 rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2))
-
+print("DQ1 mean percentage error = ",np.mean(perc_err(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1)))
+print("DQ2 mean percentage error = ",np.mean(perc_err(pair_rela([topdata.k31,topdata.k32],*DQ2_fit[0]),topdata.DQ2)))
 #%%
 # topdata = topdata[abs(topdata.DQ1)<250]
 # topdata = topdata[abs(topdata.DQ2)<250]
@@ -340,10 +366,14 @@ plt.figure(num="DQ1")
 plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ1, s=5,label="DQ1")
 plt.scatter(np.array(topdata.k31)+1*np.array(topdata.k32), topdata.DQ2, s=5,label="DQ2")
 plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31),0),label='0')
+# plt.plot([-5.5,-0.5], np.full(2,0),label='0')
 plt.xlabel("sum of $k_3 (m^{-4})$")
+# plt.xlim([-5.5,-0.5])
 plt.ylabel("DQ")
+# plt.title("centre DQ="+DQ1+','+DQ2)
+plt.title("$Q_x$="+str(Qx))
 plt.legend()
-plt.grid()
+plt.grid(linewidth=0.3)
 
 #%%
 DQ1_fit = curve_fit(order3,[topdata.k31, topdata.k32], topdata.DQ1, p0=[0,0,0,0,0,0,0,0,0,0])
@@ -548,6 +578,28 @@ for value in ["ORBIT_X","GAMMA_TR", "DQ1", "DQ2"]  :
     plt.xlabel("Qx")
     plt.ylabel(value)
     plt.legend()
+    
+#%%
+
+
+botdata= pd.read_csv("Data/twiss_csv//1252_csv/1252_26.7495bot.csv")
+data=botdata[botdata.k31==0]
+for value in ["ORBIT_X","GAMMA_TR", "DQ1", "DQ2"]  :
+    plt.figure()
+    plt.scatter(data.k32,data[value])
+    fit,cov = np.polyfit(data.k32, data[value],2, cov=1)
+    pfit = np.poly1d(fit)
+    Qxx = np.linspace(data.k32[0],data.k32.iloc[-1],100)
+    plt.plot(Qxx, pfit(Qxx), label=value)
+    print(fit)
+    print("uncertainty= ",perc_err(pfit(data.k32), data[value]))
+    plt.xlabel("k32")
+    plt.ylabel(value)
+    plt.legend()
+    
+    
+
+    
     
 
     

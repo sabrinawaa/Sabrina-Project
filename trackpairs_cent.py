@@ -15,12 +15,12 @@ job='pairs.madx'
 
 
 oct_names=["LOE.12002","LOEN.52002"]
-k31=[-1.3, -1.5]
-k32=k31
-qx=26.2495
-no_particles=8 #was 6
-DQ1=3.12
-DQ2 =2
+k31=[-1.4]
+k32=[-2.5]
+qx=26.747
+no_particles= 2#was 6
+DQ1=-0.2
+DQ2 =-0.005
 qy = 26.58
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
@@ -65,7 +65,7 @@ for a in range (len(oct_names)):
                 with open(job, 'w') as file:
                     file.write(data)
                     
-#%%
+  #%%
                    
 mad=Madx()
 job='pairs2.madx'

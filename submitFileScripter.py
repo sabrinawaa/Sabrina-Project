@@ -5,15 +5,18 @@ import shutil
 #%%
 
 def main():
-    for K3 in [-2.1]:
+    for K3 in ["-2.161_-3.239"]:
+    # for K3 in ["-2.082,-3.118"]:
         oct_name = "LOE.12002,LOEN.52002"
         k3= K3
-        qx= 26.746
+        qx= 26.7495
         startPID = 0
-        endPID = 7800
+        endPID = 7800#7800
         step = 20
-        flavour = "longlunch"
-        folder = "./submit/1252sq_k3_"+str(k3)+"qx_"+str(qx)
+        flavour = "workday"
+        # folder = "./submit/1252sq_k3_"+str(k3)+"qx_"+str(qx)
+        folder = "submit/1252sq_-2.161,-3.239DQ_3,0.005_cent/"
+        # folder = "submit/1252sq_-2.082,-3.118DQ_3,0.005_cent/"
         os.chdir(folder)
         os.mkdir("out")
         os.mkdir("err")

@@ -40,9 +40,19 @@ def rmse(expected,observed):
     observed = np.array(observed)
     diff= observed-expected
     return np.sqrt(np.mean(diff**2))
+
+def energy_tr (gamma_tr):
+    gamma_tr = np.array(gamma_tr)
+    return 938.2720813*gamma_tr/1000
+
+twissname="Data/twiss_csv/1252_cents.csv"
+
+twiss=pd.read_csv(twissname)
+Qx=float(26.7495)
+twiss=twiss[twiss["Qx"]==Qx] 
 #%%
 
-topdata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv").reset_index()
+topdata= pd.read_csv("Data/twiss_csv/1252_csv/1252_-2.7,-1.5_DQ_2,0.005_Qy_top.csv").reset_index()
 # centdata=pd.read_csv("Data/twiss_csv/1252_DQ_3.12,2after_cent.csv")
 # topdata = topdata.drop(index=2)
 # topdata = topdata.drop(index=9)
@@ -50,6 +60,7 @@ topdata= pd.read_csv("Data/twiss_csv/2232_-3,-2DQ_-3.12Qy_top.csv").reset_index(
 
 plt.scatter(topdata.Qy,topdata.DQ1,s=5,label="DQ1 island")
 plt.scatter(topdata.Qy,topdata.DQ2,s=5,label="DQ2 island")
+plt.plot(topdata.Qy, np.full(len(topdata.Qy),0),label="0",c='g')
 # plt.scatter(topdata.Qy,topdata.GAMMA_TR,s=5,label="GAMMA_TR")
 
 # plt.scatter(centdata.Qy,centdata.DQ1,s=5,label="DQ1 centre")
@@ -58,8 +69,24 @@ plt.scatter(topdata.Qy,topdata.DQ2,s=5,label="DQ2 island")
 plt.xlabel("Qy")
 plt.ylabel("DQ")
 plt.legend()
+plt.grid(linewidth=0.3)
 
 # print("order 2 top rmse =",rmse(pair_rela([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 # # print("order 3 top rmse =",rmse(order3([topdata.k31,topdata.k32],*DQ1_fit[0]),topdata.DQ1))
 
 #%%
+plt.scatter(topdata.Qy,energy_tr(topdata.GAMMA_TR),s=5,label="DQ1 island")
+plt.plot(topdata.Qy, np.full(len(topdata.Qy),energy_tr(twiss.GAMMA_TR)),label='centre')
+
+plt.xlabel("Qy")
+plt.ylabel("Transition energy (GeV)")
+plt.legend()
+plt.grid(linewidth=0.3)
+#%%
+plt.scatter(topdata.Qy,topdata.ORBIT_X,s=5,label="FP x (m)")
+
+plt.scatter(topdata.Qy,topdata.ORBIT_PX,s=5,label="FP $p_x$ (rad)")
+plt.xlabel("Qy")
+plt.ylabel("FP position")
+plt.legend()
+plt.grid(linewidth=0.3)
