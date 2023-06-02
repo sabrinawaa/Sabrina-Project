@@ -11,10 +11,13 @@ import numpy as np
 import pandas as pd
 import scipy.optimize as op
 from numba import njit
-from scipy.integrate import dblquad
+from matplotlib.colors import LinearSegmentedColormap
 # from scipy.integrate import trapezoid
-
-
+# colors = [(0.0, 'white'), (1.0, 'red')]
+colors = [(0.0, (1, 1, 1, 0)), (1.0, 'green')]
+colors2 = [(0.0, (1, 1, 1, 0)), (1.0, 'purple')]
+cmap = LinearSegmentedColormap.from_list('custom_cmap', colors)
+cmap1 = LinearSegmentedColormap.from_list('custom_cmap', colors2)
 import henon_funcs as fn
 
 
@@ -75,39 +78,61 @@ def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
     r0 = np.sqrt(((muxn * xn_std)**2 + (mupxn * pxn_std)**2)/(muxn**2 + mupxn**2))
     return (1+ delta_r / r0) **2  
 #%%
-twissname="Data/twiss_csv/1252_cents.csv"
+# twissname="Data/twiss_csv/1252_cents.csv"
 
-twiss=pd.read_csv(twissname)
-Qx=float(26.7495)
-twiss=twiss[twiss["Qx"]==Qx] 
+# twiss=pd.read_csv(twissname)
+# Qx=float(26.7495)
+# twiss=twiss[twiss["Qx"]==Qx] 
 
-twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
-twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7495]
+# twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
+# twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
+# twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7495]
 
+twiss=pd.read_csv("Data/twiss_csv/fin_config.csv")
+# twiss=twiss[twiss["k31"]==-1.925] 
 # twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
 # twiss.BETX = 64.33992636
 # twiss.ALFX = 1.728756478
 
-# twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
 
+
+# twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
+twiss_FP = twiss[twiss.k31==-1.403]
+twiss_FP = twiss_FP[twiss_FP.island =="top"]
+twiss = twiss.iloc[0]
 
 # area = 1.24e-6
 # std = np.sqrt( area *0.05/ np.pi) /3
 # std =  0.000937
-std = 0.000613
-# offset = -0.0082707
+# std = 0.000613  3.5micron beam
 
-std = 0.000498#1 micron beam
-xn_fp, pxn_fp= normalise(3.275167554e-06,-0.00125242722, twiss.ALFX, twiss.BETX )
-offset = pxn_fp
+std = 0.0004975#1 micron beam
+# std = 0.001471417 #grown beam large
+# std = 0.00112755 # grown beam small
+offset = -0.0065
+# offset = -0.01 #
+# offset = 0
+
+
+# xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
+#                             float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
+# offset = pxn_fp
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
-no_particles=7800 #7774
+no_particles=10000 #7774
 no_turns=2048
-folder="submit/1252sq_-2.161,-3.239DQ_3,0.005/"
+# folder = "submit/1252sq_-1.732,-2.479DQ_-0.2,-0.005_bot/"# config1
+# folder="submit/1252sq_-1.957,-2.918DQ_3,0.005_top_filled/"
+# folder = 'submit/1252sq_-1.957,-2.918DQ_3,0.005_cent/'
+
+# folder = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_bot/"# config1
+folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_top_fil/"
+# folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent/"
+
+
 # stds = np.linspace(std*0.5, std*1.5, 50)
 stds = np.linspace(0.0001,0.0011,80)
-offsets = np.linspace(offset*0.75, offset *1.25, 400)
+offsets = np.linspace(offset-abs(offset)*0.15, offset +abs(offset)*0.15, 400)
+# offsets = np.linspace(-0.002,0.002,400)
 
 std_grid,offs_grid=np.meshgrid(std,offsets)
 std_grid=std_grid.flatten()
@@ -118,6 +143,7 @@ x0s=[]
 px0s=[]
 x_fins=[]
 px_fins=[]
+weights_stage2 =[]
 for i in range (1,no_particles+1):
 
     name = folder + "track.no=" + str(i)
@@ -127,11 +153,14 @@ for i in range (1,no_particles+1):
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
     
-    x0s.append(track.X[1])
-    px0s.append(track.PX[1])
-    
-    x_fins.append(track.X.iloc[-1])
-    px_fins.append(track.PX.iloc[-1])
+    if track.X.iloc[0]!= track.X.iloc[-1]: #no problem here iloc[0]=[1]
+        
+        x0s.append(track.X[1])
+        px0s.append(track.PX[1])
+        
+        x_fins.append(track.X.iloc[-1])
+        px_fins.append(track.PX.iloc[-1])
+        weights_stage2.append(weights[i-1])
 
 #%%
 plt.figure()
@@ -150,8 +179,7 @@ delta_pxn = 2.7343750000000024e-05#9.58e-5 for 7774 case
 #%%
 emm_grid = []
 emm_inis =[]
-# xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
-#                            float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
+
 
 for i in range (len(std_grid)):
     weights = []
@@ -163,8 +191,8 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/24, xn0[j]+delta_pxn/2)
-        weighti = gaussian(xn0[j],0,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        # weighti = gaussian(xn0[j],xn_fp+0.003,std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],0, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -174,13 +202,14 @@ for i in range (len(std_grid)):
     emm_inis.append(emm_ini)
     print(i)
 #%%    
-# i=np.argmin(emm_inc)
-idx=188
+i=np.argmin(emm_inc)
+idx=i
 weights=[]
 for j in range (len(xn0)):
       
         weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
-        # weighti = gaussian(xn0[j],xn_fp+0.008,std_grid[idx]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[idx]) * delta_pxn
+        # weighti = gaussian(xn0[j],-0.001,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -218,13 +247,64 @@ plt.colorbar(label="emm_fin / emm_ini")
 plt.xlabel("normalised initial emittance [m rad]")
 plt.ylabel("momentum offset")
 #%%
+# plot_color_gradients('Sequential',
+#                      ['Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
+#                       'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
+#                       'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn'])
+fig,ax = plt.subplots()
 weights = np.array(weights)/np.sum(weights)
-plt.figure()
-plt.scatter(xn_fin,pxn_fin,c=weights,s=0.5,cmap=plt.cm.jet)
-# plt.scatter(xn0,pxn0,c=weights,s=0.5,cmap=plt.cm.jet)
-plt.colorbar(label="weights")
+
+# ini = ax.scatter(xn0,pxn0,c=weights,s=0.8,cmap=plt.cm.Purples)
+# cbb = plt.colorbar(ini,label="Initial Beam Weights")
+
+fin = ax.scatter(xn_fin,pxn_fin,c=weights,s=0.8,cmap=plt.cm.Reds)
+cb = plt.colorbar(fin,label="Final Beam Weights")
+
+# separatrix= "submit/1252sq_-1.925,-2.775DQ_-0.2,-0.005_sep/track.no=157"
+separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
+
+ax.scatter(xn_fin,pxn_fin, s=0.001,c='green')
+
+
 plt.xlabel("$x_n$")
 plt.ylabel("$p_{xn}$")
+
+#%%
+fig,ax = plt.subplots()
+# weights = np.array(weights)/np.sum(weights)
+weights_stage2 = np.array(weights_stage2)/np.sum(weights_stage2)
+
+# weights = np.exp(weights)
+
+w = weights
+w = weights_stage2
+
+fin = ax.scatter(x_fins,px_fins,c=w,s=0.8,cmap=cmap1)
+cb = plt.colorbar(fin,label="Final Beam Weights")
+
+ini = ax.scatter(x0s,px0s,c=w,s=0.8,cmap=cmap)
+cbb = plt.colorbar(ini,label="Initial Beam Weights")
+
+# separatrix= "submit/1252sq_-1.732,-2.479DQ_-0.2,-0.005_sep/track.no=309"
+# # separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
+# track = pd.read_fwf(separatrix, skiprows=6,infer_nrows=no_turns)
+# track = track.drop(index = 0,columns="*")
+# track = track.astype(np.float64)
+# ax.scatter(track.X,track.PX,marker='.', s=0.1,label="config 1 separatrix")
+
+separatrix2= "submit/1252sq_-1.957,-2.918DQ_3,0.005_sep/track.no=284"
+# separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
+track2 = pd.read_fwf(separatrix2, skiprows=6,infer_nrows=no_turns)
+track2 = track2.drop(index = 0,columns="*")
+track2 = track2.astype(np.float64)
+ax.scatter(track2.X,track2.PX,marker='.', s=0.1)
+ax.scatter(track2.X,track2.PX,marker='.', s=0.1,label="config 2 separatrix")
+
+
+plt.xlabel("x (m)")
+plt.ylabel("$p_{x}$ (rad)")
+plt.title("Stage 3 Centre Filamentation")
+plt.legend()
 #%%
 xx = np.sqrt(float(twiss.BETX)) * xn0
 pxx = - float(twiss.ALFX) * xn0 / np.sqrt(float(twiss.BETX)) + pxn0/ np.sqrt(float(twiss.BETX)) 
@@ -237,7 +317,7 @@ uncertainty= []
 
 steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
 
-for k in std_grid:
+for k in std_grid[::400]:
     em_fin=[]
     for i in steps:
         weights = []
@@ -253,14 +333,41 @@ for k in std_grid:
         em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
         
     uncertainty.append((max(abs(em_fin[:2]-em_fin[0]))-min(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
-    # plt.figure(num=k)    
+    plt.figure(num=k)    
     # plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-    # plt.xlabel("No. of Initial Conditions")
-    # plt.ylabel("Final Normalised Emittance (m rad)")
-    # plt.xscale("log")
-    # plt.legend()
-    # plt.grid()
+    plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+    plt.xlabel("No. of Initial Conditions")
+    plt.ylabel("Final Normalised Emittance (m rad)")
+    plt.xscale("log")
+    plt.legend()
+    plt.grid()
+#%% known weight calculate uncertainty
 
+w = weights_stage2
+
+uncertainty= []
+steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
+em_fin=[]
+for i in steps:
+    
+    xn0_sliced = xn0[::i]
+    weight_sliced = w[::i]
+    pxn0_sliced = pxn0[::i]
+    xn_fin_sliced = xn_fin[::i]
+    pxn_fin_sliced = pxn_fin[::i]
+    
+    
+    em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weight_sliced))
+    
+uncertainty.append((max(abs(em_fin[:2]-em_fin[0]))-min(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
+plt.figure(num=k)    
+# plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+plt.xlabel("No. of Initial Conditions")
+plt.ylabel("Final Normalised Emittance (m rad)")
+plt.xscale("log")
+plt.legend()
+plt.grid()
            
 #%%
 plt.figure(num="growth1")

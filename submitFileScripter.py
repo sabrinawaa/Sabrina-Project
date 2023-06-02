@@ -5,17 +5,17 @@ import shutil
 #%%
 
 def main():
-    for K3 in ["-2.161_-3.239"]:
-    # for K3 in ["-2.082,-3.118"]:
+    # for K3 in ["-1.957_-2.918"]:
+    for K3 in ["-1.403,-1.687"]:
         oct_name = "LOE.12002,LOEN.52002"
         k3= K3
-        qx= 26.7495
+        qx= 26.747
         startPID = 0
-        endPID = 7800#7800
-        step = 20
-        flavour = "workday"
+        endPID =7440#7800|
+        step = 5
+        flavour = "longlunch"
         # folder = "./submit/1252sq_k3_"+str(k3)+"qx_"+str(qx)
-        folder = "submit/1252sq_-2.161,-3.239DQ_3,0.005_cent/"
+        folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
         # folder = "submit/1252sq_-2.082,-3.118DQ_3,0.005_cent/"
         os.chdir(folder)
         os.mkdir("out")
@@ -29,6 +29,7 @@ def main():
                 ff.write("error = err/$(MYNAME)_$(ClusterId).$(ProcId).err\n")
                 ff.write("log = log/$(MYNAME)_$(ClusterId).$(ProcId).log\n\n")
                 ff.write("transfer_input_files = $(MYINPUT)\n\n")
+                ff.write('MY.WantOS = "el7"\n')
                 ff.write('+AccountingGroup = "group_u_BE.ABP.normal"\n')
                 ff.write('+JobFlavour = "{}"\n\n'.format(flavour))
     
@@ -38,7 +39,7 @@ def main():
             py_filename = "sq32_{}.py".format(str(i))
             with open(exeFileName, 'w') as f:
                 f.write("#!/bin/bash\n\n")
-                f.write("source /cvmfs/sft-nightlies.cern.ch/lcg/views/dev4/latest/x86_64-centos7-gcc11-opt/setup.sh\n")
+                f.write("source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-dbg/setup.sh\n")
                 f.write("source /afs/cern.ch/work/s/sawang/public/project/myenv/bin/activate\n\n")
                 f.write("python3 {}\n".format(py_filename))
                 #fstring=literal string interpolation, interpolate values inside{}
@@ -48,6 +49,7 @@ def main():
             with open(py_filename, 'r') as f:
                 content = f.read()
                 content = content.replace("job=","job="+"'"+str(mad_filename)+"'")
+                content = content.replace("no_particles=","no_particles="+str(step))
                 content = content.replace("chunk=","chunk="+str(i))
             with open(py_filename, 'w') as f:     
                 f.write(content)

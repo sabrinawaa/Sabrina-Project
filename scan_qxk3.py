@@ -28,20 +28,16 @@ job = "qxk3_dependencee.madx"
 
 FP = [0.0,0.0005]
 
-Qx = [26.7495]
+Qx = [26.747]
 qy= 26.58
 
 
-k31 = [   -1.5, -1.9, -2.3, -2.7, 
-        -0.7, -1.1, -1.5, -1.9, -2.3, -2.7]
-  
+k31 = [     -1.957]
 
-k32 = [   -2.3, -2.3, -2.3, -2.3, 
-        -2.7, -2.7, -2.7, -2.7, -2.7, -2.7]
-
-island = "bot"
-DQ1 =-3
-DQ2 = -0.005
+k32 = [    -2.918 ]
+island = "cent"
+DQ1 =3
+DQ2 = 0.005
 
 
 
@@ -91,19 +87,15 @@ import os
 mad=Madx()
 job = "qxk3_dependence_2.madx"
 
-FP = [0.0,0.0005]
+Qx = [26.747]
 
-Qx = [26.7495]
+k31=[  -1.403] 
+k32=[  -1.687]
+island = "cent"
+DQ1 = 1
+DQ2 = 0.005
 
-k31 = [  -2.7]
-  
 
-k32 = [  -2.7]
-
-
-island = "bot"
-DQ1 = -2
-DQ2 = -0.005
 oct1 = "LOE.12002"
 oct2 = "LOEN.52002"
 for i in Qx:
@@ -140,6 +132,7 @@ for i in Qx:
             with open(job, 'w') as file:
                 file.write(data)
 #%% anothe DQ value
+print("here")
 from cpymad.madx import Madx
 import numpy as np
 
@@ -155,13 +148,13 @@ job = "qxk3_dependence_DQ.madx"
 # island = "bot"
 # DQ1 =1
 # DQ2 = 0.005
-Qx = [26.7495]
+Qx = [26.747]
 
-k31=[-2.3, -2.2, -2.1, -2.0, -1.9 ]
-k32=[-1.5, -1.6, -1.7, -1.8, -1.9 ]
-island = "bot"
-DQ1 = 1
-DQ2 = 0.005
+k31=[    -1.732, -1.336]
+k32=[     -2.479, -1.586] 
+island = "cent"
+DQ1 = -0.2
+DQ2 = -0.005
 
 
 oct1 = "LOE.12002"

@@ -8,7 +8,7 @@ mad=Madx()
 job=
 chunk=
 
-no_particles=20
+no_particles=
             
 mad.call(job)
 

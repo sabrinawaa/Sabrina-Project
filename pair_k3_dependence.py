@@ -48,7 +48,7 @@ def perc_err(expected, observed):
 twissname="Data/twiss_csv/1252_cents.csv"
 
 twiss=pd.read_csv(twissname)
-Qx=float(26.7495)
+Qx=float(26.747)
 twiss=twiss[twiss["Qx"]==Qx] 
 # twiss.GAMMA_TR = 22.8701# for Qx=247
 # twiss.GAMMA_TR = 22.8711# for Qx=248
@@ -58,9 +58,11 @@ twiss=twiss[twiss["Qx"]==Qx]
 # twiss.GAMMA_TR = 22.874 # for 251
 
 #%%
-DQ1='3'
+# Qx=26.2495
+DQ1='0.2'
 DQ2='0.005'
 topdata= pd.read_csv("Data/twiss_csv/1252_csv/1252Qx_"+str(Qx)+"_DQ_"+DQ1+','+DQ2+"top.csv")
+# topdata=topdata[topdata.k31>0]
 # botdata= pd.read_csv("Data/twiss_csv/1252_csv/1252_-5.4Qx_26.7495_DQ_3,0.005bot.csv")
 # topdata=topdata.iloc[:37]
 # botdata=botdata.drop(index=12)
@@ -188,8 +190,8 @@ plt.xlabel("sum of $k_3 (m^{-4})$")
 plt.ylabel("Transition energy (GeV)")
 # plt.xlim([-7.8,-0.5])
 # plt.xlim([-5.5,-0.5])
-# plt.title("centre DQ="+DQ1+','+DQ2)
-plt.title("$Q_x$="+str(Qx))
+plt.title("centre DQ="+DQ1+','+DQ2)
+# plt.title("$Q_x$="+str(Qx)+",centre DQ="+DQ1+','+DQ2)
 plt.legend()
 plt.grid(linewidth=0.3)
 #%% transition energy >0.5 GeV
@@ -370,8 +372,9 @@ plt.plot(np.array(topdata.k31)+1*np.array(topdata.k32), np.full(len(topdata.k31)
 plt.xlabel("sum of $k_3 (m^{-4})$")
 # plt.xlim([-5.5,-0.5])
 plt.ylabel("DQ")
-# plt.title("centre DQ="+DQ1+','+DQ2)
-plt.title("$Q_x$="+str(Qx))
+plt.title("centre DQ="+DQ1+','+DQ2)
+# plt.title("$Q_x$="+str(Qx))
+# plt.title("$Q_x$="+str(Qx)+",centre DQ="+DQ1+','+DQ2)
 plt.legend()
 plt.grid(linewidth=0.3)
 
