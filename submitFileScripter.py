@@ -5,22 +5,22 @@ import shutil
 #%%
 
 def main():
-    # for K3 in ["-1.957_-2.918"]:
-    for K3 in ["-1.403,-1.687"]:
+    for K3 in ["-1.957_-2.918"]:
+    # for K3 in ["-1.403,-1.687"]:
         oct_name = "LOE.12002,LOEN.52002"
         k3= K3
         qx= 26.747
         startPID = 0
-        endPID =7440#7800|
+        endPID =6290#7800|
         step = 5
-        flavour = "longlunch"
+        flavour = "workday"
         # folder = "./submit/1252sq_k3_"+str(k3)+"qx_"+str(qx)
-        folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
-        # folder = "submit/1252sq_-2.082,-3.118DQ_3,0.005_cent/"
+        # folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
+        folder ="submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil_orig_moremore/"
         os.chdir(folder)
-        os.mkdir("out")
-        os.mkdir("err")
-        os.mkdir("log")
+        # os.mkdir("out")
+        # os.mkdir("err")
+        # os.mkdir("log")
         oneSubmitFileName = "mass_track." + oct_name + "k3_" + str(k3) + ".sub"
         with open(oneSubmitFileName, 'w') as ff:
                 ff.write("universe = vanilla\n")

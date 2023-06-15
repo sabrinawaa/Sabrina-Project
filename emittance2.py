@@ -97,7 +97,7 @@ twiss=pd.read_csv("Data/twiss_csv/fin_config.csv")
 
 
 # twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
-twiss_FP = twiss[twiss.k31==-1.403]
+twiss_FP = twiss[twiss.k31==-1.957]
 twiss_FP = twiss_FP[twiss_FP.island =="top"]
 twiss = twiss.iloc[0]
 
@@ -123,10 +123,15 @@ no_turns=2048
 # folder = "submit/1252sq_-1.732,-2.479DQ_-0.2,-0.005_bot/"# config1
 # folder="submit/1252sq_-1.957,-2.918DQ_3,0.005_top_filled/"
 # folder = 'submit/1252sq_-1.957,-2.918DQ_3,0.005_cent/'
+# folder = 'submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil/'
+# folder = 'submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil_orig_moremore/'
 
 # folder = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_bot/"# config1
-folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_top_fil/"
+# folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_top_fil/"
 # folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent/"
+# folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
+folder = "submit/1252sq_k3_-2.1qx_26.746/"
+
 
 
 # stds = np.linspace(std*0.5, std*1.5, 50)
@@ -143,7 +148,12 @@ x0s=[]
 px0s=[]
 x_fins=[]
 px_fins=[]
-weights_stage2 =[]
+# weights_stage2 =[]
+# weights_stage3=[]
+# weights_stage4=[]
+# weights_stage5=[]
+# stage3_x0s=[]
+# stage3_px0s=[]
 for i in range (1,no_particles+1):
 
     name = folder + "track.no=" + str(i)
@@ -160,7 +170,28 @@ for i in range (1,no_particles+1):
         
         x_fins.append(track.X.iloc[-1])
         px_fins.append(track.PX.iloc[-1])
-        weights_stage2.append(weights[i-1])
+        # weights_stage2.append(weights[i-1])
+        # weights_stage3.append(weights_stage2[i-1])
+        # weights_stage4.append(weights_stage3[i-1])
+        # weights_stage5.append(weights_stage4[i-1])
+        # stage3_x0s.append(track.X[1])
+        # stage3_px0s.append(track.PX[1])
+
+#%% summary of track file
+import csv
+# Define the header names
+headers = ['x0s', 'px0s', 'x_fins', 'px_fins']
+
+# Create a CSV file and write the data
+with open("Data/trackdata/1252sq_k3_-2.1qx_26.746.csv", 'w', newline='') as csvfile:
+    writer = csv.writer(csvfile)
+    
+    # Write the header row
+    writer.writerow(headers)
+    
+    # Write the data rows
+    for i in range(len(x0s)):
+        writer.writerow([x0s[i], px0s[i], x_fins[i], px_fins[i]])
 
 #%%
 plt.figure()
@@ -254,11 +285,11 @@ plt.ylabel("momentum offset")
 fig,ax = plt.subplots()
 weights = np.array(weights)/np.sum(weights)
 
-# ini = ax.scatter(xn0,pxn0,c=weights,s=0.8,cmap=plt.cm.Purples)
-# cbb = plt.colorbar(ini,label="Initial Beam Weights")
+ini = ax.scatter(xn0,pxn0,c=weights,s=0.8,cmap=plt.cm.Purples)
+cbb = plt.colorbar(ini,label="Initial Beam Weights")
 
-fin = ax.scatter(xn_fin,pxn_fin,c=weights,s=0.8,cmap=plt.cm.Reds)
-cb = plt.colorbar(fin,label="Final Beam Weights")
+# fin = ax.scatter(xn_fin,pxn_fin,c=weights,s=0.8,cmap=plt.cm.Reds)
+# cb = plt.colorbar(fin,label="Final Beam Weights")
 
 # separatrix= "submit/1252sq_-1.925,-2.775DQ_-0.2,-0.005_sep/track.no=157"
 separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
@@ -272,28 +303,34 @@ plt.ylabel("$p_{xn}$")
 #%%
 fig,ax = plt.subplots()
 # weights = np.array(weights)/np.sum(weights)
-weights_stage2 = np.array(weights_stage2)/np.sum(weights_stage2)
+# weights_stage2 = np.array(weights_stage2)/np.sum(weights_stage2)
+weights_stage3 = np.array(weights_stage3)/np.sum(weights_stage3)
+weights_stage5 = np.array(weights_stage5)/np.sum(weights_stage5)
 
 # weights = np.exp(weights)
 
 w = weights
-w = weights_stage2
-
+# w3 = weights_stage3
+# w = weights_stage5
+# 
 fin = ax.scatter(x_fins,px_fins,c=w,s=0.8,cmap=cmap1)
 cb = plt.colorbar(fin,label="Final Beam Weights")
 
 ini = ax.scatter(x0s,px0s,c=w,s=0.8,cmap=cmap)
 cbb = plt.colorbar(ini,label="Initial Beam Weights")
 
+# ini = ax.scatter(stage3_x0s,stage3_px0s,c=w3,s=0.8,cmap=cmap)
+# cbb = plt.colorbar(ini,label="Initial Beam Weights")
+
 # separatrix= "submit/1252sq_-1.732,-2.479DQ_-0.2,-0.005_sep/track.no=309"
-# # separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
-# track = pd.read_fwf(separatrix, skiprows=6,infer_nrows=no_turns)
-# track = track.drop(index = 0,columns="*")
-# track = track.astype(np.float64)
+separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
+track = pd.read_fwf(separatrix, skiprows=6,infer_nrows=no_turns)
+track = track.drop(index = 0,columns="*")
+track = track.astype(np.float64)
 # ax.scatter(track.X,track.PX,marker='.', s=0.1,label="config 1 separatrix")
 
-separatrix2= "submit/1252sq_-1.957,-2.918DQ_3,0.005_sep/track.no=284"
-# separatrix = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
+# separatrix2= "submit/1252sq_-1.957,-2.918DQ_3,0.005_sep/track.no=284"
+separatrix2 = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_sep/track.no=170"
 track2 = pd.read_fwf(separatrix2, skiprows=6,infer_nrows=no_turns)
 track2 = track2.drop(index = 0,columns="*")
 track2 = track2.astype(np.float64)
@@ -303,6 +340,8 @@ ax.scatter(track2.X,track2.PX,marker='.', s=0.1,label="config 2 separatrix")
 
 plt.xlabel("x (m)")
 plt.ylabel("$p_{x}$ (rad)")
+plt.title("Stage 1 Filamentation in Island")
+# plt.title("Stage 2 Inter-Configuration Filamentation")
 plt.title("Stage 3 Centre Filamentation")
 plt.legend()
 #%%
@@ -317,33 +356,36 @@ uncertainty= []
 
 steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
 
-for k in std_grid[::400]:
-    em_fin=[]
-    for i in steps:
-        weights = []
-        xn0_sliced = xn0[::i]
-        pxn0_sliced = pxn0[::i]
-        xn_fin_sliced = xn_fin[::i]
-        pxn_fin_sliced = pxn_fin[::i]
-        
-        for j in range (len(xn0_sliced)):
-            # weighti = gaussian(xn0_sliced[j],xn_fp,std) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,std) * delta_pxn
-            weighti = gaussian(xn0_sliced[j],0,std) * delta_xn *gaussian (pxn0_sliced[j],std_grid[idx],std) * delta_pxn
-            weights.append(weighti)
-        em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
-        
-    uncertainty.append((max(abs(em_fin[:2]-em_fin[0]))-min(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
-    plt.figure(num=k)    
-    # plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-    plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-    plt.xlabel("No. of Initial Conditions")
-    plt.ylabel("Final Normalised Emittance (m rad)")
-    plt.xscale("log")
-    plt.legend()
-    plt.grid()
+# for k in std_grid[::400]:
+k=std_grid[idx]
+em_fin=[]
+for i in steps:
+    weights = []
+    xn0_sliced = xn0[::i]
+    pxn0_sliced = pxn0[::i]
+    xn_fin_sliced = xn_fin[::i]
+    pxn_fin_sliced = pxn_fin[::i]
+    
+    for j in range (len(xn0_sliced)):
+        # weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
+        # weighti = gaussian(xn0_sliced[j],xn_fp,std) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,std) * delta_pxn
+        weighti = gaussian(xn0_sliced[j],0,std) * delta_xn *gaussian (pxn0_sliced[j],offs_grid[idx],std) * delta_pxn
+        weights.append(weighti)
+    em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
+    # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weights))
+    
+uncertainty.append((max(abs(em_fin[:3]-em_fin[0])))/em_fin[0])    
+plt.figure(num=k)    
+# plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+plt.scatter(len(xn0)/steps, emm_norm(np.array(em_fin)),s=10,label="ini norm em="+str(round(emm_norm(k**2),9)))
+plt.xlabel("No. of Initial Conditions")
+plt.ylabel("Final Normalised Emittance (m rad)")
+plt.xscale("log")
+# plt.legend()
+plt.grid()
 #%% known weight calculate uncertainty
 
-w = weights_stage2
+w = weights
 
 uncertainty= []
 steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
@@ -356,17 +398,17 @@ for i in steps:
     xn_fin_sliced = xn_fin[::i]
     pxn_fin_sliced = pxn_fin[::i]
     
-    
     em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weight_sliced))
+    # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weight_sliced))
     
-uncertainty.append((max(abs(em_fin[:2]-em_fin[0]))-min(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
+uncertainty.append((max(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
 plt.figure(num=k)    
 # plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
 plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
 plt.xlabel("No. of Initial Conditions")
 plt.ylabel("Final Normalised Emittance (m rad)")
 plt.xscale("log")
-plt.legend()
+# plt.legend()
 plt.grid()
            
 #%%

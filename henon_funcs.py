@@ -13,7 +13,7 @@ import pandas as pd
 
 @njit
 def hanning_window(x):
-    return x * 2 * np.power((np.sin(np.pi * np.arange(len(x)) / (len(x)))), 2)
+    return x * 2 * np.power((np.sin(np.pi * np.arange(len(x)) / (len(x)) )), 2)
 @njit
 def A(a, b, c):
     return (-(a + b * c) * (a - b) + b * np.sqrt(c**2 * (a + b)**2 - 2 * a * b * (2 * c**2 - c - 1))) / (a**2 + b**2 + 2 * a * b * c)

@@ -18,10 +18,10 @@ import henon_funcs as fn
 mad=Madx()
 mad.call("track.madx")
 #%%
-twiss=pd.read_fwf("sps.tfs",skiprows=50,infer_nrows=3000)
+twiss=pd.read_fwf("sps.tfs",skiprows=50,infer_nrows=3000,delimiter=" ")
 #twiss=pd.read_fwf("sps.tfs",skiprows=50)
 twiss=twiss.drop(index=0)
-twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
+twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float64)
 #%%
 
 L_LOD=0.677
@@ -29,7 +29,7 @@ L_LOE=0.74
 L_LOF=0.705
 L_LOEN=0.656
 
-seq= pd.read_fwf("sps/sps.seq" ,skiprows=189,delimiter=" ")
+seq= pd.read_fwf("sps/sps.seq" ,infer_nrows=1912,skiprows=186,delimiter='')
 seq=seq.iloc[0:1913]
 names=seq.iloc[:,0]
 pos=seq.iloc[:,6]
@@ -41,10 +41,10 @@ LOFs=sps[sps["type"]=="LOF"].reset_index()
 LOEs=sps[sps["type"]=="LOE"].reset_index()
 LOENs=sps[sps["type"]=="LOEN"].reset_index()
 
-twiss=pd.read_fwf("sps.tfs",skiprows=50)
+twiss=pd.read_fwf("sps.tfs",skiprows=50,infer_nrows=3000,delimiter=" ")
 twiss=twiss.drop(index=0)
-twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
-twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
+twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float64)
+twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float64)
 twiss.S=twiss.S.round(decimals=2)
 
 
@@ -94,3 +94,17 @@ plt.xlabel("Octupoles")
 plt.xticks(rotation=60, ha='right',fontsize=6)
 plt.legend()
 plt.grid()
+
+#%% count sextupoles
+
+seq= pd.read_fwf("sps/sps.seq" ,skiprows=189,delimiter=" ")
+seq=seq.iloc[0:1911]
+names=seq.iloc[:,0]
+pos=seq.iloc[:,6]
+magtype=seq.iloc[:,2]
+data={"name":names, "type":magtype, "S":np.array(pos)}
+sps=pd.DataFrame(data=data).astype({'S':'float'})
+LSDs=sps[sps["type"]=="LSD"].reset_index()
+LSEs=sps[sps["type"]=="LSE"].reset_index()
+LSENs=sps[sps["type"]=="LSEN"].reset_index()
+LSFs=sps[sps["type"]=="LSF"].reset_index()

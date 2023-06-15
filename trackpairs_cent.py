@@ -15,12 +15,12 @@ job='pairs.madx'
 
 
 oct_names=["LOE.12002","LOEN.52002"]
-k31=[-1.734]
-k32=[-2.48]
+k31=[-1.957]
+k32=[-2.918]
 qx=26.747
-no_particles= 8#was 6
-DQ1=-0.2
-DQ2 =-0.005
+no_particles= 7#was 6
+DQ1=3
+DQ2 =0.005
 qy = 26.58
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
@@ -66,18 +66,19 @@ for a in range (len(oct_names)):
                     file.write(data)
                     
   #%%
-                   
+from cpymad.madx import Madx
+import os
 mad=Madx()
 job='pairs2.madx'
 
 
 oct_names=["LOE.12002","LOEN.52002"]
-k31=[-1.403]
-k32=[-1.687]
+k31=[-1.336]
+k32=[-1.586]
 qx=26.747
-no_particles= 8#was 6
-DQ1=1
-DQ2 =0.005
+no_particles= 7#was 6
+DQ1=-0.2
+DQ2 =-0.005
 qy = 26.58
 for a in range (len(oct_names)):
     for k in range (len(oct_names)):
@@ -106,7 +107,7 @@ for a in range (len(oct_names)):
                     else:
                         name="track.obs0001.p00"+str(i)
 
-                    newname="track.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(k31[j])+","+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1)+","+str(DQ2)+"no="+str(i)
+                    newname="tracky.oct="+oct_names[k]+","+oct_names[a]+"k3=" +str(k31[j])+","+str(k32[j])+"Qx="+str(qx)+"DQ="+str(DQ1)+","+str(DQ2)+"no="+str(i)
                     os.rename(name, newname)
 
                 with open(job, 'r') as file:

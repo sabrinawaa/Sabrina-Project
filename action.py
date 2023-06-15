@@ -118,9 +118,9 @@ plt.legend()
 
 #%% central
 island=0
-no_particles=20
+no_particles=16
 no_turns=2048
-folder=["Data/25_123252_negk3/"]
+folder=["Data/25DQ_-3.12trackpairs,triplets/"]
 # name=["ptc_twiss_cent.tfs"]
 # name_sum=["ptc_twiss_summ_cent.tfs"]
 
@@ -132,7 +132,7 @@ folder=["Data/25_123252_negk3/"]
 # twiss_sum=pd.read_fwf(name_sum[island],skiprows=6)
 # twiss_sum=twiss_sum.drop(index=0,columns='*')
 
-twissname=["Data/twiss_csv/cent_twiss.csv"]
+twissname=["Data/twiss_csv/747cent_twiss.csv"]
 
 twiss=pd.read_csv(twissname[island])
 twiss=twiss[twiss["k3"]==0.6]
@@ -147,7 +147,8 @@ for i in range (1,no_particles+1):
     #     name = folder[island] + "track.obs0001.p000"+str(i)
     # else:   
     #     name = folder[island] + "track.obs0001.p00"+str(i)
-    name = folder[island]+ "track.oct=LOE.12002,LOE.32002,LOEN.52002k3=-0.9no=" + str(i)
+    # name = folder[island]+ "track.oct=LOE.12002,LOE.32002,LOEN.52002k3=-0.9no=" + str(i)
+    name = folder[island]+"track.oct=LOE.12002,LOE.22002k3=-0.9,-0.9no=" + str(i)
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float)

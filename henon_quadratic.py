@@ -56,14 +56,14 @@ twiss=twiss.loc[:, ~twiss.columns.isin(['* NAME', 'KEYWORD'])].astype(np.float)
 
 #plt.plot(np.array(twiss.S), np.array(twiss.BETX))
 
-no_particles=7
-no_turns=8192
+no_particles=14
+no_turns=2048
 for j in [0.6]:
     tunes=[]
     x0s=[]
     for i in range (1,no_particles+1):
         if i <10:
-            name="Data/000/track.obs0001.p000"+str(i)
+            name="Data/cent/track.obs0001.p000"+str(i)
         else:   
             name="track.obs0001.p00"+str(i)
         

@@ -47,8 +47,8 @@ twiss_cent.ALFX = 1.728756478
 # xns=np.linspace(-0.005,0.005,150)#cent
 # pxns=np.arange(-0.005,0.005,0.00015625)#cent
 
-xns=np.linspace(-0.0038,0.0038,130)#cent small
-pxns=np.arange(-0.0038,0.0038,0.00015625)#cent
+# xns=np.linspace(-0.0038,0.0038,130)#cent small
+# pxns=np.arange(-0.0038,0.0038,0.00015625)#cent
 
 # xns=np.linspace(-0.0054,0.0034,120)#top large
 # pxns=np.arange(0.002,0.014,0.00015625)#top
@@ -59,8 +59,8 @@ pxns=np.arange(-0.0038,0.0038,0.00015625)#cent
 # xns=np.linspace(-0.0038,0.0038,120)#bot small
 # pxns=np.arange(-0.0014,-0.011,-0.00015625)#bot small
 
-# xns=np.linspace(-0.0055,-0.004,20)# large sep
-# pxns=np.linspace(0.002,0.005,18)
+xns=np.linspace(-0.0055,-0.004,20)# large sep
+pxns=np.linspace(0.002,0.005,18)
 
 # xns=np.linspace(-0.0042,-0.0032,20)# small sep
 # pxns=np.linspace(0.0015,0.006,18)
@@ -178,14 +178,14 @@ qx=[26.7495]#np.arange(26.729,26.7164,-0.0025)
         
 chunk_size=5
 # folder = "./submit/1252sq_k3_"+str(k3[idx])+"qx_"+str(qx[idx])+"/"
-# folder = "submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil/"
-folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
-os.mkdir(folder)
+folder = "submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil_orig_moremore/"
+# folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
+# os.mkdir(folder)
 
 
 x_fins=[]
 px_fins=[]
-folder_orig = "submit/1252sq_-1.403,-1.687DQ_1,0.005_top_fil/"
+folder_orig =  "submit/1252sq_-1.957,-2.918DQ_3,0.005_cent_fil_orig_more/"
 # folder_orig = "submit/1252sq_-1.336,-1.586DQ_-0.2,-0.005_bot/"
 no_particles = 9000
 for i in range (1,no_particles+1):
@@ -202,10 +202,10 @@ for i in range (1,no_particles+1):
         px_fins.append(track.PX.iloc[-1])
 #%%kicked continued
 
-# px_kicked = np.array(px_fins)- 0.0012728885016671549# large
-px_kicked = np.array(px_fins)-0.000824808616445194
+px_kicked = np.array(px_fins)#-0.0012953864584999595 #- 0.0012728885016671549# large
+# px_kicked = np.array(px_fins)-0.000824808616445194
 
-plt.scatter(x_fins,px_kicked,c=weights_stage2, s=1)
+plt.scatter(x_fins,px_kicked,c=weights_stage4, s=1)
 #%%kicked write
 
 for i in range(0,len(x_fins),chunk_size):

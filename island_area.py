@@ -31,8 +31,8 @@ twiss=pd.read_csv(twissname)
 Qx=float(26.747)
 twiss=twiss[twiss["Qx"]==Qx] 
 #%%
-folder="submit/1252sq_-1.403,-1.687DQ_1,0.005_sep/"
-folder = "./"
+# folder="submit/1252sq_-1.403,-1.687DQ_1,0.005_sep/"
+folder = "Data/75pairs2/"
 xns=[]
 tunes=[]
 pxns=[]
@@ -40,7 +40,7 @@ oct_names=["LOE.12002","LOEN.52002"]
 k31=[-1.403]
 k32=[-1.687]
 qx=26.747
-no_particles= 8#was 6
+no_particles= 20#was 6
 DQ1=1
 DQ2 =0.005
 qy = 26.58
@@ -57,8 +57,8 @@ for i in range (1,no_particles+1):
     #     name=folder+"track.obs0001.p"+str(i)
     # name = folder + "track.no=" + str(i)
     # name =folder+ "track.oct=LOE.12002,LOEN.52002k3=" +str(k31[0])+","+str(k32[0])+"no=" + str(i)
-    # name = folder+ "track.oct=LOE.32002,LOEN.52002k3=-2.4,-2.4no=" + str(i)
-    name= folder+ "track.oct="+oct_names[0]+","+oct_names[1]+"k3=" +str(k31[0])+","+str(k32[0])+"Qx="+str(qx)+"DQ="+str(DQ1)+","+str(DQ2)+"no="+str(i)
+    name = folder+ "track.oct=LOE.22002,LOE.32002k3=0.6no=" + str(i)
+    # name= folder+ "track.oct="+oct_names[0]+","+oct_names[1]+"k3=" +str(k31[0])+","+str(k32[0])+"Qx="+str(qx)+"DQ="+str(DQ1)+","+str(DQ2)+"no="+str(i)
 
     # plt.figure(num='2')
     track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
@@ -90,6 +90,45 @@ for i in range (1,no_particles+1):
     tunes.append(Qx)
     
    
+    #%%
+folder = "./"
+xns=[]
+tunes=[]
+pxns=[]
+oct_names=["LOE.12002","LOEN.52002"]
+k31=[-1.734]
+k32=[-2.429]
+qx=26.747
+no_particles= 7#was 6
+DQ1=-0.2
+DQ2 =-0.005
+qy = 26.58
+
+# folder = "./"
+for i in range (1,no_particles+1):
+    # if i <10:
+    #     name=folder+"track.obs0001.p000"+str(i)
+    # elif 9<i<100:   
+    #     name=folder+"track.obs0001.p00"+str(i)
+    # elif 99<i<1000:
+    #     name=folder+"track.obs0001.p0"+str(i)
+    # else:
+    #     name=folder+"track.obs0001.p"+str(i)
+    # name = folder + "track.no=" + str(i)
+    # name =folder+ "track.oct=LOE.12002,LOEN.52002k3=" +str(k31[0])+","+str(k32[0])+"no=" + str(i)
+    # name = folder+ "track.oct=LOE.22002,LOE.32002k3=0.6no=" + str(i)
+    name= folder+ "track.oct="+oct_names[0]+","+oct_names[1]+"k3=" +str(k31[0])+","+str(k32[0])+"Qx="+str(qx)+"DQ="+str(DQ1)+","+str(DQ2)+"no="+str(i)
+
+    # plt.figure(num='2')
+    track = pd.read_fwf(name, skiprows=6,infer_nrows=no_turns)
+    track = track.drop(index = 0,columns="*")
+    track = track.astype(np.float64)
+    plt.scatter(track.Y,track.PY,marker='.',s=0.1)
+    
+    plt.xlabel("y (m)")
+    plt.ylabel("$p_y $(rad)")
+    
+
     
 #%%
 fig,ax=plt.subplots()
@@ -279,17 +318,17 @@ for k in turns:
     track = track.drop(index = 0,columns="*")
     track = track.astype(np.float64)
     
-    plt.scatter(x0is,px0is,c=tuneis,s=5,cmap=plt.cm.jet)
+    # plt.scatter(x0is,px0is,c=tuneis,s=5,cmap=plt.cm.jet)
     x4 = np.array(track.X[::4]) - float(twiss_FP.ORBIT_X)
     px4 = np.array(track.PX[::4]) - float(twiss_FP.ORBIT_PX)
     
     areas.append(fn.shape_area(x4, px4))
-    plt.scatter(x4,px4,marker='.',s=0.1)
-    plt.scatter(-0.0172,0.000708,marker='x',s=10)
-
+    # plt.scatter(x4,px4,marker='.',s=0.1)
+    # plt.scatter(-0.0172,0.000708,marker='x',s=10)
+#%%
 plt.figure()
-plt.plot(turns, areas, '-x')    
+plt.scatter(turns, areas,s=8)    
 plt.xlabel("No. Turns")
 plt.ylabel("Island Surface (m rad)")
-plt.grid()
+plt.grid(linewidth=0.5)
 
