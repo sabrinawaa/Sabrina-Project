@@ -84,22 +84,22 @@ def steering_error (xn,pxn,x_fp,px_fp,alf,beta,w):
 # Qx=float(26.7495)
 # twiss=twiss[twiss["Qx"]==Qx] 
 
-# twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
-# twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
-# twiss_FP = twiss_FP[twiss_FP["Qx"]==26.7495]
+twiss_FP = pd.read_csv("Data/twiss_csv/1252_top.csv")
+twiss_FP = twiss_FP[twiss_FP["k3"]==-2.5]
+twiss_FP = twiss_FP[twiss_FP["Qx"]==26.747]
 
 twiss=pd.read_csv("Data/twiss_csv/fin_config.csv")
-# twiss=twiss[twiss["k31"]==-1.925] 
-# twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
-# twiss.BETX = 64.33992636
-# twiss.ALFX = 1.728756478
+twiss=twiss[twiss["k31"]==-1.925] 
+twiss = pd.DataFrame(data= [[64.33992636,1.728756478]],columns=["BETX","ALFX"])
+twiss.BETX = 64.33992636
+twiss.ALFX = 1.728756478
 
 
 
 # twiss_FP = pd.DataFrame(data= [[64.22611778,1.941697691,-0.006786209248, 0.001178558315]],columns=["BETX","ALFX","ORBIT_X", "ORBIT_PX"])
-twiss_FP = twiss[twiss.k31==-1.957]
-twiss_FP = twiss_FP[twiss_FP.island =="top"]
-twiss = twiss.iloc[0]
+# twiss_FP = twiss[twiss.k31==-1.957]
+# twiss_FP = twiss_FP[twiss_FP.island =="top"]
+# twiss = twiss.iloc[0]
 
 # area = 1.24e-6
 # std = np.sqrt( area *0.05/ np.pi) /3
@@ -109,13 +109,13 @@ twiss = twiss.iloc[0]
 std = 0.0004975#1 micron beam
 # std = 0.001471417 #grown beam large
 # std = 0.00112755 # grown beam small
-offset = -0.0065
+# offset = -0.0065
 # offset = -0.01 #
-# offset = 0
+offset = 0.006
 
 
-# xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
-#                             float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
+xn_fp, pxn_fp = normalise(float(twiss_FP.ORBIT_X), 
+                            float(twiss_FP.ORBIT_PX),float(twiss.ALFX), float(twiss.BETX))
 # offset = pxn_fp
 #%% using square gridsqmean * px_sqmean -xpx_sqmean)
 no_particles=10000 #7774
@@ -130,16 +130,15 @@ no_turns=2048
 # folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_top_fil/"
 # folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent/"
 # folder = "submit/1252sq_-1.403,-1.687DQ_1,0.005_cent_fil/"
-folder = "submit/1252sq_k3_-2.1qx_26.746/"
-
+folder = "submit/1252sq_k3_-2.5qx_26.7485/"
 
 
 # stds = np.linspace(std*0.5, std*1.5, 50)
 stds = np.linspace(0.0001,0.0011,80)
-offsets = np.linspace(offset-abs(offset)*0.15, offset +abs(offset)*0.15, 400)
+offsets = np.linspace(offset-abs(offset)*0.15, offset +abs(offset)*0.15, 40)
 # offsets = np.linspace(-0.002,0.002,400)
 
-std_grid,offs_grid=np.meshgrid(std,offsets)
+std_grid,offs_grid=np.meshgrid(stds,offset)
 std_grid=std_grid.flatten()
 offs_grid=offs_grid.flatten()
 #%%
@@ -178,20 +177,28 @@ for i in range (1,no_particles+1):
         # stage3_px0s.append(track.PX[1])
 
 #%% summary of track file
-import csv
-# Define the header names
-headers = ['x0s', 'px0s', 'x_fins', 'px_fins']
+# import csv
+# # Define the header names
+# headers = ['x0s', 'px0s', 'x_fins', 'px_fins']
 
-# Create a CSV file and write the data
-with open("Data/trackdata/1252sq_k3_-2.1qx_26.746.csv", 'w', newline='') as csvfile:
-    writer = csv.writer(csvfile)
+# # Create a CSV file and write the data
+# with open("Data/trackdata/1252sq_k3_-2.5qx_26.7485.csv", 'w', newline='') as csvfile:
+#     writer = csv.writer(csvfile)
     
-    # Write the header row
-    writer.writerow(headers)
+#     # Write the header row
+#     writer.writerow(headers)
     
-    # Write the data rows
-    for i in range(len(x0s)):
-        writer.writerow([x0s[i], px0s[i], x_fins[i], px_fins[i]])
+#     # Write the data rows
+#     for i in range(len(x0s)):
+#         writer.writerow([x0s[i], px0s[i], x_fins[i], px_fins[i]])
+        
+        #%% reopen track files
+track = pd.read_csv("Data/trackdata/1252sq_k3_-2.5qx_26.747.csv")
+x0s = track.x0s
+px0s = track.px0s
+x_fins = track.x_fins
+px_fins = track.px_fins
+        
 
 #%%
 plt.figure()
@@ -222,8 +229,9 @@ for i in range (len(std_grid)):
         #                /(std_grid[i]**2 * 2* np.pi))
         # weighti = dblquad(gauss_func, pxn0[j]-delta_pxn/2, pxn0[j]+delta_pxn/2, 
                          # xn0[j]-delta_xn/24, xn0[j]+delta_pxn/2)
+        weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         # weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        weighti = gaussian(xn0[j],0, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        # weighti = gaussian(xn0[j],0, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
         weights.append(weighti)
 
         
@@ -238,9 +246,9 @@ idx=i
 weights=[]
 for j in range (len(xn0)):
       
-        weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
+        # weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
         # weighti = gaussian(xn0[j],-0.001,std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
-        # weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],offs_grid[i],std_grid[i]) * delta_pxn
+        weighti = gaussian(xn0[j],xn_fp, std_grid[i]) * delta_xn *gaussian (pxn0[j],pxn_fp,std_grid[i]) * delta_pxn
         weights.append(weighti)
   
 #%%
@@ -282,7 +290,7 @@ plt.ylabel("momentum offset")
 #                      ['Greys', 'Purples', 'Blues', 'Greens', 'Oranges', 'Reds',
 #                       'YlOrBr', 'YlOrRd', 'OrRd', 'PuRd', 'RdPu', 'BuPu',
 #                       'GnBu', 'PuBu', 'YlGnBu', 'PuBuGn', 'BuGn', 'YlGn'])
-fig,ax = plt.subplots()
+fig,ax = plt.subplots()2qx_26.7485
 weights = np.array(weights)/np.sum(weights)
 
 ini = ax.scatter(xn0,pxn0,c=weights,s=0.8,cmap=plt.cm.Purples)
@@ -304,8 +312,8 @@ plt.ylabel("$p_{xn}$")
 fig,ax = plt.subplots()
 # weights = np.array(weights)/np.sum(weights)
 # weights_stage2 = np.array(weights_stage2)/np.sum(weights_stage2)
-weights_stage3 = np.array(weights_stage3)/np.sum(weights_stage3)
-weights_stage5 = np.array(weights_stage5)/np.sum(weights_stage5)
+# weights_stage3 = np.array(weights_stage3)/np.sum(weights_stage3)
+# weights_stage5 = np.array(weights_stage5)/np.sum(weights_stage5)
 
 # weights = np.exp(weights)
 
@@ -351,75 +359,76 @@ plt.scatter(xx,pxx,c=weights,s=1,cmap=plt.cm.jet)
 plt.colorbar(label="weights")
 plt.scatter(twiss_FP.ORBIT_X, twiss_FP.ORBIT_PX, marker='x', s=10)
 #%%
-# std = 0.000467
+std = 0.000467
 uncertainty= []
 
 steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
 
-# for k in std_grid[::400]:
-k=std_grid[idx]
-em_fin=[]
-for i in steps:
-    weights = []
-    xn0_sliced = xn0[::i]
-    pxn0_sliced = pxn0[::i]
-    xn_fin_sliced = xn_fin[::i]
-    pxn_fin_sliced = pxn_fin[::i]
+for k in std_grid:
+# k=std_grid[idx]
+    em_fin=[]
+    for i in steps:
+        weights = []
+        xn0_sliced = xn0[::i]
+        pxn0_sliced = pxn0[::i]
+        xn_fin_sliced = xn_fin[::i]
+        pxn_fin_sliced = pxn_fin[::i]
+        
+        for j in range (len(xn0_sliced)):
+            # weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
+            weighti = gaussian(xn0_sliced[j],xn_fp,std) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,std) * delta_pxn
+            # weighti = gaussian(xn0_sliced[j],0,std) * delta_xn *gaussian (pxn0_sliced[j],offs_grid[idx],std) * delta_pxn
+            weights.append(weighti)
+        em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
+        # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weights))
     
-    for j in range (len(xn0_sliced)):
-        # weighti = gaussian(xn0[j],0,std_grid[idx]) * delta_xn *gaussian (pxn0[j],offs_grid[idx],std_grid[idx]) * delta_pxn
-        # weighti = gaussian(xn0_sliced[j],xn_fp,std) * delta_xn *gaussian (pxn0_sliced[j],pxn_fp,std) * delta_pxn
-        weighti = gaussian(xn0_sliced[j],0,std) * delta_xn *gaussian (pxn0_sliced[j],offs_grid[idx],std) * delta_pxn
-        weights.append(weighti)
-    em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weights))
-    # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weights))
-    
-uncertainty.append((max(abs(em_fin[:3]-em_fin[0])))/em_fin[0])    
-plt.figure(num=k)    
-# plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-plt.scatter(len(xn0)/steps, emm_norm(np.array(em_fin)),s=10,label="ini norm em="+str(round(emm_norm(k**2),9)))
-plt.xlabel("No. of Initial Conditions")
-plt.ylabel("Final Normalised Emittance (m rad)")
-plt.xscale("log")
-# plt.legend()
-plt.grid()
+    uncertainty.append((max(abs(em_fin[:4]-em_fin[0])))/em_fin[0])    
+# plt.figure(num=k)    
+# # plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+# plt.scatter(len(xn0)/steps, emm_norm(np.array(em_fin)),s=10,label="ini norm em="+str(round(emm_norm(k**2),9)))
+# plt.xlabel("No. of Initial Conditions")
+# plt.ylabel("Final Normalised Emittance (m rad)")
+# plt.xscale("log")
+# # plt.legend()
+# plt.grid()
 #%% known weight calculate uncertainty
 
-w = weights
+# w = weights
 
-uncertainty= []
-steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
-em_fin=[]
-for i in steps:
+# uncertainty= []
+# steps = np.array([1,2,3,4,5,6,8,10,12,14,16,18,20])
+# em_fin=[]
+# for i in steps:
     
-    xn0_sliced = xn0[::i]
-    weight_sliced = w[::i]
-    pxn0_sliced = pxn0[::i]
-    xn_fin_sliced = xn_fin[::i]
-    pxn_fin_sliced = pxn_fin[::i]
+#     xn0_sliced = xn0[::i]
+#     weight_sliced = w[::i]
+#     pxn0_sliced = pxn0[::i]
+#     xn_fin_sliced = xn_fin[::i]
+#     pxn_fin_sliced = pxn_fin[::i]
     
-    em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weight_sliced))
-    # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weight_sliced))
+#     em_fin.append(emittance(np.array(xn_fin_sliced), np.array(pxn_fin_sliced),weight_sliced))
+#     # em_fin.append(emittance(np.array(xn0_sliced), np.array(pxn0_sliced),weight_sliced))
     
-uncertainty.append((max(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
-plt.figure(num=k)    
-# plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
-plt.xlabel("No. of Initial Conditions")
-plt.ylabel("Final Normalised Emittance (m rad)")
-plt.xscale("log")
-# plt.legend()
-plt.grid()
+# uncertainty.append((max(abs(em_fin[:2]-em_fin[0])))/em_fin[0])    
+# plt.figure(num=k)    
+# # plt.plot(len(xn0)/steps, np.array(em_fin)-em_fin[0],'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+# plt.plot(len(xn0)/steps, np.array(em_fin),'-x',label="ini norm em="+str(round(emm_norm(k**2),9)))
+# plt.xlabel("No. of Initial Conditions")
+# plt.ylabel("Final Normalised Emittance (m rad)")
+# plt.xscale("log")
+# # plt.legend()
+# plt.grid()
            
 #%%
 plt.figure(num="growth1")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.2, Qx=0.7485, Surface=2.767e-05,Foc_Err=1.0413")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.747, Surface=3.316e-05,Foc_Err=1.0234")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.7485, Surface=4.374e-05,Foc_Err=1.0425")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.5, Qx=0.747, Surface=4.853e-05,Foc_Err=1.0369")
-# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "k3=-2.1, Qx=0.746, Surface=3.739e-05 ,Foc_Err=1.0261")
-plt.scatter(emm_norm_ini, emm_inc,s=1, label= "more displaced")
-plt.errorbar(emm_norm_ini, emm_inc,yerr = emm_inc*uncertainty,elinewidth=0.25)
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "$k_3=-2.2$, $Q_x=26.7485$, Surface=28mm mrad,$F_{focusing}=1.0413$")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "$k_3=-2.1$, $Q_x=26.747$, Surface=33mm mrad,$F_{focusing}=1.0234$")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "$k_3=-2.1$, $Q_x=26.746$, Surface=37mm mrad ,$F_{focusing}=1.0261$")
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "$k_3=-2.5$, $Q_x=26.7485$, Surface=44mm mrad,$F_{focusing}=1.0425$")
+plt.scatter(emm_norm_ini, emm_inc,s=1, label= "$k_3=-2.5$, $Q_x=26.747$, Surface=49mm mrad,$F_{focusing}=1.0369$")
+
+# plt.scatter(emm_norm_ini, emm_inc,s=1, label= "more displaced")
+plt.errorbar(emm_norm_ini, emm_inc,yerr = emm_inc*uncertainty,elinewidth=0.3)
 
 plt.xlabel("Normalised Initial Emittance (m rad)")
 plt.ylabel("Emittance Growth")
