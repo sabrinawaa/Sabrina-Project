@@ -1,0 +1,82 @@
+universe = vanilla
+executable = $(MYEXE)
+
+output = out/$(MYNAME)_$(ClusterId).$(ProcId).out
+error = err/$(MYNAME)_$(ClusterId).$(ProcId).err
+log = log/$(MYNAME)_$(ClusterId).$(ProcId).log
+
+transfer_input_files = $(MYINPUT)
+
++AccountingGroup = "group_u_BE.ABP.normal"
++JobFlavour = "workday"
+
+MYEXE= sq32_0.sh
+MYNAME = sq32_0
+MYINPUT = sps1.seq, sq32_0.madx,  sq32_0.py
+queue
+
+MYEXE= sq32_20.sh
+MYNAME = sq32_20
+MYINPUT = sps1.seq, sq32_20.madx,  sq32_20.py
+queue
+
+MYEXE= sq32_40.sh
+MYNAME = sq32_40
+MYINPUT = sps1.seq, sq32_40.madx,  sq32_40.py
+queue
+
+MYEXE= sq32_60.sh
+MYNAME = sq32_60
+MYINPUT = sps1.seq, sq32_60.madx,  sq32_60.py
+queue
+
+MYEXE= sq32_80.sh
+MYNAME = sq32_80
+MYINPUT = sps1.seq, sq32_80.madx,  sq32_80.py
+queue
+
+MYEXE= sq32_100.sh
+MYNAME = sq32_100
+MYINPUT = sps1.seq, sq32_100.madx,  sq32_100.py
+queue
+
+MYEXE= sq32_120.sh
+MYNAME = sq32_120
+MYINPUT = sps1.seq, sq32_120.madx,  sq32_120.py
+queue
+
+MYEXE= sq32_140.sh
+MYNAME = sq32_140
+MYINPUT = sps1.seq, sq32_140.madx,  sq32_140.py
+queue
+
+MYEXE= sq32_160.sh
+MYNAME = sq32_160
+MYINPUT = sps1.seq, sq32_160.madx,  sq32_160.py
+queue
+
+MYEXE= sq32_180.sh
+MYNAME = sq32_180
+MYINPUT = sps1.seq, sq32_180.madx,  sq32_180.py
+queue
+
+MYEXE= sq32_200.sh
+MYNAME = sq32_200
+MYINPUT = sps1.seq, sq32_200.madx,  sq32_200.py
+queue
+
+MYEXE= sq32_220.sh
+MYNAME = sq32_220
+MYINPUT = sps1.seq, sq32_220.madx,  sq32_220.py
+queue
+
+MYEXE= sq32_240.sh
+MYNAME = sq32_240
+MYINPUT = sps1.seq, sq32_240.madx,  sq32_240.py
+queue
+
+MYEXE= sq32_260.sh
+MYNAME = sq32_260
+MYINPUT = sps1.seq, sq32_260.madx,  sq32_260.py
+queue
+
